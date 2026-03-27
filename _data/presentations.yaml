@@ -1,0 +1,74 @@
+presentations:
+  - date: May 2018
+    event: iOSDevCampCO
+    title: Colloquial Swift (45 min)
+    location: Colorado Springs, CO
+    details:
+      - Presented findings from Colloquial Swift personal project (see entry in previous section)
+    tags: [teaching, speaking, ios, swift, conference, research]
+
+  - date: Jun 2017
+    event: CocoaHeads Boston
+    title: UIViewController Decomposition and UI Reuse (20 min)
+    venue: MIT
+    location: Cambridge, MA
+    details:
+      - Discussing strategies to separate responsibilities from UIViewControllers and a library of reusable UI components, e.g. animated transparent modal presentation with a close button
+    tags: [teaching, speaking, ios, architecture, meetup]
+
+  - date: Jan 2017
+    event: Boston Algorithms Meetup
+    title: HyperLogLog (20 min)
+    venue: Twitter
+    location: Cambridge, MA
+    details:
+      - Helped organized this initial meeting of the group
+      - Covered the theoretical workings of the HyperLogLog algorithm, with a copresenter giving a working demostration
+    tags: [teaching, speaking, algorithms, mathematics, meetup]
+
+  - date: Jul 2016
+    event: Girls Who Code
+    title: iOS Dev Session
+    venue: Twitter
+    location: Cambridge, MA
+    details:
+      - Part of GWC summer internship covering programming first principles to full-stack style development
+      - Designed and led iOS session where we built a Flappy Bird clone, introducing them to Xcode as an IDE, Interface Builder, Playgrounds and Swift
+    tags: [teaching, speaking, ios, education, youth, diversity]
+
+  - date: Mar 2016
+    event: mDevCon
+    title: Command and NSOperation (45 min)
+    location: Amsterdam, NL
+    details:
+      - Delivered presentation on the Command software design pattern, and NSOperation
+      - Introduced subclasses we open sourced at Crashlytics for asynchronous and compound operations
+      - Previously delivered at a lunchtime tech talk at Twitter, Cambridge, MA (Nov 2015) and CocoaHeads Boston meetup, MIT, Cambridge, MA (Dec 2015)
+    tags: [teaching, speaking, ios, design-patterns, conference]
+
+  - date: Oct 2015
+    event: NeighborNest
+    title: Web Dev Session
+    venue: Twitter
+    location: San Francisco, CA
+    details:
+      - Community program to help advocate technology literacy
+      - Assisted in session where students worked on a Twitter clone, teaching functional programming concepts, Javascript, and some front- and back- end concepts
+    tags: [teaching, speaking, web, javascript, education, diversity]
+
+  - date: 2013
+    event: VMASC Capstone Conference
+    title: Estimating lower bounds on the length of protein polymer chain segments using robot motion planning
+    location: Suffolk, VA
+    details:
+      - Presented research on using computational geometry and motion planning algorithms to model protein molecule structures
+      - Best paper award
+    tags: [teaching, speaking, research, academic, conference, algorithms]
+
+  - date: Oct 2012
+    event: IEEE WCSB
+    title: CryoEM skeleton length estimation using a decimated curve
+    location: Philadelphia, PA
+    details:
+      - Presented research on using a dynamic graph algorithm to identify protein molecule substructures from 3D images
+    tags: [teaching, speaking, research, academic, conference, algorithms] 

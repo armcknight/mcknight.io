@@ -1,0 +1,62 @@
+%----------------------------------------------------------------------------------------
+%	CONFIGURATION
+%----------------------------------------------------------------------------------------
+
+\newif\ifprint
+\printfalse
+
+\newif\ifweb
+\webtrue
+
+\documentclass[11pt,a4paper,sans]{moderncv}
+
+\moderncvstyle{classic}
+\moderncvcolor{green}
+
+\usepackage[scale=0.9]{geometry}
+\setlength{\hintscolumnwidth}{2cm}
+
+%----------------------------------------------------------------------------------------
+%	HEADER
+%----------------------------------------------------------------------------------------
+
+\firstname{\rmfamily Andrew}
+\familyname{\rmfamily M$^{\textrm{\Huge c}}$Knight}
+
+\ifweb
+	%no phone or address on web
+\else
+	\address{1691 Moose Trail}{Fairbanks, AK 99709}
+	\mobile{(571) 288-1339}
+\fi
+\email{andrew@mcknight.rocks}
+\homepage{mcknight.io}{https://mcknight.io}
+\linkedinpage{www.linkedin.com/in/andrewrmcknight}{https://linkedin.com/in/andrewrmcknight}
+\githubpage{github.com/armcknight}{https://github.com/armcknight}
+
+\begin{document}
+
+\recipient{Anthropic}{San Francisco, CA}
+\date{\today}
+\opening{Dear Anthropic Hiring Team,}
+\closing{Best regards,}
+\enclosure[Attached]{r\'esum\'e}
+\makelettertitle
+
+I'm writing to express my interest in the Software Engineer, iOS position. With over 14 years of professional iOS development experience---spanning developer tools, consumer apps used by millions, and most recently AI-integrated mobile experiences---I'm excited about the opportunity to build Claude's mobile applications.
+
+At Sentry, I've spent the last five years as a Senior iOS Developer on the Cocoa SDK team, where I've most recently spearheaded native iOS and macOS applications for Sentry's Seer AI workflows. This work sits at exactly the intersection this role targets: building elegant, performant mobile experiences that surface the capabilities of advanced AI systems. Earlier in my Sentry tenure, I integrated a statistical profiling engine into the SDK (following Sentry's acquisition of Specto, where I was an early engineer), built the SDK's first user-facing UI component, and drove substantial improvements to CI infrastructure and build systems.
+
+Before Sentry, I built Crashlytics and Fabric SDKs at Twitter, where I also maintained backend lambda architecture (Storm/Heron, Kafka, Cassandra) and pioneered a feature that cross-referenced crash patterns across applications to suggest fixes to developers---an early form of the kind of intelligent, data-driven assistance that Claude embodies. This full-stack experience, spanning iOS through distributed backend systems, aligns well with the role's expectation of comfort across the development stack.
+
+I've also shipped widely-adopted consumer apps: at Raizlabs, I worked on Care.com and B\&H Photo, both top-category App Store apps with large user bases. At MC10, I built a companion iOS app for a wearable medical device from scratch---a 0-to-1 product experience that required close attention to hardware integration, UX polish, and iterating rapidly in a startup environment.
+
+My academic background includes a Master's in Computer Science with a thesis in bioinformatics, where I applied computational geometry, image processing, and algorithmic techniques to model protein structures---work that resulted in three published papers and two conference presentations. While not directly in ML, this research foundation gives me an appreciation for the computational thinking behind modern AI systems.
+
+Beyond code, I value technical community and mentorship. I've presented at international conferences (mDevCon in Amsterdam), local meetups (CocoaHeads Boston), and taught iOS development sessions for Girls Who Code at Twitter. I look forward to bringing that same collaborative energy to Anthropic's mobile team.
+
+I'm based in Fairbanks, Alaska, and am open to hybrid work at any of the listed office locations. I'd welcome the chance to discuss how my experience building developer tools, consumer apps, and AI-integrated mobile experiences could contribute to Claude's mobile future.
+
+\makeletterclosing
+
+\end{document}

@@ -1,0 +1,16 @@
+<center>
+	<style scoped>
+		.reader-adaptable-video {
+			width: 75%;
+		}
+		@media only screen and (max-width: 500px) {
+			.reader-adaptable-video { /* div containing everything after the header */
+				width: 100%;
+			}	
+		}
+	</style>
+	<video class="reader-adaptable-video" controls>
+		<source src="/blog/vid/{{ include.source }}" type="video/mp4"/>
+		Your browser does not support HTML5 video.
+	</video>
+</center>

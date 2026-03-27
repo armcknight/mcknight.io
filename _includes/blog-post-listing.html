@@ -1,0 +1,32 @@
+{% assign first_post = true %}
+{% assign older_post_idx = 0 %}
+{% for post in include.posts %}
+    {% if first_post %}
+        {% assign first_post = false %}
+
+        <header>
+            <latest>
+                <div class="latest-title">Latest: <a href="{{ post.url }}"><span class="latest-title">{{ post.title }}</span></a></div>
+                <div class="latest-abstract">{{ post.abstract }} <span class="latest-readtime">({{ post.content.size | readtime }} minute read)</span></div>
+            </latest>
+            <tags>
+                <span class="section-heading">Tags:</span> {{ site | tag_cloud }}
+            </tags>
+        </header>
+
+        <div class="previous-section">
+            <div class="section-heading">Previously:</div>
+    {% else %}
+            <previous>
+                <a href="{{ post.url }}">{{ post.title }}</a>
+                <div class="previous-abstract">{{ post.abstract }}</div>
+
+        {% if older_post_idx < 2 %}
+            {% assign older_post_idx = older_post_idx | plus: 1 %}
+        {% else %}
+            {% assign older_post_idx = 0 %}
+        {% endif %}
+    {% endif %}
+            </previous>
+{% endfor %}
+        </div>

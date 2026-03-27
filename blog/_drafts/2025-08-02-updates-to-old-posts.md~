@@ -1,0 +1,14 @@
+---
+title: "Updating old posts"
+date: 2025-08-02
+layout: post
+abstract: "Just announcing updates to some older posts, and ruminating on how I might do it better in the future."
+author: Andrew McKnight
+tags: meta
+---
+
+I have a couple blog posts where I aggregate a bunch of information together as a sort of reference for myself. Of course, I don't know everything about a topic at the time I write about it. So, when I learn something new, I might want to add it to that post. But what to do when I update it? So far, I've just added a note to the post, but if anyone out there follows my RSS/etc feed, they won't know about it.
+
+So, right now, I'm opting to make a new post pointing to the ones that are being updated. In the future, it probably makes sense to set aside those posts that are most active in a reference role as a more structured page, similar to my links page. But I haven't fully figured out how they should work, or where in my site they should live. Maybe I'll generalize the area that's currently "Links" into "Reference" where Links would live under it alongside other pages of structured data.
+
+Without

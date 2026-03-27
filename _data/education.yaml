@@ -1,0 +1,70 @@
+education:
+  - start: September 2010
+    end: June 2013
+    degree: M.Sc., Dept. of Computer Science
+    institution: Old Dominion University
+    details:
+      - Thesis track in bioinformatics, robotics, image processing and meshing research topics
+      - Three published papers with two conference presentations
+      - C++ programming TA for three semesters
+      - Minor in actuarial mathematics
+    publications:
+      - title: "Estimating loop length from CryoEM images at medium resolutions"
+        url: http://www.biomedcentral.com/content/pdf/1472-6807-13-S1-S5.pdf
+        year: 2013
+      - title: "Estimating Lower Bounds on the Length of Protein Polymer Chain Segments using Robot Motion Planning"
+        url: https://class-pages.pages.cs.odu.edu/crtcpub/publications/estimating-lower-bounds-on-the-length-of-protein-polymer-cha-2013/
+        year: 2013
+      - title: "CryoEM Skeleton Length Estimation using a Decimated Curve"
+        url: https://class-pages.pages.cs.odu.edu/crtcpub/publications/cryoem-skeleton-length-estimation-using-a-decimated-curve-2012/
+        year: 2012
+    tags: [academic, masters, computer-science, research, bioinformatics]
+    honors: 
+      - year: 2013
+        award: Gene Newman Award, Virginia Modeling, Analysis and Simulation Center Capstone conference
+        description: Best overall paper
+        tags: [academic, research, awards, paper, conference]
+      - year: 2012
+        award: Graduate with Distinction
+        description: Awarded with B.Sc.
+        tags: [academic, honors, undergraduate, distinction]
+      - year: 2012
+        award: Undergraduate Research Award, Spring Undergraduate Research Fair
+        description: Outstanding undergraduate achievement
+        tags: [academic, research, undergraduate, fair]
+      - year: 2011
+        award: First Place, ODU-ACM Programming Contest
+        tags: [academic, programming, competition, first-place]
+      - year: 2010, 2011
+        award: Dean's List
+        tags: [academic, honors, undergraduate, deans-list]
+  - start: September 2003
+    end: June 2009
+    degree: A.Sc., Dept. of Computer Science
+    institution: Northern Virginia Community College; Piedmont Virginia Community College
+    tags: [academic, masters, computer-science, research, bioinformatics] 
+    honors:
+      - year: 2009
+        award: Summa Cum Laude
+        tags: [academic, honors, community-college, summa-cum-laude]
+  
+  - start: September 1999
+    end: June 2003
+    degree: High School Diploma
+    institution: CD Hylton High School
+    location: Woodbridge, VA
+    tags: [high-school]
+    highlights:
+      - AP Computer Science and Calculus A 
+      - Cryptography club
+      - Self-taught DOS and command line basics
+      - Advanced studies diploma
+  
+  - start: September 1997
+    end: June 1999
+    institution: Middle School
+    location: Manassas, VA
+    tags: [middle-school]
+    highlights:
+      - Self-taught TI Basic, building math/science helper apps
+      - Self-taught HTML, CSS, and JavaScript (back when it was called "DHTML")

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+	<channel>
+		<atom:link href="http://mcknight.io/feed.xml" rel="self" type="application/rss+xml" />
+		<title>{{ include.title }}</title>
+		<description>{{ include.description }}</description>
+		<link>{{ include.link }}</link>
+		{% for post in include.posts %}
+			<item>
+				<title>{{ post.title | xml_escape }}</title>
+				<description>{{ post.abstract | xml_escape }}</description>
+				<pubDate>{{ post.date | date_to_rfc822 }}</pubDate>
+				<link>{{ post.url | prepend: site.url }}</link>
+				<guid isPermaLink="true">{{ post.url | prepend: site.url }}</guid>
+				{% if post.thumbnail != undefined %}
+				<media:content
+				    xmlns:media="http://mcknight.io"
+				    url="http://mcknight.io/blog/img/{{ post.thumbnail }}"
+				    medium="image"
+				    type="image/jpeg"
+				    width="150"
+				    height="150" />
+				{% endif %}
+			</item>
+		{% endfor %}
+	</channel>
+</rss>

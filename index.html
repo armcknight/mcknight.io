@@ -1,0 +1,46 @@
+---
+layout: modern
+title: "Andrew McKnight's Home Page"
+---
+
+<div class="page-header">
+  <h1 class="page-title">Hello world!</h1>
+</div>
+
+<div class="home-content">
+  <p>I'm Andrew McKnight. I love science, art, technology, the outdoors and cooking.</p>
+  
+  <p>I'm currently a Senior Software Engineer at <a href="https://sentry.io">Sentry</a>, where I work on their Cocoa SDK. I've built iOS SDK and apps for quite a while, but I enjoy all types of programming. I've researched, published and presented on a variety of topics, from protein folding to algorithms.</p>
+
+  <p>I live in Fairbanks, Alaska, as I simply can't ski enough, but I've also lived in Montana, Colorado, Boston and my home state of Virginia. Oh, and I also love to travel, I've visited 38 US states and 13 countries across 4 continents.</p>
+  
+  <h2>Recent Posts</h2>
+  <div class="blog-posts">
+    {% for post in site.posts limit: 3 %}
+    <article class="blog-post-preview">
+      <header>
+        <h2 class="blog-post-title">
+          <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+        </h2>
+        <div class="blog-post-meta">
+          <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%-d %B %Y" }}</time>
+          {% if post.author %}{% endif %}
+          {% if post.tags and post.tags.size > 0 %}
+          • 
+          {% for tag in post.tags %}
+            <a href="/blog/tag/{{ tag | slugify }}.html" class="tag">{{ tag }}</a>
+          {% endfor %}
+          {% endif %}
+        </div>
+      </header>
+      {% if post.abstract %}
+      <div class="blog-post-abstract">{{ post.abstract }}</div>
+      {% endif %}
+    </article>
+    {% endfor %}
+  </div>
+  
+  <p class="mt-8">
+    <a href="/blog">View all posts →</a>
+  </p>
+</div>

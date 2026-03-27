@@ -1,0 +1,103 @@
+// Links page specific styles
+
+// Links sections layout
+.links-sections {
+  display: flex;
+  gap: var(--space-8);
+  align-items: flex-start;
+}
+
+.links-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.links-section {
+  padding-bottom: var(--space-1);
+}
+
+.links-section-title {
+  font-size: var(--text-xl);
+  font-weight: 600;
+  margin-bottom: var(--space-1);
+  color: var(--text-primary);
+}
+
+.links-list {
+  list-style: disc;
+  padding-left: var(--space-5);
+  margin: 0;
+}
+
+.links-list-item {
+  margin-bottom: var(--space-1);
+  line-height: 1.4;
+}
+
+.links-list-link {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: var(--text-sm);
+  transition: color 0.15s ease;
+}
+
+.links-list-link:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+// Floating back to top button
+.floating-back-to-top {
+  position: fixed;
+  bottom: var(--space-6);
+  right: var(--space-6);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: var(--background-alt);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, bottom 0.2s ease, opacity 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  text-decoration: none;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.floating-back-to-top.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.floating-back-to-top:hover {
+  color: var(--accent);
+  background-color: var(--accent);
+  border-color: var(--accent);
+}
+
+.floating-back-to-top:hover svg {
+  color: white;
+}
+
+.floating-back-to-top svg {
+  width: 20px;
+  height: 20px;
+}
+
+// Responsive design for links page
+@media (max-width: 650px) {
+  .links-sections {
+    flex-direction: column !important;
+    gap: var(--space-6) !important;
+  }
+  
+  .links-column {
+    gap: var(--space-1) !important;
+  }
+} 

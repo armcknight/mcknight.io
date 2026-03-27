@@ -1,0 +1,9 @@
+---
+title: "Modeling models' models"
+date: 2026-02-18
+author: Andrew McKnight
+layout: post
+tags: software engineering ai
+abstract: "How I think about how LLMs think."
+---
+Poeple lately are worried about how LLMs will [wreck all your work]() and [delete all your life's memories](). I think they're going about using LLMs the wrong way. This was most recently exemplified to me in a Show HN post I saw today: 

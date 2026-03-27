@@ -1,0 +1,321 @@
+%----------------------------------------------------------------------------------------
+%----------------------------------------------------------------------------------------
+%	CONFIGURATION
+%----------------------------------------------------------------------------------------
+%----------------------------------------------------------------------------------------
+
+%cv_links - define \printfalse and \webfalse
+%cv_print - define \printtrue and webfalse
+%cv_web - define \printfalse and \webtrue
+
+\newif\ifprint
+%\printtrue
+\printfalse
+
+\newif\ifweb
+\webtrue
+%\webfalse
+
+\documentclass[11pt,a4paper,roman]{moderncv} % Font sizes: 10, 11, or 12; paper sizes: a4paper, letterpaper, a5paper, legalpaper, executivepaper or landscape; font families: sans or roman
+
+\moderncvstyle{classic} % CV theme - options include: 'casual' (default), 'classic', 'oldstyle' and 'banking'
+\moderncvcolor{green} % CV color - options include: 'blue' (default), 'orange', 'green', 'red', 'purple', 'grey' and 'black'
+
+\usepackage[scale=0.9]{geometry} % Reduce document margins
+\setlength{\hintscolumnwidth}{2cm} % Uncomment to change the width of the dates column
+
+%----------------------------------------------------------------------------------------
+%----------------------------------------------------------------------------------------
+%	HEADER
+%----------------------------------------------------------------------------------------
+%----------------------------------------------------------------------------------------
+
+\firstname{Andrew} % Your first name
+\familyname{M$^{\textrm{\Huge c}}$Knight} % Your last name
+
+% All information in this block is optional, comment out any lines you don't need
+%\title{R\'esum\'e}
+%\title{Curriculum Vit\ae}
+\ifweb
+	%no phone or address on web
+\else
+	\address{1691 Moose Trail}{Fairbanks, AK 99709}
+	\mobile{(571) 288-1339}
+\fi
+\email{andrew@mcknight.rocks}
+\homepage{mcknight.io}{http://mcknight.io}
+%\linkedinpage{www.linkedin.com/in/andrewrmcknight}{www.linkedin.com/in/andrewrmcknight}
+%\githubpage{github.com/sixstringtheory}{https://github.com/sixstringtheory} % The first argument is the url for the clickable link, the second argument is the url displayed in the template - this allows special characters to be displayed such as the tilde in this example
+%\extrainfo{additional information}
+%\photo[70pt][0.4pt]{pictures/picture} % The first bracket is the picture height, the second is the thickness of the frame around the picture (0pt for no frame)
+%\quote{"A witty and playful quotation" - John Smith}
+
+\begin{document}
+
+%----------------------------------------------------------------------------------------
+%----------------------------------------------------------------------------------------
+%	COVER LETTER
+%----------------------------------------------------------------------------------------
+%----------------------------------------------------------------------------------------
+
+%\clearpage
+%\recipient{MC10}{9 Camp Street\\Cambridge, MA 02140}
+%\date{\today}
+%\opening{To whom it may concern:}
+%\closing{Sincerely,}
+%\enclosure[Attached]{r\'esum\'e}
+% \makelettertitle
+
+% \makeletterclosing
+%\clearpage
+
+%----------------------------------------------------------------------------------------
+%----------------------------------------------------------------------------------------
+%	CURRICULUM VITAE
+%----------------------------------------------------------------------------------------
+%----------------------------------------------------------------------------------------
+
+\makecvtitle 
+
+\hspace{1em} Senior iOS developer with 14+ years of experience shipping developer tools, consumer apps and AI-integrated mobile experiences across all Apple platforms. Background spans low-level crash reporting and statistical profiling SDKs to user-facing apps in medical, eCommerce and B2B sectors, with full-stack exposure to backend systems. M.Sc.\ in Computer Science with published research in computational geometry and image processing.
+
+\hspace{1em} Experience as both contractor and full-time employee, in office, remote and hybrid settings, including collaboration across timezones in North America and Europe.
+
+\vspace{1em}
+
+\section{iOS Experience}
+
+\cventry{Jan 2021 – Current}{Sentry}{Senior iOS Developer}{Remote}{(FTE)}{
+    \begin{itemize}
+        \item \textbf{Stack}: Objective-C++, Swift/SwiftUI, XcodeGen, GitHub Actions, SauceLabs, CocoaPods, SPM, Carthage, Swiftlint, clang-format, CodeCov, pre-commit, Fastlane, TestFlight, Arkana
+        \item \textbf{Deliverable}: \textcolor{color1}{\href{https://github.com/getsentry/sentry-cocoa}{Sentry Cocoa SDK}}: mobile app crash and performance monitoring
+        \item \textbf{Highlights}:
+        \begin{itemize}
+            \item Spearheaded launching iOS/macOS SwiftUI apps for Seer AI workflows
+            \item Integrated Specto's profiler into Sentry's Cocoa SDK and iterated with new API/features
+            \item User Feedback widget: first user-facing UI shipped in Sentry Cocoa SDK
+            \item Built and maintained sample and demo apps for developers and Sales team
+            \item CI overhauls: added workflows, streamlined inconsistencies, and parallelized long-running jobs
+        \end{itemize}
+    \end{itemize}
+}
+
+\cventry{Nov 2019 – Dec 2020}{Specto}{Senior iOS Developer}{Remote}{(FTE)}{
+    \begin{itemize}
+        \item \textbf{Stack}: Objective-C++, Swift, Go, Python, Jinja, Bazel, XcodeGen, GitHub Actions, pre-commit, clang-format
+        \item \textbf{Deliverable}: Mobile app profiling SDK with shared C++ core between iOS and Android
+        \item \textbf{Highlights}:
+        \begin{itemize}
+            \item First employee at startup; grew and maintained iOS profiling SDK
+            \item Added safe init, launch profiling, signal propagation
+            \item Automated scoped Xcode project generation from Bazel targets (pre \texttt{rules\_xcodeproj})
+            \item Acquired by Sentry in December 2020
+        \end{itemize}
+    \end{itemize}
+}
+
+\cventry{Jan 2019 – Oct 2019}{Rightpoint Consulting}{Senior iOS Developer}{Remote}{(Contract-to-Perm)}{
+    \begin{itemize}
+        \item \textbf{Stack}: Swift, SwiftGen, SwiftLint, Sourcery, CircleCI, Postman, Browserstack, Countly
+        \item \textbf{Deliverables}: Security-focused app and SDK (NDA)
+    \end{itemize}
+}
+
+\cventry{Jan – Apr 2018}{121nexus}{iOS Developer}{Remote}{(Contract)}{
+    \begin{itemize}
+        \item \textbf{Stack}: Swift, AVFoundation, OpenCV, Firebase, cocoapods-keys, AWS
+        \item \textbf{Deliverables}: Medical inventory management app/SDK with barcode/QR scanning
+        \item \textbf{Highlights}:
+        \begin{itemize}
+            \item Replaced application UI and networking with their new SDK
+            \item Reimplemented major area of app with new UI and platform API
+            \item Added crash reporting (Crashlytics) and logging (XCGLogging)
+            \item Augmented and documented analytics (Firebase)
+            \item Assisted launches via iTunes (\textcolor{color1}{\href{https://itunes.apple.com/us/app/121-scan/id1187264063}{121 Scan}}) and another internal enterprise app
+        \end{itemize}
+    \end{itemize}
+}
+
+\cventry{Dec 2016 – Jul 2017}{Layer}{iOS Developer}{Remote}{(FTE)}{
+    \begin{itemize}
+        \item \textbf{Stack}: C/Objective-C/Swift, CocoaPods, OCMock, Specta/Expecta, Jenkins, Rails, Thrift, WebSockets/SPDY, SQLite
+        \item \textbf{Deliverables}: Objective-C SDKs for data and UI components, an embeddable app layer and fully-functional sample app
+        \item \textbf{Highlights}:
+        \begin{itemize}
+            \item Rearchitected test suite to separate unit tests from integration/end-to-end tests
+            \item Helped streamline developer environment configuration (Rake, Gems, CocoaPods and git submodules)
+            \item Migrated old SPDY/Thrift architecture to WebSockets with rewritten Thrift specs
+            \item Implemented new auth and transport layer using \textcolor{color1}{\href{https://github.com/blakewatters/TransitionKit}{TransitionKit}} 
+            \item Added SDK telemetrics implementation with SQLite
+        \end{itemize}
+    \end{itemize}
+}
+
+\cventry{Apr 2015 – Dec 2016}{Twitter}{Software Engineer}{Cambridge, MA}{(FTE)}{
+    \begin{itemize}
+        \item \textbf{Stack}: C/Objective-C/Swift, Java/Scala/Clojure, Rails, React/Coffeescript, Storm/Heron, Cascading/Scalding, Graphite, Vertica/Zeppelin, Beanstalk/Kafka, Redis/Cassandra, AWS, TeamCity, Chef, Protobuf
+        \item \textbf{Deliverables}: Crashlytics/Fabric SDKs, Mac app and command line tools, front- and back-end maintenance and analytics, Unity iOS support
+        \item \textbf{Highlights}:
+        \begin{itemize}
+            \item Streamlined build and release processes with TeamCity agents deployed via Chef
+            \item Added Bitcode and tvOS compatibility to SDKs
+            \item Standardized config of all Xcode projects and released the open source \textcolor{color1}{\href{https://github.com/twitter-fabric/fabconfig}{FABConfig}} 
+            \item Maintenance of backend lambda architecture with on-call rotations
+            \item Pioneered new backend feature to cross-reference common crashes across apps and present developers with suggested fixes
+        \end{itemize}
+    \end{itemize}
+}
+
+\cventry{Jan – Apr 2015}{MC10}{iOS Developer}{Cambridge, MA}{(FTE)}{
+    \begin{itemize}
+        \item \textbf{Stack}: Objective-C/Swift, CoreBluetooth, Android
+        \item \textbf{Deliverable}: Companion iOS app for wearable medical peripheral with BTLE link
+        \item \textbf{Highlights}:
+        \begin{itemize}
+            \item Moved all app/demo code into Git repos (no previous SCM was used on the team)
+            \item Architected SDK and app codebases from the ground up
+            \item Built out greenfield app, in beta testing on my exit
+            \item Set up continuous integration and deployment with TeamCity and Fabric
+            \item Assisted adoption of Agile processes
+        \end{itemize}
+    \end{itemize}
+}
+
+\cventry{Jul 2013 – Dec 2014}{Raizlabs Consulting}{iOS Developer}{Boston, MA}{(FTE)}{ 
+    \begin{itemize}
+        \item \textbf{Stack}: Objective-C/Swift, Jenkins, TeamCity
+        \item \textbf{Deliverables}:
+        \begin{itemize}
+            \item \textcolor{color1}{\href{https://itunes.apple.com/us/app/care.com/id328453619?mt=8}{Care.com}}: service seeker/provider matching (4 months)
+            \begin{itemize}
+                \item iOS 7 redesign, with perspective zoom effect for a horizontally paged scroll view
+                \item Dynamic UI generation from server-supplied data
+            \end{itemize}
+            \item \textcolor{color1}{\href{https://itunes.apple.com/us/app/b-h-photo/id390928219?mt=8}{B\&H Photo}}: e-commerce (5 months)
+            \begin{itemize}
+                \item Custom parallactic scrolling of table view headers
+                \item Push notifications with deep linking
+            \end{itemize}
+            \item UniFirst: interactive enterprise sales catalog on iPad (8 months)
+            \begin{itemize}
+                \item Drag and drop editing of clothing selections, with PDF report generation
+            \end{itemize}
+            \item \textcolor{color1}{\href{https://itunes.apple.com/US/app/id944415329}{Invaluable}}: realtime high-end auction platform on iPad (1 month)
+            \begin{itemize}
+                \item Paging of API result display in table/collection views
+            \end{itemize}
+        \end{itemize}
+    \end{itemize}
+}
+
+\cventry{Oct 2012 – May 2013}{ODU Systems Lab}{R\&D projects}{Norfolk, VA}{(Student Intern)}{ 
+    \begin{itemize}
+    	\item \textbf{Deliverables}: 
+        \begin{itemize}
+            \item ChirpXM: location based social networking app
+            \item EMR iPad app for CHKD
+        \end{itemize}
+        \item \textbf{Highlights}:
+        \begin{itemize}
+            \item Supervised two foreign exchange students
+            \item Regular consultations with onsite clients
+        \end{itemize}
+    \end{itemize}
+}
+
+\cventry{Aug 2012 – May 2013}{Old Dominion University}{Undergraduate capstone project}{Norfolk, VA}{(Seminar)}{ 
+    \begin{itemize}
+        \item \textbf{Stack}: Objective-C, OpenEars, MapQuest
+        \item \textbf{Deliverable}: Traffic Wizard, a mobile app to help drivers avoid traffic jams
+        \item \textbf{Highlights}:
+        \begin{itemize}
+            \item Co-lead of 7 member team
+            \item 4 presentations given to visiting professors and industry executives
+            \item Sole developer of the team's iOS portion
+            \item Highest scoring project!
+        \end{itemize}
+    \end{itemize}
+}
+
+\cventry{Nov 2011 – Current}{Insight Therapeutics}{Lead iOS Developer}{Norfolk, VA \& Remote}{(Contract)}{ 
+    \begin{itemize}
+        \item \textbf{Stack}: Objective-C/Swift, MessageUI, Storyboards, CoreGraphics, CoreData, FMDB, SQLite, SSZipArchive, RNCryptor, cocoapods-keys
+        \item \textbf{Deliverables}:
+        \begin{itemize}
+            \item \textcolor{color1}{\href{http://itunes.apple.com/us/app/clot-rx/id408979176?mt=8}{ClotRx}} \& \textcolor{color1}{\href{http://itunes.apple.com/us/app/dementia-rx/id496024720?mt=8}{DementiaRx}}: reference e-pamphlets
+            \begin{itemize}
+                \item Hybrid app with WKWebView
+                \item Searchable, bookmarkable HTML content automatically extracted from PDFs with custom scripts
+                \item Interactive clinical surveys, print/email report generation
+            \end{itemize}
+            \item \textcolor{color1}{\href{http://itunes.apple.com/us/app/antibiotics-kinetics/id557658913?mt=8}{Antibiotic Kinetics}}: antibiotic dosage calculator
+            \begin{itemize}
+                \item Ported from another developer's preexisting Android app
+            \end{itemize}
+            \item eConsent: HIPAA-compliant informed consent app for clinical trials
+            \begin{itemize}
+                \item Interactive quiz-based presentation of study details
+                \item Signature collection and export to PDF
+                \item Interface with backend API to upload finished consents
+            \end{itemize}
+        \end{itemize}
+    \end{itemize}
+}
+
+\section{Teaching and Presentations}
+
+\cventry{May 2018}{iOSDevCampCO}{Colloquial Swift (45 min)}{}{Colorado Springs, CO}{ 
+    \begin{itemize}
+        \item Presented findings from Colloquial Swift personal project (see entry in previous section)
+    \end{itemize}
+}
+
+\cventry{Jun 2017}{CocoaHeads Boston}{UIViewController Decomposition and UI Reuse (20 min)}{MIT}{Cambridge, MA}{ 
+    \begin{itemize}
+        \item Discussing strategies to separate responsibilities from UIViewControllers and a library of reusable UI components, e.g. animated transparent modal presentation with a close button
+    \end{itemize}
+}
+
+\cventry{Jan 2017}{Boston Algorithms Meetup}{HyperLogLog (20 min)}{Twitter}{Cambridge, MA}{ 
+    \begin{itemize}
+        \item Helped organized this initial meeting of the group
+        \item Covered the theoretical workings of the HyperLogLog algorithm, with a copresenter giving a working demostration
+    \end{itemize}
+}
+
+\cventry{Jul 2016}{Girls Who Code}{iOS Dev Session}{Twitter}{Cambridge, MA}{ 
+    \begin{itemize}
+        \item Part of GWC summer internship covering programming first principles to full-stack style development
+        \item Designed and led iOS session where we built a Flappy Bird clone, introducing them to Xcode as an IDE, Interface Builder, Playgrounds and Swift
+    \end{itemize}
+}
+
+\cventry{Mar 2016}{mDevCon}{Command and NSOperation (45 min)}{}{Amsterdam, NL}{ 
+    \begin{itemize}
+        \item Delivered presentation on the Command software design pattern, and NSOperation
+        \item Introduced subclasses we open sourced at Crashlytics for asynchronous and compound operations
+        \item Previously delivered at a lunchtime tech talk at Twitter, Cambridge, MA (Nov 2015) and CocoaHeads Boston meetup, MIT, Cambridge, MA (Dec 2015)
+    \end{itemize}
+}
+
+\cventry{Oct 2015}{NeighborNest}{Web Dev Session}{Twitter}{San Francisco, CA}{ 
+    \begin{itemize}
+        \item Community program to help advocate technology literacy
+        \item Assisted in session where students worked on a Twitter clone, teaching functional programming concepts, Javascript, and some front- and back- end concepts
+    \end{itemize}
+}
+
+% \cventry{2013}{VMASC Capstone Conference}{Estimating lower bounds on the length of protein polymer chain segments using robot motion planning}{}{Suffolk, VA}{ 
+%     \begin{itemize}
+%         \item Presented research on using computational geometry and motion planning algorithms to model protein molecule structures
+%         \item Best paper award
+%     \end{itemize}
+% }
+
+% \cventry{Oct 2012}{IEEE WCSB}{CryoEM skeleton length estimation using a decimated curve}{}{Philadelphia, PA}{ 
+%     \begin{itemize}
+%         \item Presented research on using a dynamic graph algorithm to identify protein molecule substructures from 3D images
+%     \end{itemize}
+% }
+
+\end{document}

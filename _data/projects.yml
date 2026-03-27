@@ -1,0 +1,145 @@
+devtools:
+  - name: "Vrsnr"
+    description: "A command-line tool for bumping version numbers in your source files. Supports multiple file types and version schemas, and offers utilities to explore how best to version your software."
+    website: "https://github.com/tworingsoft/Vrsnr"
+    website-name: "GitHub"
+    build-badge: "https://travis-ci.org/TwoRingSoft/Vrsnr.svg?branch=master"
+    build-badge-link: "https://travis-ci.org/TwoRingSoft/vrsnr"
+    
+  - name: "Pippin"
+    description: "Utilities to quickly prototype iOS apps and simplify working with Cocoa/UIKit API in Swift."
+    website: "https://github.com/TwoRingSoft/Pippin"
+    website-name: "GitHub"
+    build-badge: "https://travis-ci.org/TwoRingSoft/Pippin.svg?branch=master"
+    build-badge-link: "https://travis-ci.org/TwoRingSoft/Pippin"
+    
+  - name: "armcknight-swift"
+    description: "The spiritual successor to Pippin in a Swift Package Manager world."
+    website: "https://github.com/armcknight/armcknight-swift"
+    website-name: "GitHub"
+    build-badge: "https://travis-ci.org/TwoRingSoft/Pippin.svg?branch=master"
+    build-badge-link: "https://travis-ci.org/TwoRingSoft/Pippin"
+    
+  - name: "xcbs"
+    description: "Track your Xcode project's build settings with confidence."
+    website: "https://github.com/tworingsoft/xcbs"
+    website-name: "GitHub"
+    build-badge: "https://travis-ci.org/TwoRingSoft/xcbs.svg?branch=master"
+    build-badge-link: "https://travis-ci.org/TwoRingSoft/xcbs"
+    
+  - name: "Psst"
+    description: "Insert secrets into codebases that don't want to commit them to history."
+    website: "https://github.com/TwoRingSoft/psst"
+    website-name: "GitHub"
+
+  - name: "Forgery"
+    description: "A tool to wrangle collections of git repositories."
+    website: "https://github.com/armcknight/forgery"
+    website-name: "GitHub"
+
+apps:
+  - name: "Dat Bread Dough"
+    description: "Create recipes for your bread formulas, with easy formula/weight conversions when editing. Store all your favorite ingredients, even by brands, and keep notes on everything."
+    app-store-url: "https://itunes.apple.com/us/app/dat-bread-dough/id1214735558"
+    image: "Dough.png"
+    
+  - name: "Trgnmtry"
+    description: "A simple Swift app that draws all of the trigonometric functions onto a unit circle, with the ability to only display certain ones. The latest version added snapping to angle intervals."
+    app-store-url: "https://itunes.apple.com/us/app/trgnmtry/id1146667288?ls=1&mt=8"
+    image: "Trgnmtry.png"
+    
+  - name: "Delaunay Triangulator"
+    description: "An app that triangulates the points you create by tapping on the screen, while maintaining the Delaunay property."
+    app-store-url: "https://itunes.apple.com/us/app/delaunay-triangulator/id657596160?mt=8"
+    image: "Delaunay.png" 
+
+  - name: "FastMagic"
+    description: "A CLI for managing Magic: the Gathering collectins and decks that I hope to turn into a full-featured app one day."
+    website: "https://github.com/armcknight/mtg"
+    website-name: "GitHub"
+  
+coding-challenges:
+  - name: Project Euler
+    solutions: "https://github.com/armcknight/ProjectEuler"
+    progress: |
+      Solved 52 out of 954 problems (5.5%) between "A long, long time ago" and "September 2015".
+      Mean difficulty of problems solved = 5.67%
+      Mean difficulty of all rated problems = 46.59%
+      Highest difficulty problem solved = 20%
+  
+  - name: Advent of Code
+    solutions: "https://github.com/armcknight/AdventOfCode"
+    progress: |
+      2023:
+            --------Part 1---------   --------Part 2---------
+      Day       Time    Rank  Score       Time    Rank  Score
+       15       >24h   39760      0          -       -      -
+       14       >24h   39021      0          -       -      -
+       13       >24h   38855      0          -       -      -
+       11   04:04:23   15670      0   04:14:05   13929      0
+        9       >24h   54908      0       >24h   55181      0
+        8       >24h   67885      0       >24h   56951      0
+        7   01:11:30    7994      0   01:33:37    6559      0
+        6   01:40:54   15730      0   01:45:17   14979      0
+        5   04:40:32   23991      0          -       -      -
+        4   01:18:02   16100      0   01:46:12   13450      0
+        3   01:47:46   11053      0   03:48:20   14384      0
+        2   20:55:32   94942      0   21:43:40   91523      0
+        1       >24h  152985      0       >24h  111558      0
+
+      2022:
+            --------Part 1---------   --------Part 2---------
+      Day       Time    Rank  Score       Time    Rank  Score
+       11   01:10:02    6750      0   02:40:17    7479      0
+       10   00:18:36    3593      0   01:07:40    7089      0
+        9   01:01:03    8471      0          -       -      -
+        8   00:29:07    5342      0   00:51:41    5302      0
+        7   01:04:31    6524      0   01:18:56    6678      0
+        6   00:22:18   12147      0   00:25:48   11609      0
+        5       >24h  103783      0       >24h  101842      0
+        4       >24h  117004      0       >24h  115070      0
+        3       >24h  120806      0       >24h  115098      0
+        2       >24h  151777      0       >24h  145485      0
+        1       >24h  185359      0       >24h  178595      0
+
+      2021:
+            --------Part 1--------   --------Part 2--------
+      Day       Time   Rank  Score       Time   Rank  Score
+       21   00:56:10   4523      0          -      -      -
+       20   01:35:50   3231      0   02:37:36   4187      0
+       17   01:50:31   5833      0   02:07:09   5298      0
+       15   00:27:00   1695      0          -      -      -
+       14   00:59:24   8040      0          -      -      -
+       13   21:10:07  34709      0   21:21:29  33905      0
+       11       >24h  44267      0          -      -      -
+       10       >24h  52166      0          -      -      -
+        9       >24h  59074      0          -      -      -
+        8   00:51:01  10513      0          -      -      -
+        7   00:09:52   4373      0   01:08:34  11772      0
+        6   00:12:48   4327      0   04:43:58  20005      0
+        5   00:39:14   5335      0   01:13:28   6136      0
+        4   01:04:05   6342      0   01:12:35   5371      0
+        3   00:42:26  12148      0   01:42:56  10475      0
+        2   00:08:12   5780      0   00:10:03   4108      0
+        1   00:06:13   3537      0   00:13:50   3589      0
+
+      2020:
+            --------Part 1--------   --------Part 2--------
+      Day       Time   Rank  Score       Time   Rank  Score
+       16       >24h  31456      0          -      -      -
+       15       >24h  33987      0       >24h  32208      0
+       14       >24h  35093      0       >24h  31373      0
+       13       >24h  39860      0          -      -      -
+       12   02:20:50   8656      0   02:50:24   7568      0
+       11   05:00:11  14620      0   06:25:24  12774      0
+       10   00:24:31   6520      0          -      -      -
+        9   01:46:01  11662      0   02:09:14  11202      0
+        8   01:10:59  10016      0   03:52:22  15177      0
+        7   04:23:47  15030      0          -      -      -
+        6       >24h  52028      0       >24h  50428      0
+        5       >24h  64038      0       >24h  62869      0
+        4       >24h  60438      0       >24h  64277      0
+        3       >24h  73385      0       >24h  71097      0
+        2       >24h  84617      0       >24h  82236      0
+        1       >24h  75019      0       >24h  70168      0
+      

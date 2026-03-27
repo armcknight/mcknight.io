@@ -1,0 +1,1203 @@
+---
+layout: modern
+title: "Experience"
+---
+
+<div class="page-header">
+  <h1 class="page-title">Experience</h1>
+  <p class="page-subtitle">Professional background, education, and expertise</p>
+
+  <p>If you'd prefer something in PDF format, you can download my <a href="/assets/pdf/andrew-mcknight-resume-ios.pdf">iOS resume</a> and <a href="/assets/pdf/andrew-mcknight-cv.pdf">curriculum vitae</a>.</p>
+</div>
+
+{% comment %}
+Git-style timeline - start simple with just dates
+{% endcomment %}
+
+<div class="git-timeline-container">
+  <h2>Career Timeline</h2>
+  
+  <!-- Git-style graph view -->
+  <div class="git-graph">
+    <canvas id="git-canvas" width="800" height="600"></canvas>
+    
+    <div class="git-commits" id="git-commits">
+      <!-- Simple commit list with just dates -->
+      {% for job in site.data.experience.experience %}
+        <div class="git-commit" 
+             data-start="{{ job.start }}"
+             data-end="{{ job.end }}"
+             data-company="{{ job.company }}"
+             data-title="{{ job.title }}"
+             data-location="{{ job.location }}"
+             data-employment-type="{{ job.employment_type }}"
+             data-highlights="{{ job.highlights | jsonify | escape }}"
+             data-tags="{{ job.tags | join: ',' }}"
+             data-stack="{{ job.stack | jsonify | escape }}"
+             data-deliverables="{{ job.deliverables | jsonify | escape }}"
+             data-era="{{ job.era }}">
+          <div class="commit-dot"></div>
+          <div class="commit-info">
+            <span class="commit-date">{{ job.start }}{% if job.end %} - {{ job.end }}{% endif %}</span>
+            <span class="commit-company">{{ job.company }}</span>
+          </div>
+        </div>
+      {% endfor %}
+      
+      {% for edu in site.data.education.education %}
+        <div class="git-commit" 
+             data-start="{{ edu.start }}"
+             data-end="{{ edu.end }}"
+             data-company="{{ edu.institution }}"
+             data-school="{{ edu.institution }}"
+             data-title="{{ edu.degree }}"
+             data-location="{{ edu.location }}"
+
+             data-highlights="{{ edu.highlights | jsonify | escape }}"
+             data-publications="{{ edu.publications | jsonify | escape }}"
+             data-honors="{{ edu.honors | jsonify | escape }}"
+             data-tags="{{ edu.tags | join: ',' }}"
+             data-era="education">
+          <div class="commit-dot"></div>
+          <div class="commit-info">
+            <span class="commit-date">{{ edu.start }}{% if edu.end %} - {{ edu.end }}{% endif %}</span>
+            <span class="commit-company">{{ edu.institution }}</span>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Mobile detection helper
+  function isMobile() {
+    return window.innerWidth <= 768;
+  }
+  
+  // Simple date parser
+  function parseDate(dateStr) {
+    if (!dateStr) return null;
+    dateStr = dateStr.trim();
+    
+    if (dateStr.includes('Current')) return new Date();
+    
+    // "January 2021" format
+    const monthYearMatch = dateStr.match(/^([A-Za-z]+)\s+(\d{4})$/);
+    if (monthYearMatch) {
+      const month = new Date(Date.parse(monthYearMatch[1] + " 1, 2000")).getMonth();
+      return new Date(parseInt(monthYearMatch[2]), month, 1);
+    }
+    
+    // "2010" format  
+    const yearMatch = dateStr.match(/^(\d{4})$/);
+    if (yearMatch) {
+      return new Date(parseInt(yearMatch[1]), 0, 1);
+    }
+    
+    return null;
+  }
+  
+
+  
+  // Collect all commits (start and end dates)
+  let allCommits = [];
+  
+  // Process experience items
+  const commits = document.querySelectorAll('.git-commit');
+  commits.forEach(commit => {
+    const startDate = parseDate(commit.dataset.start);
+    const endDate = parseDate(commit.dataset.end);
+    // Check for both company and school/institution
+    const company = commit.dataset.company || commit.dataset.school || commit.dataset.institution;
+    const era = commit.dataset.era;
+    
+    // Skip commits with missing company/school data
+    if (!company || company.trim() === '') {
+      console.log(`Skipping commit with empty company/school: start="${commit.dataset.start}", end="${commit.dataset.end}", era="${era}"`);
+      return;
+    }
+    
+    // Add start commit
+    if (startDate) {
+      allCommits.push({
+        date: startDate,
+        company: company,
+        type: 'start',
+        era: era,
+        element: commit,
+        originalDate: commit.dataset.start // Store original start date string
+      });
+    }
+    
+    // Add end commit (if different from start)
+    if (endDate && endDate.getTime() !== startDate?.getTime()) {
+      allCommits.push({
+        date: endDate,
+        company: company,
+        type: 'end',
+        era: era,
+        element: commit,
+        originalDate: commit.dataset.end // Store original end date string
+      });
+    }
+  });
+  
+  // Add birth commit as the anchor point for the timeline
+  allCommits.push({
+    date: new Date(1985, 0, 1), // January 1, 1985
+    company: "Born 1985",
+    type: 'birth',
+    era: 'birth',
+    element: null,
+    originalDate: "1985"
+  });
+  
+  // Sort chronologically (newest first) - important for git graph branch logic
+  allCommits.sort((a, b) => b.date - a.date);
+  
+  // Assign branches - every experience gets its own branch
+  // Main branch = empty trunk line
+  // All experiences get dedicated side branches
+  const branchAssignments = {};
+  
+  // Group commits by company+era to get their full date ranges
+  const entryRanges = {};
+  allCommits.forEach(commit => {
+    const key = commit.company + commit.era;
+    if (!entryRanges[key]) {
+      entryRanges[key] = {
+        company: commit.company,
+        era: commit.era,
+        start: commit.date,
+        end: commit.date,
+        commits: []
+      };
+    }
+    entryRanges[key].commits.push(commit);
+    
+    // Update the range
+    if (commit.date < entryRanges[key].start) entryRanges[key].start = commit.date;
+    if (commit.date > entryRanges[key].end) entryRanges[key].end = commit.date;
+  });
+  
+  // Sort entries by start date (earliest first)
+  const sortedEntries = Object.values(entryRanges).sort((a, b) => a.start - b.start);
+  
+  // Assign each experience a unique branch number for colors (skip branch 0 - it's the empty trunk)
+  let nextBranch = 1; // Start from branch 1
+  
+  // Also create efficient horizontal positioning based on overlaps
+  const branchPositions = {}; // Maps branch number to horizontal position index
+  const activeBranches = []; // Track active ranges for efficient positioning
+  let nextPosition = 1; // Start from position 1 (position 0 is main branch)
+  
+  sortedEntries.forEach(entry => {
+    const key = entry.company + entry.era;
+    
+    // Every experience gets its own unique branch number for color
+    branchAssignments[key] = nextBranch++;
+    
+    // But for horizontal positioning, find the leftmost available position
+    let assignedPosition = -1;
+    
+    for (let positionIndex = 0; positionIndex < activeBranches.length; positionIndex++) {
+      const activeBranch = activeBranches[positionIndex];
+      let hasOverlap = false;
+      
+      for (let activeEntry of activeBranch) {
+        // Check if current entry overlaps with this active entry
+        if (entry.start < activeEntry.end && entry.end > activeEntry.start) {
+          hasOverlap = true;
+          break;
+        }
+      }
+      
+      if (!hasOverlap) {
+        // No overlap, can use this position
+        assignedPosition = positionIndex + 1; // +1 because position 0 is main branch
+        break;
+      }
+    }
+    
+    // If no existing position can accommodate this entry, create a new position
+    if (assignedPosition === -1) {
+      assignedPosition = nextPosition++;
+      activeBranches.push([]);
+    }
+    
+    // Map branch number to horizontal position
+    branchPositions[branchAssignments[key]] = assignedPosition;
+    activeBranches[assignedPosition - 1].push(entry); // -1 because activeBranches is 0-indexed but position numbers start from 1
+  });
+  
+  // Apply branch assignments to commits
+  allCommits.forEach(commit => {
+    if (commit.type === 'birth') {
+      // Birth commit always goes on the main branch
+      commit.branch = 0;
+    } else {
+      const key = commit.company + commit.era;
+      commit.branch = branchAssignments[key];
+    }
+  });
+  
+  // Create git graph visualization
+  const canvas = document.getElementById('git-canvas');
+  const ctx = canvas.getContext('2d');
+  const commitsContainer = document.getElementById('git-commits');
+  
+  const BRANCH_WIDTH = 15;
+  const LINE_HEIGHT = 30;
+      const MAIN_BRANCH_X = 5; // Small padding to ensure main line is fully visible
+  
+  // Function to calculate complete entry height (text + stack on mobile)
+  function calculateCompleteEntryHeight(commit) {
+    const element = commit.element;
+    let content = '';
+    
+    if (commit.type === 'start') {
+      // START COMMITS: Show contextual start information (minimal)
+      content = `<h1 style="font-size: 1.125rem; font-weight: 600; margin: 0 0 0.5rem 0;">${commit.company} - Started ${commit.originalDate}</h1>`;
+      
+    } else if (commit.type === 'birth') {
+      // BIRTH COMMIT: Special anchor point for timeline
+      content = `<h1 style="font-size: 1.125rem; font-weight: 600; margin: 0 0 0.5rem 0;">${commit.company}</h1>`;
+      
+    } else {
+      // END COMMITS: Show date range and all detailed information
+      const startDate = element.dataset.start;
+      const endDate = element.dataset.end;
+      const isCurrentJob = endDate === 'Current';
+      
+      if (isCurrentJob) {
+        content = `<h1 style="font-size: 1.125rem; font-weight: 600; margin: 0 0 0.5rem 0;">${commit.company} - ${startDate} to Present</h1>`;
+      } else {
+        content = `<h1 style="font-size: 1.125rem; font-weight: 600; margin: 0 0 0.5rem 0;">${commit.company} - ${startDate} - ${endDate}</h1>`;
+      }
+      
+      // Add title if available
+      if (element.dataset.title) {
+        content += `<h2 style="font-size: 1rem; font-weight: 500; margin: 0 0 0.5rem 0; font-style: italic;">${element.dataset.title}</h2>`;
+      }
+      
+      // Add location and employment type if available
+      if (element.dataset.location || element.dataset.employmentType) {
+        let locationInfo = '';
+        if (element.dataset.location) {
+          locationInfo += element.dataset.location;
+        }
+        if (element.dataset.employmentType) {
+          locationInfo += ` ${element.dataset.employmentType}`;
+        }
+        content += `<p style="margin: 0 0 0.5rem 0;">${locationInfo}</p>`;
+      }
+      
+      // Add highlights for experience and education entries
+      if (element.dataset.highlights) {
+        try {
+          const highlights = JSON.parse(element.dataset.highlights);
+          if (highlights && highlights.length > 0) {
+            content += `<ul style="margin: 0.5rem 0; padding-left: 1.5rem;">`;
+            highlights.slice(0, 4).forEach(highlight => { // Show first 4 highlights
+              if (typeof highlight === 'string') {
+                // Simple string format
+                content += `<li style="margin-bottom: 0.25rem;">${highlight}</li>`;
+              } else if (highlight.name && highlight.description) {
+                // Object format with name/url/description
+                let description = highlight.description;
+                if (highlight.url) {
+                  // Replace instances of the name in the description with a link
+                  description = description.replace(new RegExp(highlight.name, 'g'), `<a href="${highlight.url}" target="_blank">${highlight.name}</a>`);
+                }
+                content += `<li style="margin-bottom: 0.25rem;">${description}</li>`;
+              }
+            });
+            content += `</ul>`;
+          }
+        } catch (e) {
+          // Skip if JSON parsing fails
+        }
+      }
+      
+      // Add education publications
+      if (element.dataset.publications) {
+        try {
+          const publications = JSON.parse(element.dataset.publications);
+          if (publications && publications.length > 0) {
+            content += `<h3 style="font-size: 1rem; font-weight: 600; margin: 0.5rem 0 0.25rem 0;">Publications:</h3>`;
+            content += `<ul style="margin: 0.5rem 0; padding-left: 1.5rem; list-style: none;">`;
+            publications.forEach(pub => {
+              content += `<li style="margin-bottom: 0.75rem; position: relative; padding-left: 1.5rem;"><span style="position: absolute; left: 0;">📄</span>`;
+              if (pub.url) {
+                content += `<a href="${pub.url}" target="_blank" style="color: #123458; text-decoration: none; font-weight: 500;">${pub.title}</a>`;
+              } else {
+                content += `<span style="font-weight: 500;">${pub.title}</span>`;
+              }
+              if (pub.year) {
+                content += `<br/><span style="font-size: 0.9rem; color: #666;">${pub.year}</span>`;
+              }
+              content += `</li>`;
+            });
+            content += `</ul>`;
+          }
+        } catch (e) {
+          // Skip if JSON parsing fails
+        }
+      }
+      
+      // Add education honors
+      if (element.dataset.honors) {
+        try {
+          const honors = JSON.parse(element.dataset.honors);
+          if (honors && honors.length > 0) {
+            content += `<h3 style="font-size: 1rem; font-weight: 600; margin: 0.5rem 0 0.25rem 0;">Honors:</h3>`;
+            content += `<ul style="margin: 0.5rem 0; padding-left: 1.5rem; list-style: none;">`;
+            honors.forEach(honor => { // Show all honors
+              content += `<li style="margin-bottom: 0.5rem; position: relative; padding-left: 1.5rem;"><span style="position: absolute; left: 0;">🏆</span>`;
+              content += `<strong>${honor.award}</strong>`;
+              if (honor.year) {
+                content += `<br/><span style="font-size: 0.9rem; color: #666;">${honor.year}</span>`;
+              }
+              if (honor.description) {
+                content += `<br/><span style="font-size: 0.9rem; font-style: italic;">${honor.description}</span>`;
+              }
+              content += `</li>`;
+            });
+            content += `</ul>`;
+          }
+        } catch (e) {
+          // Skip if JSON parsing fails
+        }
+      }
+      
+      // Add details for education entries (in addition to highlights)
+      if (element.dataset.details) {
+        try {
+          const details = JSON.parse(element.dataset.details);
+          if (details && details.length > 0) {
+            content += `<ul style="margin: 0.5rem 0; padding-left: 1.5rem;">`;
+            details.slice(0, 4).forEach(detail => { // Show first 4 details
+              content += `<li style="margin-bottom: 0.25rem;">${detail}</li>`;
+            });
+            content += `</ul>`;
+          }
+        } catch (e) {
+          // Skip if JSON parsing fails
+        }
+      }
+      
+      // Skip adding stack to content - will be rendered as tag cloud separately
+      
+      // Add deliverables for experience entries
+      if (element.dataset.deliverables) {
+        try {
+          const deliverables = JSON.parse(element.dataset.deliverables);
+          if (deliverables && deliverables.length > 0) {
+            content += `<h3 style="font-size: 1rem; font-weight: 600; margin: 0.5rem 0 0.25rem 0;">Deliverables:</h3>`;
+            content += `<ul style="margin: 0.5rem 0; padding-left: 1.5rem;">`;
+            deliverables.forEach(deliverable => {
+              if (typeof deliverable === 'string') {
+                // Simple string format
+                content += `<li style="margin-bottom: 0.25rem;">${deliverable}</li>`;
+              } else if (deliverable.name) {
+                // Object format with name/description/url (url is optional)
+                let deliverableContent = '';
+                if (deliverable.url) {
+                  deliverableContent += `<a href="${deliverable.url}" target="_blank">${deliverable.name}</a>`;
+                } else {
+                  deliverableContent += deliverable.name;
+                }
+                if (deliverable.description) {
+                  deliverableContent += ` - ${deliverable.description}`;
+                }
+                content += `<li style="margin-bottom: 0.25rem;">${deliverableContent}`;
+                // Add details if available
+                if (deliverable.details && deliverable.details.length > 0) {
+                  content += `<ul style="font-size: 0.95rem; margin: 0.5rem 0 0 1.5rem; padding-left: 1rem;">`;
+                  deliverable.details.forEach(detail => {
+                    content += `<li style="margin-bottom: 0.25rem;">${detail}</li>`;
+                  });
+                  content += `</ul>`;
+                }
+                content += `</li>`;
+              }
+            });
+            content += `</ul>`;
+          }
+        } catch (e) {
+          // Skip if JSON parsing fails
+        }
+      }
+    }
+    
+    // Create a temporary element with exact same styling to measure actual height
+    const tempElement = document.createElement('div');
+    tempElement.style.position = 'absolute';
+    tempElement.style.left = '-9999px';
+    tempElement.style.top = '-9999px';
+    tempElement.style.visibility = 'hidden';
+    tempElement.style.fontSize = '1.125rem'; // --text-lg: match website body text
+    tempElement.style.lineHeight = '1.75';   // match website body text
+    tempElement.style.width = isMobile() ? '280px' : '450px'; // Responsive width
+    tempElement.style.fontFamily = 'Charter, Georgia, Times New Roman, serif';
+    tempElement.style.whiteSpace = 'normal';
+    tempElement.innerHTML = content;
+    
+    // On mobile, add stack content directly to temp element for accurate measurement
+    if (isMobile() && commit.type === 'end' && element && element.dataset.stack) {
+      try {
+        const stackData = JSON.parse(element.dataset.stack);
+        if (stackData && Array.isArray(stackData)) {
+          const stackSection = document.createElement('div');
+          stackSection.style.marginTop = '1rem';
+          stackSection.style.marginBottom = '1rem';
+          stackSection.style.fontSize = '0.9rem';
+          stackSection.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+          
+          stackData.forEach(categoryObj => {
+            if (categoryObj && typeof categoryObj === 'object') {
+              Object.keys(categoryObj).forEach(category => {
+                const categoryItems = categoryObj[category];
+                if (categoryItems && Array.isArray(categoryItems) && categoryItems.length > 0) {
+                  // Category heading
+                  const heading = document.createElement('div');
+                  heading.style.fontSize = '0.8rem';
+                  heading.style.fontWeight = '600';
+                  heading.style.color = '#123458';
+                  heading.style.marginBottom = '4px';
+                  heading.style.marginTop = '8px';
+                  heading.textContent = category;
+                  stackSection.appendChild(heading);
+                  
+                  // Tags container
+                  const tagsContainer = document.createElement('div');
+                  tagsContainer.style.display = 'flex';
+                  tagsContainer.style.flexWrap = 'wrap';
+                  tagsContainer.style.gap = '4px';
+                  tagsContainer.style.marginBottom = '8px';
+                  
+                  const sortedItems = [...categoryItems].sort((a, b) => a.length - b.length);
+                  sortedItems.forEach(tech => {
+                    const tag = document.createElement('span');
+                    tag.className = 'stack-tag';
+                    tag.textContent = tech;
+                    tagsContainer.appendChild(tag);
+                  });
+                  
+                  stackSection.appendChild(tagsContainer);
+                }
+              });
+            }
+          });
+          
+          tempElement.appendChild(stackSection);
+        }
+      } catch (e) {
+        console.error('Error adding stack to temp element:', e);
+      }
+    }
+    
+    // Add to document to measure, then remove
+    document.body.appendChild(tempElement);
+    const textHeight = tempElement.offsetHeight;
+    document.body.removeChild(tempElement);
+    
+    // Debug logging for mobile
+    if (isMobile() && commit.company) {
+      console.log(`Pre-render measurement - ${commit.company}: textHeight=${textHeight}px`);
+    }
+    
+    // Calculate stack height for end commits by actually rendering and measuring
+    let stackHeight = 0;
+    if (commit.type === 'end' && element && element.dataset.stack && !isMobile()) {
+      // Only calculate stack height for desktop (mobile embeds it in text)
+      try {
+        const stackData = JSON.parse(element.dataset.stack);
+        if (stackData && Array.isArray(stackData)) {
+          // Create temporary element with same styling as actual stack container
+          const tempStackContainer = document.createElement('div');
+          tempStackContainer.style.position = 'absolute';
+          tempStackContainer.style.left = '-9999px'; // Hide off-screen
+          tempStackContainer.style.top = '-9999px';
+          tempStackContainer.style.display = 'flex';
+          tempStackContainer.style.flexDirection = 'column';
+          tempStackContainer.style.gap = '8px';
+          tempStackContainer.style.alignItems = 'flex-start';
+          tempStackContainer.style.maxWidth = '120px';
+          tempStackContainer.style.visibility = 'hidden';
+          
+          stackData.forEach(categoryObj => {
+            if (categoryObj && typeof categoryObj === 'object') {
+              Object.keys(categoryObj).forEach(category => {
+                const categoryItems = categoryObj[category];
+                if (categoryItems && Array.isArray(categoryItems) && categoryItems.length > 0) {
+                  // Create heading for the category
+                  const heading = document.createElement('div');
+                  heading.style.fontSize = '0.7rem';
+                  heading.style.fontWeight = '600';
+                  heading.style.color = '#123458';
+                  heading.style.marginBottom = '3px';
+                  heading.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+                  heading.textContent = category;
+                  tempStackContainer.appendChild(heading);
+                  
+                  // Create container for this category's tags
+                  const categoryContainer = document.createElement('div');
+                  categoryContainer.style.display = 'flex';
+                  categoryContainer.style.flexDirection = 'row';
+                  categoryContainer.style.flexWrap = 'wrap';
+                  categoryContainer.style.gap = '3px';
+                  categoryContainer.style.marginBottom = '4px';
+                  
+                  // Sort items by length for better packing
+                  const sortedItems = [...categoryItems].sort((a, b) => a.length - b.length);
+                  
+                  sortedItems.forEach(tech => {
+                    const tag = document.createElement('span');
+                    tag.className = 'stack-tag';
+                    tag.textContent = tech;
+                    categoryContainer.appendChild(tag);
+                  });
+                  
+                  tempStackContainer.appendChild(categoryContainer);
+                }
+              });
+            }
+          });
+          
+          // Add to document to measure, then remove
+          document.body.appendChild(tempStackContainer);
+          stackHeight = tempStackContainer.offsetHeight;
+          document.body.removeChild(tempStackContainer);
+        }
+      } catch (e) {
+        console.error('Error parsing stack data for height calculation:', e);
+      }
+    }
+    
+    // Return the complete entry height
+    if (isMobile()) {
+      // Mobile: stack is embedded in text content, so textHeight includes everything
+      return textHeight;
+    } else {
+      // Desktop: stack appears alongside text, so use the maximum
+      return Math.max(textHeight, stackHeight);
+    }
+  }
+  
+  // NEW APPROACH: Text-first layout to prevent overlaps
+  // 1. Layout text entries with regular spacing (no chronological gaps)
+  // 2. Map git commit dots to text positions
+  // 3. Draw git graph based on text-driven positions
+  let cumulativeY = 20; // Start with padding from top
+  const textPositions = [];
+  
+  // Layout all commits with fixed spacing to prevent overlaps
+  allCommits.forEach((commit, index) => {
+    const completeHeight = calculateCompleteEntryHeight(commit);
+    const yPosition = cumulativeY;
+    
+    textPositions.push({
+      commit: commit,
+      yPosition: yPosition,
+      textHeight: completeHeight
+    });
+    
+    // Use actual measured height + small fixed spacing between entries
+    const spacingBetweenEntries = 20; // Fixed spacing between entries
+    const entrySpacing = completeHeight + spacingBetweenEntries;
+    
+    // Debug logging for mobile
+    if (isMobile() && commit.company) {
+      console.log(`Mobile entry - ${commit.company}: completeHeight=${completeHeight}, spacing=${spacingBetweenEntries}, total=${entrySpacing}, cumulativeY=${cumulativeY}`);
+    }
+    
+    cumulativeY += entrySpacing;
+  });
+  
+  // Now map git commit dots to text positions (adapting git graph to text layout)
+  const commitPositions = textPositions.map(textPos => ({
+    commit: textPos.commit,
+    yPosition: textPos.yPosition + 5, // Center dot vertically with first line of text
+    textHeight: textPos.textHeight
+  }));
+  
+  // Calculate canvas dimensions
+  const maxPosition = Math.max(...Object.values(branchPositions));
+  const totalHeight = cumulativeY + 50; // Use actual cumulative height + padding
+  const gitGraphWidth = MAIN_BRANCH_X + (maxPosition * BRANCH_WIDTH) + 10; // Minimal padding
+  const textAreaX = gitGraphWidth + 10; // Text area starts very close to git graph
+  
+  // Set canvas size (just for the git graph)
+  canvas.width = gitGraphWidth;
+  canvas.height = totalHeight;
+  canvas.style.width = gitGraphWidth + 'px';
+  canvas.style.height = totalHeight + 'px';
+  
+  // Clear canvas
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+  // Draw git-style branch tree using text-driven positions
+  drawGitBranches(ctx, allCommits, branchAssignments, commitPositions);
+  
+  // Clear existing commits and recreate
+  commitsContainer.innerHTML = '';
+  // Position commits using text-first approach
+  textPositions.forEach((textPos, index) => {
+    const commit = textPos.commit;
+    const textY = textPos.yPosition;
+    const dotY = commitPositions[index].yPosition; // Use mapped commit position for dot
+    const xPosition = getBranchX(commit.branch);
+    
+    // Skip rendering start commits (but keep them in positioning for git graph)
+    if (commit.type === 'start') {
+      return;
+    }
+    
+    // Create commit element (for the dot)
+    const commitEl = document.createElement('div');
+    commitEl.className = 'git-commit';
+    commitEl.style.position = 'absolute';
+    // Adjust dot position to account for canvas positioning on mobile
+    const canvasLeftOffset = isMobile() ? 8 : 0; // Mobile: 8px, Desktop: -4px to align with canvas
+    commitEl.style.left = (xPosition - 5 + canvasLeftOffset) + 'px'; // Center 10px dot on branch line
+    commitEl.style.top = dotY + 'px'; // Use dot position for the actual dot
+    
+    // Debug: Check exact dot positioning
+    console.log(`Dot ${commit.company}: positioned at (${xPosition - 5}, ${dotY}), center at (${xPosition}, ${dotY + 5})`);
+    
+    // Commit dot
+    const dot = document.createElement('div');
+    dot.className = 'commit-dot';
+    dot.style.width = '10px';
+    dot.style.height = '10px';
+    dot.style.borderRadius = '50%';
+    dot.style.backgroundColor = getBranchColor(commit.branch);
+    dot.style.border = '2px solid white';
+    dot.style.position = 'absolute';
+    
+    // Commit info (rich multi-line content) - positioned based on text layout
+    const info = document.createElement('div');
+    info.className = 'commit-info';
+    info.style.position = 'absolute';
+    info.style.left = textAreaX + 'px'; // Position in text area, not relative to dot
+    info.style.top = textY + 'px'; // Use text position for the text (no offset needed)
+    
+    // Debug logging for mobile positioning
+    if (isMobile() && commit.company) {
+      console.log(`Mobile positioning - ${commit.company}: textY=${textY}, textHeight=${commitPositions[index].textHeight}`);
+    }
+    info.style.fontSize = '1.125rem'; // --text-lg: match website body text
+    info.style.lineHeight = '1.75';   // match website body text
+    // Responsive text width
+    info.style.width = isMobile() ? '280px' : '450px'; // Narrower on mobile to prevent horizontal scroll
+    info.style.fontFamily = 'Charter, Georgia, Times New Roman, serif';
+    info.style.whiteSpace = 'normal'; // Allow wrapping for multi-line content
+    
+    // Build content based on commit type
+    const element = commit.element;
+    let content = '';
+    
+    if (commit.type === 'start') {
+      // START COMMITS: Show contextual start information (minimal)
+      content = `<h1 style="font-size: 1.125rem; font-weight: 600; margin: 0 0 0.5rem 0;">${commit.company} - Started ${commit.originalDate}</h1>`;
+      
+    } else if (commit.type === 'birth') {
+      // BIRTH COMMIT: Special anchor point for timeline
+      content = `<h1 style="font-size: 1.125rem; font-weight: 600; margin: 0 0 0.5rem 0;">${commit.company}</h1>`;
+      
+    } else {
+      // END COMMITS: Show date range and all detailed information
+      const startDate = element.dataset.start;
+      const endDate = element.dataset.end;
+      const isCurrentJob = endDate === 'Current';
+      
+      if (isCurrentJob) {
+        content = `<h1 style="font-size: 1.125rem; font-weight: 600; margin: 0 0 0.5rem 0;">${commit.company} - ${startDate} to Present</h1>`;
+      } else {
+        content = `<h1 style="font-size: 1.125rem; font-weight: 600; margin: 0 0 0.5rem 0;">${commit.company} - ${startDate} - ${endDate}</h1>`;
+      }
+      
+      // Add title if available
+      if (element.dataset.title) {
+        content += `<h2 style="font-size: 1rem; font-weight: 500; margin: 0 0 0.5rem 0; font-style: italic;">${element.dataset.title}</h2>`;
+      }
+      
+      // Add location and employment type if available
+      if (element.dataset.location || element.dataset.employmentType) {
+        let locationInfo = '';
+        if (element.dataset.location) {
+          locationInfo += element.dataset.location;
+        }
+        if (element.dataset.employmentType) {
+          locationInfo += ` ${element.dataset.employmentType}`;
+        }
+        content += `<p style="margin: 0 0 0.5rem 0;">${locationInfo}</p>`;
+      }
+      
+      // Add highlights for experience and education entries
+      if (element.dataset.highlights) {
+        try {
+          const highlights = JSON.parse(element.dataset.highlights);
+          if (highlights && highlights.length > 0) {
+            content += `<ul style="margin: 0.5rem 0; padding-left: 1.5rem;">`;
+            highlights.slice(0, 4).forEach(highlight => { // Show first 4 highlights
+              if (typeof highlight === 'string') {
+                // Simple string format
+                content += `<li style="margin-bottom: 0.25rem;">${highlight}</li>`;
+              } else if (highlight.name && highlight.description) {
+                // Object format with name/url/description
+                let description = highlight.description;
+                if (highlight.url) {
+                  // Replace instances of the name in the description with a link
+                  description = description.replace(new RegExp(highlight.name, 'g'), `<a href="${highlight.url}" target="_blank">${highlight.name}</a>`);
+                }
+                content += `<li style="margin-bottom: 0.25rem;">${description}</li>`;
+              }
+            });
+            content += `</ul>`;
+          }
+        } catch (e) {
+          // Skip if JSON parsing fails
+        }
+      }
+      
+      // Add education publications
+      if (element.dataset.publications) {
+        try {
+          const publications = JSON.parse(element.dataset.publications);
+          if (publications && publications.length > 0) {
+            content += `<h3 style="font-size: 1rem; font-weight: 600; margin: 0.5rem 0 0.25rem 0;">Publications:</h3>`;
+            content += `<ul style="margin: 0.5rem 0; padding-left: 1.5rem; list-style: none;">`;
+            publications.forEach(pub => {
+              content += `<li style="margin-bottom: 0.75rem; position: relative; padding-left: 1.5rem;"><span style="position: absolute; left: 0;">📄</span>`;
+              if (pub.url) {
+                content += `<a href="${pub.url}" target="_blank" style="color: #123458; text-decoration: none; font-weight: 500;">${pub.title}</a>`;
+              } else {
+                content += `<span style="font-weight: 500;">${pub.title}</span>`;
+              }
+              if (pub.year) {
+                content += `<br/><span style="font-size: 0.9rem; color: #666;">${pub.year}</span>`;
+              }
+              content += `</li>`;
+            });
+            content += `</ul>`;
+          }
+        } catch (e) {
+          // Skip if JSON parsing fails
+        }
+      }
+      
+      // Add education honors
+      if (element.dataset.honors) {
+        try {
+          const honors = JSON.parse(element.dataset.honors);
+          if (honors && honors.length > 0) {
+            content += `<h3 style="font-size: 1rem; font-weight: 600; margin: 0.5rem 0 0.25rem 0;">Honors:</h3>`;
+            content += `<ul style="margin: 0.5rem 0; padding-left: 1.5rem; list-style: none;">`;
+            honors.forEach(honor => { // Show all honors
+              content += `<li style="margin-bottom: 0.5rem; position: relative; padding-left: 1.5rem;"><span style="position: absolute; left: 0;">🏆</span>`;
+              content += `<strong>${honor.award}</strong>`;
+              if (honor.year) {
+                content += `<br/><span style="font-size: 0.9rem; color: #666;">${honor.year}</span>`;
+              }
+              if (honor.description) {
+                content += `<br/><span style="font-size: 0.9rem; font-style: italic;">${honor.description}</span>`;
+              }
+              content += `</li>`;
+            });
+            content += `</ul>`;
+          }
+        } catch (e) {
+          // Skip if JSON parsing fails
+        }
+      }
+      
+      // Add details for education entries (in addition to highlights)
+      if (element.dataset.details) {
+        try {
+          const details = JSON.parse(element.dataset.details);
+          if (details && details.length > 0) {
+            content += `<ul style="margin: 0.5rem 0; padding-left: 1.5rem;">`;
+            details.slice(0, 4).forEach(detail => { // Show first 4 details
+              content += `<li style="margin-bottom: 0.25rem;">${detail}</li>`;
+            });
+            content += `</ul>`;
+          }
+        } catch (e) {
+          // Skip if JSON parsing fails
+        }
+      }
+      
+      // Add deliverables for experience entries
+      if (element.dataset.deliverables) {
+        try {
+          const deliverables = JSON.parse(element.dataset.deliverables);
+          if (deliverables && deliverables.length > 0) {
+            content += `<h3 style="font-size: 1rem; font-weight: 600; margin: 0.5rem 0 0.25rem 0;">Deliverables:</h3>`;
+            content += `<ul style="margin: 0.5rem 0; padding-left: 1.5rem;">`;
+            deliverables.forEach(deliverable => {
+              if (typeof deliverable === 'string') {
+                // Simple string format
+                content += `<li style="margin-bottom: 0.25rem;">${deliverable}</li>`;
+              } else if (deliverable.name) {
+                // Object format with name/description/url (url is optional)
+                let deliverableContent = '';
+                if (deliverable.url) {
+                  deliverableContent += `<a href="${deliverable.url}" target="_blank">${deliverable.name}</a>`;
+                } else {
+                  deliverableContent += deliverable.name;
+                }
+                if (deliverable.description) {
+                  deliverableContent += ` - ${deliverable.description}`;
+                }
+                content += `<li style="margin-bottom: 0.25rem;">${deliverableContent}`;
+                // Add details if available
+                if (deliverable.details && deliverable.details.length > 0) {
+                  content += `<ul style="font-size: 0.95rem; margin: 0.5rem 0 0 1.5rem; padding-left: 1rem;">`;
+                  deliverable.details.forEach(detail => {
+                    content += `<li style="margin-bottom: 0.25rem;">${detail}</li>`;
+                  });
+                  content += `</ul>`;
+                }
+                content += `</li>`;
+              }
+            });
+            content += `</ul>`;
+          }
+        } catch (e) {
+          // Skip if JSON parsing fails
+        }
+      }
+    }
+    
+    info.innerHTML = content;
+    
+    // Create tag cloud for technology stack
+    if (commit.type === 'end' && element && element.dataset.stack) {
+      try {
+        const stackData = JSON.parse(element.dataset.stack);
+        const hasContent = stackData && Array.isArray(stackData) && stackData.length > 0;
+        
+        if (hasContent) {
+          if (isMobile()) {
+            // MOBILE: Append stack below text content
+            const stackSection = document.createElement('div');
+            stackSection.style.marginTop = '1rem';
+            stackSection.style.marginBottom = '1rem';
+            stackSection.style.fontSize = '0.9rem';
+            stackSection.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+            
+            stackData.forEach(categoryObj => {
+              if (categoryObj && typeof categoryObj === 'object') {
+                Object.keys(categoryObj).forEach(category => {
+                  const categoryItems = categoryObj[category];
+                  if (categoryItems && Array.isArray(categoryItems) && categoryItems.length > 0) {
+                    // Category heading
+                    const heading = document.createElement('div');
+                    heading.style.fontSize = '0.8rem';
+                    heading.style.fontWeight = '600';
+                    heading.style.color = '#123458';
+                    heading.style.marginBottom = '4px';
+                    heading.style.marginTop = '8px';
+                    heading.textContent = category;
+                    stackSection.appendChild(heading);
+                    
+                    // Tags container
+                    const tagsContainer = document.createElement('div');
+                    tagsContainer.style.display = 'flex';
+                    tagsContainer.style.flexWrap = 'wrap';
+                    tagsContainer.style.gap = '4px';
+                    tagsContainer.style.marginBottom = '8px';
+                    
+                    const sortedItems = [...categoryItems].sort((a, b) => a.length - b.length);
+                    sortedItems.forEach(tech => {
+                      const tag = document.createElement('span');
+                      tag.className = 'stack-tag';
+                      tag.textContent = tech;
+                      tagsContainer.appendChild(tag);
+                    });
+                    
+                    stackSection.appendChild(tagsContainer);
+                  }
+                });
+              }
+            });
+            
+            // Append to the text info element instead of positioning absolutely
+            info.appendChild(stackSection);
+            
+          } else {
+            // DESKTOP: Absolute positioning to the right
+            const tagCloud = document.createElement('div');
+            tagCloud.className = 'stack-tag-cloud';
+            tagCloud.style.position = 'absolute';
+            tagCloud.style.left = (textAreaX + 460) + 'px';
+            tagCloud.style.top = textY + 'px';
+            tagCloud.style.maxWidth = '120px';
+            tagCloud.style.display = 'flex';
+            tagCloud.style.flexDirection = 'column';
+            tagCloud.style.gap = '8px';
+            tagCloud.style.alignItems = 'flex-start';
+            
+            stackData.forEach(categoryObj => {
+              if (categoryObj && typeof categoryObj === 'object') {
+                Object.keys(categoryObj).forEach(category => {
+                  const categoryItems = categoryObj[category];
+                  if (categoryItems && Array.isArray(categoryItems) && categoryItems.length > 0) {
+                    // Create heading for the category
+                    const heading = document.createElement('div');
+                    heading.style.fontSize = '0.7rem';
+                    heading.style.fontWeight = '600';
+                    heading.style.color = '#123458';
+                    heading.style.marginBottom = '3px';
+                    heading.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+                    heading.textContent = category;
+                    tagCloud.appendChild(heading);
+                    
+                    // Create container for this category's tags
+                    const categoryContainer = document.createElement('div');
+                    categoryContainer.style.display = 'flex';
+                    categoryContainer.style.flexDirection = 'row';
+                    categoryContainer.style.flexWrap = 'wrap';
+                    categoryContainer.style.gap = '3px';
+                    categoryContainer.style.marginBottom = '4px';
+                    
+                    // Sort items by length for better packing
+                    const sortedItems = [...categoryItems].sort((a, b) => a.length - b.length);
+                    
+                    sortedItems.forEach(tech => {
+                      const tag = document.createElement('span');
+                      tag.className = 'stack-tag';
+                      tag.textContent = tech;
+                      
+                      categoryContainer.appendChild(tag);
+                    });
+                    
+                    tagCloud.appendChild(categoryContainer);
+                  }
+                });
+              }
+            });
+            
+            commitsContainer.appendChild(tagCloud);
+          }
+        }
+      } catch (e) {
+        console.error('Error parsing stack data:', e);
+      }
+    }
+    
+    commitEl.appendChild(dot);
+    // Add text directly to commits container instead of to individual commit element
+    commitsContainer.appendChild(info);
+    commitsContainer.appendChild(commitEl);
+  });
+  
+  function getBranchX(branchIndex) {
+    if (branchIndex === 0) return MAIN_BRANCH_X; // Main branch
+    const position = branchPositions[branchIndex] || branchIndex; // Use position mapping, fallback to branch index
+    const result = MAIN_BRANCH_X + (position * BRANCH_WIDTH); // Side branches
+    return result;
+  }
+  
+  function getBranchColor(branchIndex) {
+    // Get standard websafe colors from CSS custom properties
+    const style = getComputedStyle(document.documentElement);
+    const colors = [
+      style.getPropertyValue('--git-maroon').trim(),       // Maroon
+      style.getPropertyValue('--git-green').trim(),        // Green
+      style.getPropertyValue('--git-olive').trim(),        // Olive
+      style.getPropertyValue('--git-purple').trim(),       // Purple
+      style.getPropertyValue('--git-teal').trim(),         // Teal
+      style.getPropertyValue('--git-red').trim(),          // Red
+      style.getPropertyValue('--git-blue').trim(),         // Blue
+    ];
+    return colors[branchIndex % colors.length]; // Cycle through colors
+  }
+  
+  function drawGitBranches(ctx, commits, branchAssignments, commitPositions) {
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    
+    // Draw main branch line (stop at birth commit)
+    ctx.strokeStyle = getBranchColor(0);
+    ctx.beginPath();
+    ctx.moveTo(MAIN_BRANCH_X, 0);
+    
+    // Find the birth commit's Y position to end the line there
+    const birthCommitIndex = commits.findIndex(commit => commit.type === 'birth');
+    const birthCommitY = birthCommitIndex !== -1 ? commitPositions[birthCommitIndex].yPosition : totalHeight;
+    
+    ctx.lineTo(MAIN_BRANCH_X, birthCommitY);
+    ctx.stroke();
+    
+    // Find the start and end positions for each branch
+    const branchRanges = {};
+    
+    commits.forEach((commit, index) => {
+      const yPos = commitPositions[index].yPosition; // Use actual Y position from commitPositions
+      const branchIndex = commit.branch;
+      
+      if (!branchRanges[branchIndex]) {
+        branchRanges[branchIndex] = { top: yPos, bottom: yPos };
+      } else {
+        branchRanges[branchIndex].bottom = yPos; // Since commits are sorted newest first, bottom is the last we see (chronologically earliest)
+      }
+    });
+    
+    // Draw individual vertical and horizontal lines for each entry
+    Object.values(entryRanges).forEach(entry => {
+      const key = entry.company + entry.era;
+      const branchIndex = branchAssignments[key];
+      
+      if (branchIndex === 0) return; // Skip main branch entries
+      
+      const sideX = getBranchX(branchIndex);
+      
+      // Find the Y positions of the entry's start and end commits
+      const startCommit = allCommits.find((commit, index) => {
+        return commit.company === entry.company && 
+               commit.era === entry.era && 
+               commit.type === 'start';
+      });
+      
+      const endCommit = allCommits.find((commit, index) => {
+        return commit.company === entry.company && 
+               commit.era === entry.era && 
+               commit.type === 'end';
+      });
+      
+      if (startCommit) {
+        const startCommitIndex = allCommits.findIndex(c => c === startCommit);
+        const startY = commitPositions[startCommitIndex].yPosition;
+        
+        // Calculate coordinated curve offsets for symmetry
+        const horizontalDistance = sideX - MAIN_BRANCH_X;
+        const idealOffset = horizontalDistance;
+        
+        let forkStartOffset = idealOffset;
+        let mergeEndOffset = idealOffset;
+        
+        // If there's both a start and end commit, coordinate the curves
+        if (endCommit && endCommit !== startCommit) {
+          const endCommitIndex = allCommits.findIndex(c => c === endCommit);
+          const endY = commitPositions[endCommitIndex].yPosition;
+          
+          // Calculate available space to avoid intersections
+          const nextCommitIndex = endCommitIndex - 1; // Next chronologically newer commit
+          
+          if (nextCommitIndex >= 0) {
+            // There's a next commit - calculate total available space
+            const nextCommitY = commitPositions[nextCommitIndex].yPosition;
+            const totalAvailableSpace = startY - nextCommitY - 20; // 20px buffer
+            const requiredSpace = forkStartOffset + mergeEndOffset;
+            
+            // If we need more space than available, scale both curves proportionally
+            if (requiredSpace > totalAvailableSpace) {
+              const scaleFactor = totalAvailableSpace / requiredSpace;
+              forkStartOffset *= scaleFactor;
+              mergeEndOffset *= scaleFactor;
+            }
+          }
+        }
+        
+        // Draw the curved fork line at this entry's start point (aligned with dot center)
+        ctx.strokeStyle = getBranchColor(branchIndex);
+        ctx.beginPath();
+        
+        // Create a smooth gitgraph.js-style curve from vertical main branch to horizontal branch
+        const curveStart = startY + 5 + forkStartOffset; // Start point on main branch (below the commit)
+        const curveEnd = startY + 5; // End point on horizontal branch line (at commit level)
+        
+        // Use cubic Bezier curve with control points for smooth S-curve transition
+        const controlDistance = horizontalDistance * 0.5; // How far out the control points extend
+        
+        ctx.moveTo(MAIN_BRANCH_X, curveStart);
+        ctx.bezierCurveTo(
+          MAIN_BRANCH_X, curveStart - controlDistance, // First control point (pull vertically from start)
+          sideX, curveEnd + controlDistance,           // Second control point (pull vertically from end)
+          sideX, curveEnd                              // End point
+        );
+        ctx.stroke();
+        
+                          // Draw the vertical line for this entry only
+         if (endCommit && endCommit !== startCommit) {
+           const endCommitIndex = allCommits.findIndex(c => c === endCommit);
+           const endY = commitPositions[endCommitIndex].yPosition;
+           
+           ctx.strokeStyle = getBranchColor(branchIndex);
+           ctx.beginPath();
+           ctx.moveTo(sideX, startY + 5); // +5px to align with center of 10px dot
+           ctx.lineTo(sideX, endY + 5);   // +5px to align with center of 10px dot
+           ctx.stroke();
+           
+           // Draw curved merge line back to main branch if this entry has ended (not "current")
+           if (endCommit.originalDate !== 'Current') { // If end date is not "Current"
+               ctx.strokeStyle = getBranchColor(branchIndex);
+               ctx.beginPath();
+               
+                                // Create a smooth gitgraph.js-style curve from horizontal branch to vertical main branch
+                 const mergeStart = endY + 5; // Start point on horizontal branch line (at commit level)
+                 const mergeHorizontalDistance = sideX - MAIN_BRANCH_X;
+                 
+                 // Use the coordinated merge end offset for symmetry
+                 const mergeEnd = endY + 5 - mergeEndOffset; // Use coordinated offset
+               
+               // Use cubic Bezier curve with control points for smooth S-curve transition
+               const mergeControlDistance = mergeHorizontalDistance * 0.5; // How far out the control points extend
+               
+               ctx.moveTo(sideX, mergeStart);
+               ctx.bezierCurveTo(
+                 sideX, mergeStart - mergeControlDistance, // First control point (pull vertically from start)
+                 MAIN_BRANCH_X, mergeEnd + mergeControlDistance, // Second control point (pull vertically from end)
+                 MAIN_BRANCH_X, mergeEnd                   // End point on main branch
+               );
+               ctx.stroke();
+             }
+         }
+      }
+    });
+  }
+  
+  // Set container dimensions to accommodate both git graph and text area
+  commitsContainer.style.height = totalHeight + 'px';
+  
+  // Responsive container width
+  const containerWidth = isMobile() ? 
+    (textAreaX + 295) + 'px' : // Mobile: narrower width to prevent horizontal scroll
+    (textAreaX + 580) + 'px';  // Desktop: extra space for text area and tag cloud column
+  commitsContainer.style.width = containerWidth;
+  commitsContainer.style.position = 'relative';
+
+  // Handle window resize for responsive behavior
+  let initialWidth = window.innerWidth;
+  let resizeTimeout;
+  
+  window.addEventListener('resize', function() {
+    // Debounce resize events to avoid rapid firing
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(function() {
+      const currentWidth = window.innerWidth;
+      const widthChange = Math.abs(currentWidth - initialWidth);
+      
+      // Only reload on significant width changes (more than 50px difference)
+      // This prevents reloads from mobile address bar changes or small viewport adjustments
+      if (widthChange > 50) {
+        // Update initial width before reload to prevent repeated reloads
+        initialWidth = currentWidth;
+        location.reload();
+      }
+    }, 300); // Wait for resize events to settle
+  });
+
+});
+</script>
+
+<a href="#top" class="floating-back-to-top">
+  <svg viewBox="0 0 24 24" fill="currentColor">
+    <path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/>
+  </svg>
+</a>

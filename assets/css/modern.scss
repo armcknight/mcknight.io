@@ -1,0 +1,12 @@
+---
+---
+
+// Import base styles (variables, reset, typography, layout, header, footer)
+@use 'base';
+
+// Import page-specific styles
+@use 'home';
+@use 'blog';
+@use 'projects';
+@use 'experience';
+@use 'links';

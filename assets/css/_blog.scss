@@ -1,0 +1,254 @@
+// Blog page specific styles
+
+// Tags section
+.tags-section {
+  margin-bottom: var(--space-4);
+}
+
+.tag-cloud {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  margin-top: var(--space-4);
+}
+
+.tag-link {
+  font-family: var(--font-family-sans);
+  font-size: var(--text-xs);
+  background-color: var(--background-alt);
+  color: var(--text-secondary);
+  padding: var(--space-1) var(--space-2);
+  border-radius: 12px;
+  text-decoration: none;
+  transition: background-color 0.15s ease;
+}
+
+.tag-link:hover {
+  background-color: var(--accent);
+  color: white;
+  transform: translateY(-1px);
+  text-decoration: none;
+}
+
+// Blog navigation
+.blog-navigation {
+  display: flex;
+  gap: var(--space-8);
+  align-items: flex-start;
+  margin-top: var(--space-8);
+}
+
+.chronological-nav {
+  min-width: 200px;
+  position: sticky;
+  top: var(--space-6);
+}
+
+.chronological-nav h3 {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  margin-bottom: var(--space-3);
+  color: var(--text-primary);
+}
+
+.year-links {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.year-link {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  padding: var(--space-2) var(--space-3);
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+
+.year-link:hover {
+  background-color: var(--background-alt);
+  color: var(--accent);
+}
+
+.blog-posts-container {
+  flex: 1;
+}
+
+.year-section {
+  margin-bottom: var(--space-16);
+}
+
+.year-header {
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  margin-bottom: var(--space-6);
+  color: var(--text-primary);
+  border-bottom: 2px solid var(--border);
+  padding-bottom: var(--space-2);
+}
+
+.year-nav {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--space-6);
+  padding-top: var(--space-4);
+}
+
+// Individual blog post styles
+.article-header {
+  margin-bottom: var(--space-10);
+}
+
+.article-title {
+  font-size: var(--text-4xl);
+  font-weight: 700;
+  margin-bottom: var(--space-4);
+  line-height: 1.2;
+}
+
+.article-meta {
+  font-family: var(--font-family-sans);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  margin-bottom: var(--space-2);
+}
+
+.article-abstract {
+  font-size: var(--text-xl);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-8);
+  font-style: italic;
+}
+
+.article-content {
+  font-size: var(--text-lg);
+  line-height: 1.75;
+}
+
+// Article feedback styles
+.article-feedback {
+  background-color: var(--background-alt);
+  border-radius: 8px;
+  padding: var(--space-6);
+  margin-top: var(--space-8);
+}
+
+.article-feedback p {
+  margin-bottom: var(--space-3);
+}
+
+.article-feedback p:last-child {
+  margin-bottom: 0;
+}
+
+// Gist embeds
+.gist-container {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+  margin: var(--space-4) 0;
+}
+
+.gist-container .gist {
+  margin: 0;
+}
+
+.gist-container .gist .gist-file {
+  margin-bottom: 0;
+  border: none;
+}
+
+.gist-container .gist .gist-data {
+  max-height: 240px; // ~10 lines
+  overflow-y: auto;
+}
+
+// Image captions
+.caption {
+  font-family: var(--font-family-sans);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  font-style: italic;
+  margin-top: var(--space-2);
+  margin-bottom: var(--space-6);
+  display: block;
+  text-align: center;
+  line-height: 1.4;
+}
+
+// Back to top button
+.back-to-top {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  text-decoration: none;
+  margin-top: var(--space-2);
+  transition: color 0.15s ease;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: var(--background-alt);
+  border: 1px solid var(--border);
+}
+
+.back-to-top:hover {
+  color: var(--accent);
+  background-color: var(--accent);
+  border-color: var(--accent);
+}
+
+.back-to-top:hover svg {
+  color: white;
+}
+
+.back-to-top svg {
+  width: 14px;
+  height: 14px;
+}
+
+.back-to-top-text {
+  display: none;
+}
+
+// Responsive design for blog
+@media (max-width: 650px) {
+  .blog-navigation {
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+  
+  .chronological-nav {
+    position: static;
+    min-width: auto;
+  }
+  
+  .year-links {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+  
+  .year-link {
+    font-size: var(--text-xs);
+    padding: var(--space-1) var(--space-2);
+  }
+  
+  .year-header {
+    font-size: var(--text-2xl);
+  }
+  
+  .article-title {
+    font-size: var(--text-3xl);
+  }
+  
+  .article-content {
+    font-size: var(--text-base);
+  }
+  
+  .back-to-top {
+    display: none !important;
+  }
+} 

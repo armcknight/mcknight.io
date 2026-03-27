@@ -1,0 +1,48 @@
+{% include meta-tags-common.html %}
+
+{% assign date = page.date | date: '%-d %B %Y' %}
+{% assign postTitle="Andrew McKnight's blog % " | append: page.title | append: " % " | append: date %}
+
+{% if page.thumbnail != undefined %}
+	{% assign og_image_tag = "og:image::/blog/img/" | append: page.thumbnail %}
+	{% assign twitter_image_tag = "twitter:image::/blog/img/" | append: page.thumbnail %}
+{% else %}
+	{% assign og_image_tag = "og:image::/img/logo-small.jpg" %}
+	{% assign twitter_image_tag = "twitter:image::/img/logo-small.jpg" %}
+{% endif %}
+
+{% assign meta_tags = og_image_tag | append: ';' | append: twitter_image_tag | append: ';' | append: 'og:type::article' %}
+{% for tag in page.tags %}
+	{% assign meta_tag = 'article:tag::' | append: tag %}
+	{% assign meta_tags = meta_tags | append: ';' | append: meta_tag %}
+{% endfor %}
+{% assign publish_date = page.date | date_to_xmlschema %}
+{% assign updat4e_date = page.last-modified-date | date_to_xmlschema %}
+{% assign meta_tags = meta_tags | append: ';og:published_time::' | append: publish_date | append: ';og:modified_time::' | append: update_date %}
+{% assign all_tags = page.tags | join: ', ' %}
+{% assign meta_tags = meta_tags | append: ';twitter:label1::By:;twitter:data1:Andrew McKnight;twitter:label2::Tags:;twitter:data2::' | append: all_tags %}
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@tworingsoft" />
+<meta name="twitter:creator" content="@tworingsoft" />
+
+<meta name="og:site_name" content="Two Ring Software">
+
+<meta property="og:url" content="{{ site.url }}{{ page.url }}" />
+<meta name="twitter:url" content="{{ site.url }}{{ page.url }}" />
+
+<title>{{ include.title }}</title>
+<meta property="og:title" content="{{ include.title }}" />
+<meta property="twitter:title" content="{{ include.title }}" />
+
+<meta name="description" content="{{ include.description }}" />
+<meta property="og:description" content="{{ include.description }}" />
+<meta property="twitter:description" content="{{ include.description }}" />
+
+{% if include.other_meta_tags != undefined %}
+  {% assign tag_key_value_pairs = include.other_meta_tags | split: ';' %}
+  {% for key_value_pair in tag_key_value_pairs %}
+    {% assign key_and_value = key_value_pair | split: '::' %}
+    <meta name="{{ key_and_value[0] }}" content="{{ key_and_value[1] }}" />
+  {% endfor %}
+{% endif %}

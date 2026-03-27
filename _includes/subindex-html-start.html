@@ -1,0 +1,42 @@
+<!doctype html>
+<!--[if IE 9]><html class="lt-ie10" lang="en" > <![endif]-->
+
+<html class="no-js" lang="en" data-useragent="Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; Trident/6.0)">
+	<head>
+		<title>Andrew McKnight - {{ include.name }}</title>
+
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+		<meta name="description" content="{{ include.description }}"/>
+		<meta name="author" content="Andrew McKnight"/>
+		<meta name="copyright" content="Andrew McKnight Copyright (c) 2017"/>
+		
+		<meta name="twitter:card" content="summary" />
+		
+		<meta property="og:title" content="Andrew McKnight - {{ include.name }}" />
+		<meta property="og:description" content="{{ include.description }}" />
+		
+		{% if include.thumbnail != undefined %}
+			<meta property="og:image" content="/blog/img/{{ include.thumbnail }}" />
+		{% endif %}
+
+		<link rel="stylesheet" href="/css/{{ include.css_file }}"/>
+	</head>
+
+	<body>
+		<div>
+			<table width="100%">
+				<tr>
+					<td class="left">
+						{% if include.back_url != nil %}
+							<a href="{{ include.back_url }}" class="breadcrumb">&lt; Back</a>
+						{% else %}
+							<a href=".." class="breadcrumb">&lt; Back</a>
+						{% endif %}
+					</td>
+					<td class="right">
+						<span class="heading">{{ include.name }}</span>
+					</td>
+				</tr>
+			</table>
+		</div>

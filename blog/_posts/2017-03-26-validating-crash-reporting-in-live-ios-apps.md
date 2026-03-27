@@ -1,0 +1,19 @@
+---
+title: Validating Crash Reporting in Live iOS Apps
+date: 2017-03-26
+layout: post
+abstract: There's only one way to guarantee your iOS crash reporter is working&#58; purposefully crash your app in production.
+author: Andrew McKnight
+author-email: andrew@tworingsoft.com
+tags: ios
+---
+
+During my time at Fabric, Apple announced their [Bitcode](https://developer.apple.com/library/content/documentation/IDEs/Conceptual/AppDistributionGuide/AppThinning/AppThinning.html#//apple_ref/doc/uid/TP40012582-CH35-SW2) concept at WWDC (more reading [here](https://lowlevelbits.org/bitcode-demystified/) and [here](https://www.infoq.com/articles/ios-9-bitcode)). This created new challenges to the way Crashlytics traditionally worked (and every other crash reporter available, for that matter). The usual flow went like this: when you compiled/archived your app for submission to the app store, you'd submit the corresponding dSYM binary to Crashlytics, which it uses to [symbolicate](https://fabric.io/blog/2016/09/08/how-crashlytics-symbolicates-1000-crashes-every-second/) the stack frames in your crash report. 
+
+In the Bitcode world, however, the LLVM-IR bytecode you submit could be recompiled by Apple before distribution in the app store, invalidating the dSYMs submitted alongside the bytecode. (I'm not sure it even makes sense to immediately generate dSYMs for Bitcode apps at all, but I digress.) Now, after your submitted app is recompiled, you must download the new dSYMs from Apple and submit them to your crash reporter so they get the new binary addresses for your app's symbols. (Shout out to [Fastlane](https://krausefx.com/blog/download-dsym-symbolication-files-from-itunes-connect-for-bitcode-ios-apps) for creating a tool that helps automate this process; if you prefer a little more control, I wrote a tool called `upload-symbols` that ships with Fabric.app and the Fabric CocoaPod you can use).
+
+We thought there would be some time before we started seeing recompilations, maybe when a new processor architecture came out, but there are other reasons Apple might want to recompile: new LLVM optimizations, or injecting code for security or DRM purposes. Indeed, we quickly found that it was happening immediately for all new apps, by testing one of my own personal apps in the store. This caused confusion for lots of our customers at the time, and to this day the process, because it requires some manual work, still trips up some developers.
+
+Now, I insert a secret test crash button in all my apps, to test immediately upon release. I'll purposely cause this crash before submitted the recompiled dSYMS, to make sure that Crashlytics' [missing dSYM](https://docs.fabric.io/apple/crashlytics/missing-dsyms.html) logic is working in all cases. (It is a fairly complicated state machine, after all–they must buffer crashes they can't symbolicate, notify you, and reprocess those crashes after receiving all the required dSYMs, of which there can be more than one if your crash stack traverses external non-Apple libraries.) Then, I'll submit all the new dSYMs, ensure the buffered crashes are processed, inspect the stack traces to make sure they make sense, and maybe send up another test crash. If my app does contain any dynamic libraries, I try to construct a stack trace that includes symbols from all of them.
+
+While I have a lot of trust in the fine folks at Crashlytics, I appreciate that Apple holds the keys to the castle as far as crash reporting is concerned. As we learned at that WWDC, they can easily break the existing pipelines at any time by introducing new concepts or even making small tweaks to how they work. It behooves us as app developers to ensure that our instrumentation works correctly by building processes to validate them. So, crash your apps!

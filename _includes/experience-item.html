@@ -1,0 +1,146 @@
+{% comment %}
+Experience item renderer that handles both experience and education entries
+{% endcomment %}
+
+<div class="experience-item-content">
+  <div class="experience-header">
+    {% if include.type == "education" %}
+      {% if include.item.degree %}
+        <h3 class="experience-title">{{ include.item.degree }}</h3>
+      {% else %}
+        <h3 class="experience-title">{{ include.item.institution }}</h3>
+      {% endif %}
+    {% elsif include.type == "presentation" %}
+      <h3 class="experience-title">{{ include.item.title }}</h3>
+    {% else %}
+      <h3 class="experience-title">{{ include.item.title }}</h3>
+    {% endif %}
+    
+    <div class="experience-meta">
+      {% if include.type == "education" %}
+        {% if include.item.degree %}
+          <span class="experience-company">{{ include.item.institution }}</span>
+        {% endif %}
+        <span class="experience-dates">{{ include.item.dates }}</span>
+        {% if include.item.location %}
+        <span class="experience-location">{{ include.item.location }}</span>
+        {% endif %}
+      {% elsif include.type == "presentation" %}
+        <span class="experience-company">{{ include.item.event }}</span>
+        <span class="experience-dates">{{ include.item.date }}</span>
+        {% if include.item.location %}
+        <span class="experience-location">{{ include.item.location }}</span>
+        {% endif %}
+      {% else %}
+        {% if include.item.company %}
+          <span class="experience-company">{{ include.item.company }}</span>
+        {% elsif include.item.school %}
+          <span class="experience-company">{{ include.item.school }}</span>
+        {% endif %}
+        <span class="experience-dates">{{ include.item.dates }}</span>
+        {% if include.item.location %}
+        <span class="experience-location">{{ include.item.location }}</span>
+        {% endif %}
+        {% if include.item.employment_type %}
+        <span class="experience-type">{{ include.item.employment_type }}</span>
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+  
+  <div class="experience-description">
+    {% if include.item.details %}
+    <div class="experience-highlights">
+      <h4>Details:</h4>
+      <ul>
+        {% for detail in include.item.details %}
+        <li>{{ detail }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+    
+    {% if include.item.highlights %}
+    <div class="experience-highlights">
+      <h4>Highlights:</h4>
+      <ul>
+        {% for highlight in include.item.highlights %}
+        <li>
+          {% if highlight.name %}
+          <strong>{{ highlight.name }}</strong>
+          {% if highlight.url %}
+          <a href="{{ highlight.url }}" class="highlight-link">{{ highlight.url }}</a>
+          {% endif %}
+          {% if highlight.description %}
+          – {{ highlight.description }}
+          {% endif %}
+          {% else %}
+          {{ highlight }}
+          {% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+    
+    {% if include.item.deliverables %}
+    <div class="experience-deliverables">
+      <h4>Deliverables:</h4>
+      {% for deliverable in include.item.deliverables %}
+      <div class="deliverable">
+        {% if deliverable.url %}
+        <a href="{{ deliverable.url }}" class="deliverable-name">{{ deliverable.name }}</a>
+        {% else %}
+        <span class="deliverable-name">{{ deliverable.name }}</span>
+        {% endif %}
+        {% if deliverable.description %}
+        <span class="deliverable-description">– {{ deliverable.description }}</span>
+        {% endif %}
+        {% if deliverable.details %}
+        <ul class="deliverable-details">
+          {% for detail in deliverable.details %}
+          <li>{{ detail }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    
+    {% if include.item.stack %}
+    <div class="experience-stack">
+      <h4>Tech Stack:</h4>
+      <div class="stack-tags">
+        {% for tech in include.item.stack %}
+        <span class="stack-tag">{{ tech }}</span>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+    
+    {% if include.item.honors %}
+    <div class="experience-honors">
+      <h4>Honors & Awards:</h4>
+      <ul>
+        {% for honor in include.item.honors %}
+        <li>
+          <strong>{{ honor.award }}</strong>
+          {% if honor.year != include.item.dates %} ({{ honor.year }}){% endif %}
+          {% if honor.description %} – {{ honor.description }}{% endif %}
+          {% if honor.institution != include.item.institution %}
+          <br><em>{{ honor.institution }}</em>
+          {% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+    
+    {% if include.type == "presentation" and include.item.venue %}
+    <div class="presentation-venue">
+      <strong>Venue:</strong> {{ include.item.venue }}
+    </div>
+    {% endif %}
+  </div>
+</div> 

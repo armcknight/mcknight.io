@@ -1,0 +1,41 @@
+projects:
+  - category: Apps
+    name: Trgnmtry
+    url: https://itunes.apple.com/us/app/trgnmtry/id1146667288
+    description: Draws a set of chosen trigonometric measures on a unit circle, around which a user drags their finger
+    stack: [Swift, CoreGraphics, Pippin, CocoaPods]
+    tags: [ios, mobile, apps, swift, mathematics, trigonometry]
+
+  - name: Delaunay Triangulator
+    url: https://itunes.apple.com/us/app/delaunay-triangulator/id657596160
+    description: Maintain a Delaunay triangulation of points from touch input on the screen
+    stack: [C/ObjC/Swift, CoreGraphics, CocoaPods]
+    tags: [ios, mobile, apps, algorithms, mathematics, geometry]
+
+  - name: Dat Bread Dough.
+    url: https://itunes.apple.com/us/app/dat-bread-dough/id1214735558
+    description: Store bread formulas/recipes, along with custom ingredients and brands, with in-app purchases to unlock full functionality
+    stack: [Swift, Core Data, Pippin, CocoaPods]
+    tags: [ios, mobile, apps, swift, coredata, food]
+
+  - category: Devtools
+    name: Pippin
+    url: https://github.com/TwoRingSoft/Pippin
+    description: Collection of protocols and adapters for common iOS architecture and infrastructure, and extensions
+    tags: [ios, mobile, devtools, framework, swift, architecture]
+
+  - name: Vrsnr
+    url: https://github.com/TwoRingSoft/SemVer
+    description: Extensible Swift CLI automating version management for devtool makers
+    tags: [devtools, swift, cli, versioning, semver]
+
+  - category: Science
+    name: Colloquial Swift
+    url: https://github.com/armcknight/colloquial-swift
+    description: An experiment that surveys Swift repositories and analyzes how the language and stdlib are extended
+    tags: [research, swift, language-analysis, github, statistics]
+
+  - name: MaVec
+    url: https://github.com/armcknight/MaVec
+    description: Classes for matrices and vectors, wrapping Accelerate's functions and adding from-scratch routines
+    tags: [mathematics, linear-algebra, swift, accelerate, algorithms] 

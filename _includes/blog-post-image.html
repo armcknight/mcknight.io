@@ -1,0 +1,43 @@
+<center>
+	<style scoped>
+		{% assign id = include.source | split: '.png' | last | split: '/' | last %}
+		#reader-adaptable-image-{{ id }} {
+		{% if include.narrow == undefined || include.small == undefined %}
+			{% if include.small == undefined %}
+				width: 1200px;
+                {% assign width = "1200px" %}
+			{% else %}
+				width: 300px;
+                {% assign width = "300px" %}
+			{% endif %}
+		{% else %}
+				width: 600px;
+                {% assign width = "600px" %}
+		{% endif %}
+		}
+		@media only screen and (max-width: 500px) {
+			#reader-adaptable-image-{{ id }} { /* div containing everything after the header */
+				{% if include.narrow == undefined %}
+					width: 100%;
+                    {% assign width = "100%" %}
+				{% else %}
+					{% if include.mobile_fullwidth == undefined %}
+						width: 75%;
+                        {% assign width = "75%" %}
+					{% else %}
+						width: 105%;
+                        {% assign width = "105%" %}
+						margin-left: -10px;
+					{% endif %}
+				{% endif %}
+			}
+		}
+	</style>
+	{% if include.external == undefined %}
+	<img width="{{ width }}" id="reader-adaptable-image-{{ id }}" src="/blog/img/{{ include.source }}" alt="{{ include.alt }}" />
+	{% else %}
+	<img id="reader-adaptable-image-{{ id }}" src="{{ include.source }}" alt="{{ include.alt }}" />
+	{% endif %}
+	<br />
+	<span class="caption">{{ include.alt }}</span>
+</center>

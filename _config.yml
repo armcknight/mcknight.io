@@ -1,0 +1,15 @@
+title: Andrew McKnight
+description: Lover of programming, art, learning, outdoors, food, culture and travel.
+url: http://mcknight.io
+exclude:
+  - Makefile
+  - README.md
+  - .gitignore
+  - Brewfile*
+  - Gemfile*
+  - logs/
+  - .git/
+tag_page_layout: tag_page
+tag_page_dir: blog/tag
+tag_feed_layout: tag_feed
+tag_feed_dir: blog/tag

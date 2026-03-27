@@ -1,0 +1,16 @@
+<head>
+  <title>{{ include.title }}</title>
+  <meta property="og:title" content="{{ include.title }}" />
+  <meta name="description" content="{{ include.abstract }}" />
+  <meta property="og:description" content="{{ include.abstract }}" />
+  <meta property="og:url" content="{{ site.url }}{{ page.url }}" />
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="author" content="Andrew McKnight"/>
+  <meta name="copyright" content="Andrew McKnight Copyright (c) 2024"/>
+  <link rel="stylesheet" href="{{ include.stylesheet }}"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  {% if include.feedURL != undefined %}
+  <link rel="alternate" type="application/rss+xml" title="{{include.feedName}}" href="{{include.feedURL}}">
+  {% endif %}
+</head>

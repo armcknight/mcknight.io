@@ -1,0 +1,237 @@
+// Projects page specific styles
+
+// Project categories
+.project-category {
+  margin-bottom: var(--space-16);
+}
+
+.project-category h2 {
+  margin-bottom: var(--space-2);
+}
+
+.category-description {
+  color: var(--text-primary);
+  margin-bottom: var(--space-8);
+  font-size: var(--text-lg);
+}
+
+// Project grids
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--space-6);
+}
+
+// Full-width layout for coding challenges
+.coding-challenges .projects-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.coding-challenges .project-card {
+  width: 100%;
+  max-width: none;
+}
+
+.project-card {
+  background-color: var(--background-alt);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: var(--space-6);
+}
+
+.project-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+}
+
+.project-title {
+  font-size: var(--text-xl);
+  font-weight: 600;
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.build-badge {
+  height: 20px;
+  border-radius: 3px;
+}
+
+.project-description {
+  color: var(--text-primary);
+  line-height: 1.6;
+  margin-bottom: var(--space-4);
+}
+
+.project-links {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.project-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--accent);
+  text-decoration: none;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+
+.project-link:hover {
+  background-color: var(--accent);
+  color: white;
+}
+
+.project-link svg {
+  width: 16px;
+  height: 16px;
+}
+
+.app-store-link {
+  border: none;
+  padding: 0;
+  background: none;
+  display: inline-block;
+}
+
+.app-store-link:hover {
+  background: none;
+  border: none;
+}
+
+.app-store-badge {
+  height: 40px;
+  width: auto;
+  transition: opacity 0.15s ease;
+}
+
+.app-store-badge:hover {
+  opacity: 0.8;
+}
+
+// Coding challenges specific styles
+.coding-challenges .project-links {
+  margin-bottom: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.challenge-progress {
+  margin-bottom: var(--space-4);
+  background-color: var(--code-bg);
+  padding: var(--space-3);
+}
+
+.progress-text {
+  font-family: var(--font-family-mono);
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  margin: 0;
+  white-space: pre-wrap;
+  line-height: 1.4;
+
+  // override .pre styles
+  border: 0px;
+  padding: 0px;
+  padding-top: var(--space-3);
+}
+
+// Alternative project layouts (used on some pages)
+.work-content {
+  // Container for work/projects content
+}
+
+.project-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.project-item {
+  background-color: var(--background-alt);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: var(--space-4);
+}
+
+.project-name {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--text-primary);
+  text-decoration: none;
+  display: block;
+  margin-bottom: var(--space-2);
+}
+
+.project-name:hover {
+  color: var(--accent);
+}
+
+.project-stack {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.project-tech {
+  font-family: var(--font-family-sans);
+  font-size: var(--text-xs);
+  background-color: var(--code-bg);
+  color: var(--text-secondary);
+  padding: var(--space-1) var(--space-2);
+  border-radius: 4px;
+  border: 1px solid var(--code-border);
+}
+
+// Responsive design for projects
+@media (max-width: 650px) {
+  .projects-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+  
+  .project-card {
+    padding: var(--space-4);
+  }
+  
+  .project-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+  }
+  
+  .app-store-link {
+    padding: 0;
+  }
+  
+  .app-store-badge {
+    height: 36px;
+  }
+  
+  .project-item {
+    padding: var(--space-3);
+  }
+  
+  .project-stack {
+    gap: var(--space-1);
+  }
+
+  .challenge-progress {
+    padding: var(--space-2);
+  }
+
+  .progress-text {
+    font-size: var(--text-xxs);
+  }
+
+  .coding-challenges .projects-grid {
+    gap: var(--space-4);
+  }
+} 
