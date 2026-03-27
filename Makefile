@@ -24,7 +24,7 @@ build: _logs-dir optimize-images
 	rbenv exec bundle exec jekyll build --destination _site 2>&1 | tee logs/jekyll_build.log
 
 deploy: _logs-dir
-	aws s3 sync _site/ s3://mcknight.io/ --profile armcknight --acl public-read --delete | tee logs/web_deploy.log
+	aws s3 sync _site/ s3://mcknight.io/ --profile armcknight --delete | tee logs/web_deploy.log
 
 serve:
 	pushd _site && python3 -m http.server 4000 --bind localhost &
