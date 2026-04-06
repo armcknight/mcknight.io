@@ -1,36 +1,24 @@
 devtools:
-  - name: "Vrsnr"
-    description: "A command-line tool for bumping version numbers in your source files. Supports multiple file types and version schemas, and offers utilities to explore how best to version your software."
-    website: "https://github.com/tworingsoft/Vrsnr"
-    website-name: "GitHub"
-    build-badge: "https://travis-ci.org/TwoRingSoft/Vrsnr.svg?branch=master"
-    build-badge-link: "https://travis-ci.org/TwoRingSoft/vrsnr"
-    
   - name: "Pippin"
     description: "Utilities to quickly prototype iOS apps and simplify working with Cocoa/UIKit API in Swift."
     website: "https://github.com/TwoRingSoft/Pippin"
     website-name: "GitHub"
     build-badge: "https://travis-ci.org/TwoRingSoft/Pippin.svg?branch=master"
     build-badge-link: "https://travis-ci.org/TwoRingSoft/Pippin"
-    
+
   - name: "armcknight-swift"
     description: "The spiritual successor to Pippin in a Swift Package Manager world."
     website: "https://github.com/armcknight/armcknight-swift"
     website-name: "GitHub"
     build-badge: "https://travis-ci.org/TwoRingSoft/Pippin.svg?branch=master"
     build-badge-link: "https://travis-ci.org/TwoRingSoft/Pippin"
-    
-  - name: "xcbs"
-    description: "Track your Xcode project's build settings with confidence."
-    website: "https://github.com/tworingsoft/xcbs"
+
+  - name: "tools"
+    description: "A collection of developer tools for Apple platform projects: version bumping (vrsn), build settings tracking (xcbs), secrets injection (psst), changelog management, git tag annotation, dSYM uploading, and app icon tagging."
+    website: "https://github.com/armcknight/tools"
     website-name: "GitHub"
-    build-badge: "https://travis-ci.org/TwoRingSoft/xcbs.svg?branch=master"
-    build-badge-link: "https://travis-ci.org/TwoRingSoft/xcbs"
-    
-  - name: "Psst"
-    description: "Insert secrets into codebases that don't want to commit them to history."
-    website: "https://github.com/TwoRingSoft/psst"
-    website-name: "GitHub"
+    build-badge: "https://github.com/armcknight/tools/actions/workflows/ci.yml/badge.svg?branch=main"
+    build-badge-link: "https://github.com/armcknight/tools/actions/workflows/ci.yml"
 
   - name: "Forgery"
     description: "A tool to wrangle collections of git repositories."
@@ -38,26 +26,26 @@ devtools:
     website-name: "GitHub"
 
 apps:
-  - name: "Dat Bread Dough"
-    description: "Create recipes for your bread formulas, with easy formula/weight conversions when editing. Store all your favorite ingredients, even by brands, and keep notes on everything."
-    app-store-url: "https://itunes.apple.com/us/app/dat-bread-dough/id1214735558"
-    image: "Dough.png"
-    
+#  - name: "Dat Bread Dough"
+#    description: "Create recipes for your bread formulas, with easy formula/weight conversions when editing. Store all your favorite ingredients, even by brands, and keep notes on everything."
+#    app-store-url: "https://itunes.apple.com/us/app/dat-bread-dough/id1214735558"
+#    image: "Dough.png"
+
   - name: "Trgnmtry"
     description: "A simple Swift app that draws all of the trigonometric functions onto a unit circle, with the ability to only display certain ones. The latest version added snapping to angle intervals."
-    app-store-url: "https://itunes.apple.com/us/app/trgnmtry/id1146667288?ls=1&mt=8"
-    image: "Trgnmtry.png"
-    
+    app-store-url: "https://apps.apple.com/us/app/trgnmtry/id1146667288"
+    image: "trgnmtry.png"
+
   - name: "Delaunay Triangulator"
     description: "An app that triangulates the points you create by tapping on the screen, while maintaining the Delaunay property."
-    app-store-url: "https://itunes.apple.com/us/app/delaunay-triangulator/id657596160?mt=8"
-    image: "Delaunay.png" 
+    app-store-url: "https://apps.apple.com/us/app/delaunay-triangulator/id657596160"
+    image: "delaunay.png"
 
-  - name: "FastMagic"
-    description: "A CLI for managing Magic: the Gathering collectins and decks that I hope to turn into a full-featured app one day."
-    website: "https://github.com/armcknight/mtg"
-    website-name: "GitHub"
-  
+#  - name: "FastMagic"
+#    description: "A CLI for managing Magic: the Gathering collections and decks that I hope to turn into a full-featured app one day."
+#    website: "https://github.com/armcknight/mtg"
+#    website-name: "GitHub"
+
 coding-challenges:
   - name: Project Euler
     solutions: "https://github.com/armcknight/ProjectEuler"
@@ -66,7 +54,7 @@ coding-challenges:
       Mean difficulty of problems solved = 5.67%
       Mean difficulty of all rated problems = 46.59%
       Highest difficulty problem solved = 20%
-  
+
   - name: Advent of Code
     solutions: "https://github.com/armcknight/AdventOfCode"
     progress: |
@@ -142,4 +130,3 @@ coding-challenges:
         3       >24h  73385      0       >24h  71097      0
         2       >24h  84617      0       >24h  82236      0
         1       >24h  75019      0       >24h  70168      0
-      
