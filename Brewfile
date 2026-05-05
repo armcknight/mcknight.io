@@ -1,5 +1,6 @@
 brew 'rbenv'
 brew 'awscli'
 brew 'ruby-build'
+cask 'imageoptim'
 brew 'imageoptim-cli'
 brew 'exiftool'
