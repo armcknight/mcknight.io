@@ -15,10 +15,13 @@ resume:
 	cp resume/build/pdfs/ios_resume.pdf assets/pdf/andrew-mcknight-resume-ios.pdf
 
 optimize-images:
-	@echo "Stripping EXIF data from images in blog/img/..."
-	@find blog/img -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" -o -iname "*.gif" \) -exec exiftool -all= -overwrite_original {} \;
-	@echo "Optimizing images in blog/img/..."
-	@imageoptim blog/img/**/*.{jpg,jpeg,png,gif}
+	@new_images=$$(git status --porcelain | awk '{print $$NF}' | grep -iE '\.(jpg|jpeg|png|gif)$$'); \
+	if [ -n "$$new_images" ]; then \
+		echo "Stripping EXIF data from new images..."; \
+		echo "$$new_images" | xargs exiftool -all= -overwrite_original; \
+		echo "Optimizing new images..."; \
+		imageoptim $$new_images; \
+	fi
 
 build: _logs-dir optimize-images
 	rbenv exec bundle exec jekyll build --destination _site 2>&1 | tee logs/jekyll_build.log
