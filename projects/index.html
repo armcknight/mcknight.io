@@ -30,6 +30,13 @@ title: "Projects"
           <h3 class="project-title">{{ project.name }}</h3>
           <p class="project-description">{{ project.description }}</p>
 
+          {% if project.screenshot %}
+            {% assign screenshot_url = '/assets/images/projects/' | append: project.screenshot | relative_url %}
+            <a href="{{ screenshot_url }}" target="_blank" rel="noopener" class="app-screenshot-link" data-lightbox>
+              <img src="{{ screenshot_url }}" alt="{{ project.name }} screenshot" class="app-screenshot" loading="lazy">
+            </a>
+          {% endif %}
+
           <div class="project-links">
             {% if project.website %}
               <a href="{{ project.website }}" target="_blank" rel="noopener" class="project-link">
@@ -52,11 +59,6 @@ title: "Projects"
         <div class="project-card">
           <div class="project-header">
             <h3 class="project-title">{{ project.name }}</h3>
-            {% if project.build-badge %}
-              <a href="{{ project.build-badge-link }}" target="_blank" rel="noopener">
-                <img src="{{ project.build-badge }}" alt="Build Status" class="build-badge">
-              </a>
-            {% endif %}
           </div>
 
           <p class="project-description">{{ project.description }}</p>
@@ -101,3 +103,67 @@ title: "Projects"
   </section>
 
 </div>
+
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Screenshot" hidden>
+  <button type="button" class="lightbox-close" id="lightbox-close" aria-label="Close screenshot">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <path d="M6 6l12 12M18 6L6 18"/>
+    </svg>
+  </button>
+  <img src="" alt="" class="lightbox-image" id="lightbox-image">
+</div>
+
+<script>
+  // Expand project screenshots over a blurred page instead of navigating to the
+  // image. The anchors keep their href, so this is purely an enhancement.
+  document.addEventListener('DOMContentLoaded', function() {
+    const lightbox = document.getElementById('lightbox');
+    const image = document.getElementById('lightbox-image');
+    const closeButton = document.getElementById('lightbox-close');
+    const triggers = document.querySelectorAll('[data-lightbox]');
+
+    if (!lightbox || !triggers.length) return;
+
+    let lastFocused = null;
+
+    function open(trigger) {
+      const thumbnail = trigger.querySelector('img');
+      lastFocused = trigger;
+      image.src = trigger.getAttribute('href');
+      image.alt = thumbnail ? thumbnail.alt : '';
+      lightbox.hidden = false;
+      // Let the element render before transitioning, so the fade in plays.
+      requestAnimationFrame(function() { lightbox.classList.add('open'); });
+      document.body.classList.add('lightbox-open');
+      closeButton.focus();
+    }
+
+    function close() {
+      lightbox.classList.remove('open');
+      lightbox.hidden = true;
+      image.src = '';
+      document.body.classList.remove('lightbox-open');
+      if (lastFocused) lastFocused.focus();
+    }
+
+    triggers.forEach(function(trigger) {
+      trigger.addEventListener('click', function(event) {
+        // Leave modified clicks alone so "open in new tab" still works.
+        if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
+        event.preventDefault();
+        open(trigger);
+      });
+    });
+
+    closeButton.addEventListener('click', close);
+
+    // Clicking the backdrop closes; clicking the image itself does not.
+    lightbox.addEventListener('click', function(event) {
+      if (event.target === lightbox) close();
+    });
+
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape' && !lightbox.hidden) close();
+    });
+  });
+</script>

@@ -3,26 +3,50 @@ devtools:
     description: "Utilities to quickly prototype iOS apps and simplify working with Cocoa/UIKit API in Swift."
     website: "https://github.com/TwoRingSoft/Pippin"
     website-name: "GitHub"
-    build-badge: "https://travis-ci.org/TwoRingSoft/Pippin.svg?branch=master"
-    build-badge-link: "https://travis-ci.org/TwoRingSoft/Pippin"
 
   - name: "armcknight-swift"
     description: "The spiritual successor to Pippin in a Swift Package Manager world."
     website: "https://github.com/armcknight/armcknight-swift"
     website-name: "GitHub"
-    build-badge: "https://travis-ci.org/TwoRingSoft/Pippin.svg?branch=master"
-    build-badge-link: "https://travis-ci.org/TwoRingSoft/Pippin"
 
   - name: "tools"
     description: "A collection of developer tools for Apple platform projects: version bumping (vrsn), build settings tracking (xcbs), secrets injection (psst), changelog management, git tag annotation, dSYM uploading, and app icon tagging."
     website: "https://github.com/armcknight/tools"
     website-name: "GitHub"
-    build-badge: "https://github.com/armcknight/tools/actions/workflows/ci.yml/badge.svg?branch=main"
-    build-badge-link: "https://github.com/armcknight/tools/actions/workflows/ci.yml"
 
   - name: "Forgery"
     description: "A tool to wrangle collections of git repositories."
     website: "https://github.com/armcknight/forgery"
+    website-name: "GitHub"
+
+  - name: "superlinear"
+    description: "A macOS launchd daemon that watches Linear for new issues and starts an autonomous Claude Code agent for each one, in its own git worktree, taking the ticket to an open pull request without a human in the loop."
+    website: "https://github.com/armcknight/superlinear"
+    website-name: "GitHub"
+
+  - name: "workflows"
+    description: "Reusable GitHub Actions workflows for Apple platform projects: iOS CI with over-the-air staging builds installed from presigned S3 links, and macOS cask releases that archive, sign, notarize, and publish to a Homebrew tap."
+    website: "https://github.com/armcknight/workflows"
+    website-name: "GitHub"
+
+  - name: "workr"
+    description: "A manager for git worktrees, tmux sessions, and pluggable cloud devboxes. A Swift port of a personal fish function, shipped as the `work` command."
+    website: "https://github.com/armcknight/workr"
+    website-name: "GitHub"
+
+  - name: "hammerspoons"
+    description: "Personal Hammerspoon Spoons, installable with SpoonInstall: a fuzzy chooser over every iTerm2 window across all Spaces, and a toggle for Xcode's source-control status in the Project Navigator."
+    website: "https://github.com/armcknight/hammerspoons"
+    website-name: "GitHub"
+
+  - name: "homebrew-tools"
+    description: "A personal Homebrew tap that hosts the cask formulas and prebuilt binaries for these tools, with a stable and a release-candidate channel for each."
+    website: "https://github.com/armcknight/homebrew-tools"
+    website-name: "GitHub"
+
+  - name: "claude-armcknight"
+    description: "A Claude Code plugin marketplace. Its plugin turns a Linear ticket into a merged pull request one slash command at a time: start, review, commit, pr, merge, finish, and cleanup."
+    website: "https://github.com/armcknight/claude-armcknight"
     website-name: "GitHub"
 
 apps:
@@ -30,6 +54,12 @@ apps:
 #    description: "Create recipes for your bread formulas, with easy formula/weight conversions when editing. Store all your favorite ingredients, even by brands, and keep notes on everything."
 #    app-store-url: "https://itunes.apple.com/us/app/dat-bread-dough/id1214735558"
 #    image: "Dough.png"
+
+  - name: "claude-squad"
+    description: "A macOS app to keep up with multiple parallel Claude sessions, sorted by which one needs you next, with the git branch of each. Installs from a Homebrew cask."
+    website: "https://github.com/armcknight/claude-squad"
+    website-name: "GitHub"
+    screenshot: "claude-squad.png"
 
   - name: "Trgnmtry"
     description: "A simple Swift app that draws all of the trigonometric functions onto a unit circle, with the ability to only display certain ones. The latest version added snapping to angle intervals."
