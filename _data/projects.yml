@@ -47,12 +47,6 @@ devtools:
     website: "https://github.com/armcknight/hammerspoons"
     website-name: "GitHub"
 
-  - name: "homebrew-tools"
-    description: "A personal Homebrew tap that hosts the cask formulas and prebuilt binaries for these tools, with a stable and a release-candidate channel for each."
-    website: "https://github.com/armcknight/homebrew-tools"
-    website-name: "GitHub"
-    release: false
-
   - name: "claude-armcknight"
     description: "A Claude Code plugin marketplace. Its plugin turns a Linear ticket into a merged pull request one slash command at a time: start, review, commit, pr, merge, finish, and cleanup."
     website: "https://github.com/armcknight/claude-armcknight"

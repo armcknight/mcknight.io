@@ -14,7 +14,6 @@
 #                        the displayed version. Needed for the tools whose
 #                        releases live in the homebrew-tools tap under tags like
 #                        `work-1.0.1`.
-#   release: false       skip this project entirely.
 
 require 'json'
 require 'yaml'
@@ -85,11 +84,6 @@ skipped = []
 
 (projects['apps'].to_a + projects['devtools'].to_a).each do |project|
   name = project['name']
-
-  if project['release'] == false
-    skipped << "#{name}: opted out"
-    next
-  end
 
   if project['app-store-url']
     release = app_store_release(project['app-store-url'])
