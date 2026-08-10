@@ -7,7 +7,7 @@ tags: ai, tech, software
 abstract: Updates on how I automate my Claude usage.
 ---
 
-Following my previous post on [my LLM workflow/(/blog/2026/01/07/my-current-llm-assisted-workflow.html), updates on how my workflow has evolved.
+Following my previous post on [my LLM workflow](/blog/2026/01/07/my-current-llm-assisted-workflow.html), updates on how my workflow has evolved.
 
 # Herding Kittens
 
@@ -38,9 +38,9 @@ But there was a better option available: remote dev boxes. Our dev infra team al
 So, it's as simple as:
 
 - `work start remote andrewmcknight/proj-123-my-task` which does all the same stuff as `work start` from my previous blog post: pull linear ticket info, craft a prompt, and carry all the way through to opening a draft PR
-- `work remote $providerName status` gives me a listing of all my current containers, status info, URLs to their web dashboards, and URLs to the associated GitHub PRs
-- `work remote $providerName log [-f]` to see what Claude's up to
-- `work remote $providerName test $instance-slug` to open the  URL to the devserver running on that instance in my browser
+- `work remote status` gives me a listing of all my current containers, status info, URLs to their web dashboards, and URLs to the associated GitHub PRs
+- `work remote log [-f]` to see what Claude's up to
+- `work remote test $instance-slug` to open the  URL to the devserver running on that instance in my browser
 
 Example `work remote status` output:
 ```
