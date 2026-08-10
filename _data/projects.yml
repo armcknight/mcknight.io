@@ -13,16 +13,22 @@ devtools:
     description: "A collection of developer tools for Apple platform projects: version bumping (vrsn), build settings tracking (xcbs), secrets injection (psst), changelog management, git tag annotation, dSYM uploading, and app icon tagging."
     website: "https://github.com/armcknight/tools"
     website-name: "GitHub"
+    release-repo: "armcknight/homebrew-tools"
+    release-tag-prefix: "tools-"
 
   - name: "Forgery"
     description: "A tool to wrangle collections of git repositories."
     website: "https://github.com/armcknight/forgery"
     website-name: "GitHub"
+    release-repo: "armcknight/homebrew-tools"
+    release-tag-prefix: "forgery-"
 
   - name: "superlinear"
     description: "A macOS launchd daemon that watches Linear for new issues and starts an autonomous Claude Code agent for each one, in its own git worktree, taking the ticket to an open pull request without a human in the loop."
     website: "https://github.com/armcknight/superlinear"
     website-name: "GitHub"
+    release-repo: "armcknight/homebrew-tools"
+    release-tag-prefix: "superlinear-"
 
   - name: "workflows"
     description: "Reusable GitHub Actions workflows for Apple platform projects: iOS CI with over-the-air staging builds installed from presigned S3 links, and macOS cask releases that archive, sign, notarize, and publish to a Homebrew tap."
@@ -33,6 +39,8 @@ devtools:
     description: "A manager for git worktrees, tmux sessions, and pluggable cloud devboxes. A Swift port of a personal fish function, shipped as the `work` command."
     website: "https://github.com/armcknight/workr"
     website-name: "GitHub"
+    release-repo: "armcknight/homebrew-tools"
+    release-tag-prefix: "work-"
 
   - name: "hammerspoons"
     description: "Personal Hammerspoon Spoons, installable with SpoonInstall: a fuzzy chooser over every iTerm2 window across all Spaces, and a toggle for Xcode's source-control status in the Project Navigator."
@@ -43,6 +51,7 @@ devtools:
     description: "A personal Homebrew tap that hosts the cask formulas and prebuilt binaries for these tools, with a stable and a release-candidate channel for each."
     website: "https://github.com/armcknight/homebrew-tools"
     website-name: "GitHub"
+    release: false
 
   - name: "claude-armcknight"
     description: "A Claude Code plugin marketplace. Its plugin turns a Linear ticket into a merged pull request one slash command at a time: start, review, commit, pr, merge, finish, and cleanup."

@@ -28,6 +28,7 @@ title: "Projects"
             {% endif %}
           </div>
           <h3 class="project-title">{{ project.name }}</h3>
+          {% include project-release.html project=project %}
           <p class="project-description">{{ project.description }}</p>
 
           {% if project.screenshot %}
@@ -60,6 +61,8 @@ title: "Projects"
           <div class="project-header">
             <h3 class="project-title">{{ project.name }}</h3>
           </div>
+
+          {% include project-release.html project=project %}
 
           <p class="project-description">{{ project.description }}</p>
 

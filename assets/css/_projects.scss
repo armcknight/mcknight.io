@@ -68,6 +68,38 @@
   color: var(--text-primary);
 }
 
+.project-release {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2);
+  font-family: var(--font-family-mono);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  margin: var(--space-2) 0 var(--space-3);
+}
+
+// The devtools card wraps its title in .project-header, which already puts
+// space below the name, so pull the release line back up by that much.
+.project-header + .project-release {
+  margin-top: calc(var(--space-2) - var(--space-3));
+}
+
+.project-release a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  border-bottom: 1px dotted var(--border);
+}
+
+.project-release a:hover {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.project-release-separator {
+  color: var(--border);
+}
+
 .project-description {
   color: var(--text-primary);
   line-height: 1.6;

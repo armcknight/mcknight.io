@@ -14,6 +14,12 @@ resume:
 	cp resume/build/pdfs/cv.pdf assets/pdf/andrew-mcknight-cv.pdf
 	cp resume/build/pdfs/ios_resume.pdf assets/pdf/andrew-mcknight-resume-ios.pdf
 
+# Refresh _data/releases.yml with each project's latest release version and date.
+# Needs the gh CLI authenticated, since some source repos are private.
+.PHONY: releases
+releases:
+	rbenv exec ruby scripts/fetch-releases.rb
+
 optimize-images:
 	@new_images=$$(git status --porcelain | awk '{print $$NF}' | grep -iE '\.(jpg|jpeg|png|gif)$$'); \
 	if [ -n "$$new_images" ]; then \

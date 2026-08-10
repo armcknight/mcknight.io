@@ -78,3 +78,9 @@ It's pretty straightforward to drop a link to a containerized devserver instance
 # Voilà
 
 So there you have it. A fully automated pipeline from Linear task to a reviewable draft PR with a test instance I can access right on my mobile device. I can pump out features without ever opening the laptop.
+
+# Nota Bene
+
+You might get the impression that I'm all in on AI. Well, almost. It's a great tool. I just want to state here that all my blog posts are 100% AI-free. I like writing, and I want to keep that activity for myself, in a ["AI was supposed to free us from laundry and dishes so we could make art, but instead it is making our art so we can do laundry and dishes" sorta way](https://x.com/AuthorJMac/status/1773679197631701238).
+
+I do need to circle back to the readmes and project descriptions on my website, because I just pushed a big update blitz to get these all visible for this blog post. I would also like those to remain human-crafted with my personal touches. OK.
