@@ -4,9 +4,9 @@ devtools:
     website: "https://github.com/TwoRingSoft/Pippin"
     website-name: "GitHub"
 
-  - name: "armcknight-swift"
+  - name: "swift-armcknight"
     description: "The spiritual successor to Pippin in a Swift Package Manager world."
-    website: "https://github.com/armcknight/armcknight-swift"
+    website: "https://github.com/armcknight/swift-armcknight"
     website-name: "GitHub"
 
   - name: "tools"
