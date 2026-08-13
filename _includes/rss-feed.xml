@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/">
 	<channel>
-		<atom:link href="http://mcknight.io/feed.xml" rel="self" type="application/rss+xml" />
+		<atom:link href="{{ '/feed.xml' | absolute_url }}" rel="self" type="application/rss+xml" />
 		<title>{{ include.title }}</title>
 		<description>{{ include.description }}</description>
 		<link>{{ include.link }}</link>
@@ -13,13 +13,18 @@
 				<link>{{ post.url | prepend: site.url }}</link>
 				<guid isPermaLink="true">{{ post.url | prepend: site.url }}</guid>
 				{% if post.thumbnail != undefined %}
+				{% assign thumbnail_extension = post.thumbnail | split: '.' | last | downcase %}
+				{% case thumbnail_extension %}
+					{% when 'png' %}{% assign thumbnail_type = 'image/png' %}
+					{% when 'gif' %}{% assign thumbnail_type = 'image/gif' %}
+					{% when 'webp' %}{% assign thumbnail_type = 'image/webp' %}
+					{% when 'svg' %}{% assign thumbnail_type = 'image/svg+xml' %}
+					{% else %}{% assign thumbnail_type = 'image/jpeg' %}
+				{% endcase %}
 				<media:content
-				    xmlns:media="http://mcknight.io"
-				    url="http://mcknight.io/blog/img/{{ post.thumbnail }}"
+				    url="{{ '/blog/img/' | append: post.thumbnail | absolute_url }}"
 				    medium="image"
-				    type="image/jpeg"
-				    width="150"
-				    height="150" />
+				    type="{{ thumbnail_type }}" />
 				{% endif %}
 			</item>
 		{% endfor %}

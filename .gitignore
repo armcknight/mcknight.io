@@ -1,6 +1,11 @@
 *.sass-cache*
 _site
 .jekyll-metadata
+# LaTeX output from `make resume`; the PDFs it produces are copied into
+# assets/pdf/ and committed from there. Left untracked it would read as a dirty
+# tree and block `make deploy`.
+resume/build/
+.jekyll-cache/
 photos/**/*.jpg
 /logs/
 vendor

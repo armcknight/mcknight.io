@@ -149,5 +149,5 @@ Originally each image thumbnail linked directly to the full-size raw image. I wa
 
 This worked great for the first photo gallery I tested with, but once I added the second, a problem surfaced: each album's slideshow was paginating through *all* of the photos in `_photos`, irrespective of album. The final touch was to write a `category` parameter into the front matter of each HTML file in `_photos` that matches the album ID, and then paginate on both the `photos` collection and the `category` matching the target album for the slideshow. (Another nit with `octopress-paginate` is that specifying both `collection` and `category` outputs scary deprecation notices-which seems to grow w.r.t. the product of the amount of collections and categories-but does not break the build: [GitHub issue](https://github.com/octopress/paginate/issues/35). Beware that `octopress-paginate` does not appear to be actively maintained–the last commit was over 13 months ago now, and that GitHub issue is about the same age.) 
 
-[Voilà](http://mcknight.io/photos), et la [sauce](https://github.com/armcknight/mcknight.io/blob/69537f14614e32ccfe3996d0e6a5d4027c016678/Rakefile)!
+[Voilà](https://mcknight.io/photos), et la [sauce](https://github.com/armcknight/mcknight.io/blob/69537f14614e32ccfe3996d0e6a5d4027c016678/Rakefile)!
 

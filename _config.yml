@@ -1,9 +1,12 @@
 title: Andrew McKnight
 description: Lover of programming, art, learning, outdoors, food, culture and travel.
-url: http://mcknight.io
+url: https://mcknight.io
 exclude:
   - Makefile
   - README.md
+  # Written straight into _site by `make deploy`, so a build never copies a
+  # stale stamp over the live one.
+  - DEPLOYED
   - .gitignore
   - Brewfile*
   - Gemfile*

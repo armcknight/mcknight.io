@@ -14,15 +14,19 @@
   <meta property="og:url" content="{{ site.url }}{{ page.url }}">
   <meta property="og:title" content="{% if page.title %}{{ page.title }} - {% endif %}{{ site.title | default: 'Andrew McKnight' }}">
   <meta property="og:description" content="{{ page.abstract | default: site.description | default: '' }}">
-  <meta property="og:image" content="{% if page.thumbnail %}/blog/img/{{ page.thumbnail }}{% else %}/assets/images/me.jpeg{% endif %}">
-  
+  {% if page.thumbnail %}
+  <meta property="og:image" content="{{ '/blog/img/' | append: page.thumbnail | absolute_url }}">
+  {% endif %}
+
   <!-- Twitter -->
-  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:card" content="{% if page.thumbnail %}summary_large_image{% else %}summary{% endif %}">
   <meta property="twitter:url" content="{{ site.url }}{{ page.url }}">
   <meta property="twitter:title" content="{% if page.title %}{{ page.title }} - {% endif %}{{ site.title | default: 'Andrew McKnight' }}">
   <meta property="twitter:description" content="{{ page.abstract | default: site.description | default: '' }}">
-  <meta name="twitter:image" content="{% if page.thumbnail %}/blog/img/{{ page.thumbnail }}{% else %}/assets/images/me.jpeg{% endif %}">
-  
+  {% if page.thumbnail %}
+  <meta name="twitter:image" content="{{ '/blog/img/' | append: page.thumbnail | absolute_url }}">
+  {% endif %}
+
   <!-- Stylesheets -->
   <link rel="stylesheet" href="{{ '/assets/css/modern.css' | relative_url }}">
   
