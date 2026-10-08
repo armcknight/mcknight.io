@@ -12,7 +12,29 @@ title: "Andrew McKnight's Home Page"
 
   <p>I'm currently a Senior Software Engineer at <a href="https://sentry.io">Sentry</a>. I've built iOS SDKs and apps for quite a while, but I enjoy all types of programming. I've researched, published and presented on a variety of topics, including protein folding and algorithms.</p>
 
-  <p>I currently live in Fairbanks, Alaska, getting my fix of skiing, but I've also lived in Montana, Colorado, Boston and my home state of Virginia. I love to travel, I've visited 38 US states and 14 countries across 4 continents.</p>
+  <p>I currently live in Fairbanks, Alaska, getting my fix of skiing, but I've also lived in Montana, Colorado, Boston and my home state of Virginia. {%- comment -%}
+    Counted from travel/_data/travel.yml, the same file the globe is drawn from,
+    so these can never fall behind the map. _plugins/travel_data.rb is what makes
+    that file readable here, since this site excludes the travel directory.
+
+    States are those with `kind: state`, which is why the District of Columbia is
+    not one of them.
+  {%- endcomment -%}
+  {%- assign us_states = 0 -%}
+  {%- assign country_count = 0 -%}
+  {%- for continent in site.data.travel.continents -%}
+    {%- for country in continent.countries -%}
+      {%- assign country_count = country_count | plus: 1 -%}
+      {%- if country.code == 'US' -%}
+        {%- for region in country.regions -%}
+          {%- if region.kind == 'state' -%}
+            {%- assign us_states = us_states | plus: 1 -%}
+          {%- endif -%}
+        {%- endfor -%}
+      {%- endif -%}
+    {%- endfor -%}
+  {%- endfor -%}
+  I love to <a href="https://travel.mcknight.io">travel</a>, I've visited {{ us_states }} US states and {{ country_count }} countries across {{ site.data.travel.continents.size }} continents.</p>
 
   <h2>Recent Posts</h2>
   <div class="blog-posts">

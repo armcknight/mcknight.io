@@ -249,6 +249,22 @@ Two details of the geometry are worth knowing, because both have bitten:
   country's colour. Antarctica's pole-following boundary and a sliver of Malawi
   in the lakes file have each done it.
 
+### The main site counts from the same file
+
+The home page sentence — *"I've visited 38 US states and 14 countries across 4
+continents"* — is counted from `travel/_data/travel.yml` at build time, so it
+cannot fall behind the map.
+
+The main site excludes `travel/`, which also hides that file from Jekyll's own
+data loading, so `_plugins/travel_data.rb` reads it and puts it in
+`site.data.travel` for the main site too. One file, two sites, no copy to drift.
+A US state is a region with `kind: state`, which is why the District of Columbia
+is not counted as one.
+
+One wrinkle: because `travel/` is excluded, `jekyll build --watch` on the main
+site does not notice edits to the travel data. Re-run `make build` after changing
+it.
+
 ### A place is framed by where you went in it
 
 Focusing a country aims at its cities, not at its outline. France's geometry
