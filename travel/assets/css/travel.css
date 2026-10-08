@@ -1,0 +1,354 @@
+/* travel.mcknight.io
+ *
+ * The palette is taken from mcknight.io, so the subdomain looks like the same
+ * person made it. The ocean is the one new colour: the globe needs a water that
+ * is not the page background, or the sphere has no edge.
+ */
+
+:root {
+  --text-primary: #030303;
+  --text-secondary: #123458;
+  --text-muted: #666;
+  --accent: #123458;
+  --accent-light: #2978cc;
+  --border: #D4C9BE;
+  --background: #ffffff;
+  --background-alt: #f2f1ef;
+
+  --ocean: #eef2f6;
+  --land: #e4e0d9;          /* a country not visited */
+  --land-stroke: #b3a897;
+  --country-visited: #9db7d4;
+  --region-visited: #3f6ea8;
+  --city: #c2412d;
+
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-serif: 'Charter', 'Georgia', 'Times New Roman', serif;
+  --font-mono: 'SF Mono', 'Monaco', 'Cascadia Code', 'Roboto Mono', monospace;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--text-primary);
+  font-family: var(--font-serif);
+  line-height: 1.6;
+}
+
+header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 1rem;
+  padding: 1.25rem 1.5rem 0.75rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+header h1 {
+  font-family: var(--font-sans);
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+header a {
+  color: var(--accent);
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  text-decoration: none;
+  border-bottom: 1px dotted var(--border);
+}
+
+header a:hover { border-bottom-color: var(--accent); }
+
+.tally {
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  margin-left: auto;
+}
+
+main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 1.5rem 2rem;
+}
+
+/* Globe on the left, the same places as a list on the right. The list becomes
+ * a block under the globe when there is not room for two columns. */
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 17rem;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+#outline {
+  max-height: 78vh;
+  overflow-y: auto;
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  border-left: 1px solid var(--border);
+  padding-left: 1rem;
+}
+
+/* Each level that has children is a <details>. The marker is replaced by a
+ * triangle that turns, and the row is laid out as a flex line so the name sits
+ * beside it rather than wrapping under it. */
+#outline summary {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+  cursor: pointer;
+  list-style: none;
+}
+
+#outline summary::-webkit-details-marker { display: none; }
+
+/* Drawn with borders rather than set as a character: the triangle glyphs are
+ * missing from some fonts, and fell back to a mark too small to read. */
+#outline summary::before {
+  content: "";
+  flex: none;
+  width: 0;
+  height: 0;
+  margin-right: 0.3rem;
+  border-left: 5px solid var(--text-muted);
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  transition: transform 0.12s ease;
+}
+
+#outline details[open] > summary::before { transform: rotate(90deg); }
+
+/* Each level steps in, so depth is visible without reading the names. The
+ * cities have no triangle of their own, so they are stepped in to line up
+ * under the names above them rather than under the triangles. */
+#outline .level .level { padding-left: 0.7rem; }
+#outline ul.cities { list-style: none; margin: 0; padding-left: 1.55rem; }
+#outline .nothing-yet {
+  color: var(--text-muted);
+  font-style: italic;
+  margin: 0 0 0 1.55rem;
+  font-size: 0.75rem;
+}
+
+#outline .continent-entry {
+  font-size: 0.6875rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+#outline .level.continent { margin-bottom: 0.6rem; }
+
+.entry {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: 0;
+  border-radius: 4px;
+  padding: 0.12rem 0.3rem;
+  font: inherit;
+  color: var(--text-primary);
+  cursor: pointer;
+  line-height: 1.45;
+}
+
+.entry:hover { background: var(--background-alt); }
+.entry:focus-visible { outline: 2px solid var(--accent-light); outline-offset: 1px; }
+
+.country-entry { font-weight: 600; }
+.region-entry { color: var(--text-secondary); }
+.city-entry { color: var(--text-muted); }
+.not-located { display: block; color: #a99; font-style: italic; cursor: default; }
+
+.entry.focused {
+  background: var(--region-visited);
+  color: #fff;
+}
+
+#clear-focus {
+  font: inherit;
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 0.1rem 0.5rem;
+  margin-left: 0.4rem;
+  cursor: pointer;
+  color: var(--text-secondary);
+}
+
+#clear-focus:hover { border-color: var(--accent); color: var(--accent); }
+
+/* Focus mode. Everything that is not the chosen place fades back, so the eye
+ * goes to it without the rest of the globe disappearing. */
+#globe.focus-active .country,
+#globe.focus-active .region { opacity: 0.35; }
+#globe.focus-active .city { opacity: 0.4; }
+#globe.focus-active .city-label { opacity: 0.35; }
+#globe.focus-active .focused { opacity: 1; }
+#globe .region.focused { stroke: #0f2740; stroke-width: 1.6; }
+#globe .country.focused { stroke: #4a6b8a; stroke-width: 1.4; }
+
+/* The globe sizes itself to the viewport so the whole sphere is always on
+ * screen, with room left for the header, legend and footer. */
+#globe-figure {
+  position: relative;
+  margin: 0;
+  touch-action: none;   /* dragging rotates the globe; it must not scroll */
+}
+
+/* The script sets width and height in pixels so the whole sphere fits the
+ * viewport. CSS must not stretch it past that, or the globe overflows and
+ * pushes the legend off the screen — only shrink it on a narrow phone. */
+#globe {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+  height: auto;
+  cursor: grab;
+}
+
+#globe.dragging { cursor: grabbing; }
+
+.sphere { fill: var(--ocean); }
+.graticule {
+  fill: none;
+  stroke: #d8dee6;
+  stroke-width: 0.4;
+}
+
+.country {
+  fill: var(--land);
+  stroke: var(--land-stroke);
+  stroke-width: 0.7;
+}
+
+.country.visited { fill: var(--country-visited); }
+
+.region {
+  fill: var(--region-visited);
+  stroke: #21405f;
+  stroke-width: 0.9;
+}
+
+.city {
+  fill: var(--city);
+  stroke: #fff;
+  stroke-width: 0.7;
+}
+
+.city:hover, .country.visited:hover, .region:hover { cursor: pointer; }
+.country.visited:hover, .region:hover { filter: brightness(1.12); }
+.city:hover { stroke-width: 1.4; }
+
+/* The outline sits above everything, so the sphere keeps a crisp edge no matter
+ * what is drawn under it. */
+.globe-outline {
+  fill: none;
+  stroke: #b9c4d0;
+  stroke-width: 1;
+  pointer-events: none;
+}
+
+/* A label beside each dot. The white stroke under the text is what keeps it
+ * readable over a dark region fill as well as over the pale ocean, and
+ * paint-order puts that stroke behind the letters instead of through them. */
+.city-label {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  fill: #1c1c1c;
+  stroke: #fff;
+  stroke-width: 2.6px;
+  paint-order: stroke fill;
+  stroke-linejoin: round;
+  pointer-events: none;
+  user-select: none;
+}
+
+#tooltip {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.12s ease;
+  background: rgba(255, 255, 255, 0.97);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.4rem 0.6rem;
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  line-height: 1.35;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+  max-width: 16rem;
+}
+
+#tooltip.visible { opacity: 1; }
+#tooltip .where { color: var(--text-muted); font-size: 0.75rem; }
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  align-items: center;
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  padding: 0.75rem 0 0;
+}
+
+.legend span { display: inline-flex; align-items: center; gap: 0.4rem; }
+.legend i {
+  display: inline-block;
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: 3px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+}
+.legend i.dot { width: 0.6rem; height: 0.6rem; border-radius: 50%; }
+.legend i.country { background: var(--country-visited); }
+.legend i.region { background: var(--region-visited); }
+.legend i.city { background: var(--city); }
+.legend i.unvisited { background: var(--land); }
+
+.hint {
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  margin: 0.25rem 0 0;
+}
+
+footer {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  border-top: 1px solid var(--border);
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+footer a { color: var(--text-secondary); }
+
+@media (max-width: 860px) {
+  .layout { grid-template-columns: 1fr; }
+  #outline {
+    max-height: none;
+    border-left: 0;
+    border-top: 1px solid var(--border);
+    padding-left: 0;
+    padding-top: 1rem;
+  }
+}
+
+@media (max-width: 640px) {
+  header { padding: 1rem 1rem 0.5rem; }
+  main { padding: 0 1rem 1.5rem; }
+  .tally { margin-left: 0; width: 100%; }
+}

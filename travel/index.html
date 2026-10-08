@@ -1,0 +1,191 @@
+---
+layout: null
+title: Travel
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Travel — Andrew McKnight</title>
+  <meta name="description" content="Every country, state, province and city I have been to, on an interactive globe.">
+  <meta name="author" content="Andrew McKnight">
+
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="{{ site.url }}/">
+  <meta property="og:title" content="Travel — Andrew McKnight">
+  <meta property="og:description" content="Every country, state, province and city I have been to, on an interactive globe.">
+  <meta property="twitter:card" content="summary">
+
+  <link rel="stylesheet" href="/assets/css/travel.css">
+</head>
+<body>
+
+{%- comment -%}
+  The counts are derived here rather than written down, so they can never
+  disagree with the data.
+{%- endcomment -%}
+{%- assign country_count = 0 -%}
+{%- assign region_count = 0 -%}
+{%- assign city_count = 0 -%}
+{%- for continent in site.data.travel.continents -%}
+  {%- for country in continent.countries -%}
+    {%- assign country_count = country_count | plus: 1 -%}
+    {%- for region in country.regions -%}
+      {%- assign region_count = region_count | plus: 1 -%}
+      {%- for city in region.cities -%}
+        {%- if city.name and city.name != '' -%}
+          {%- assign city_count = city_count | plus: 1 -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endfor -%}
+  {%- endfor -%}
+{%- endfor -%}
+
+<header>
+  <h1>Travel</h1>
+  <a href="https://mcknight.io">← mcknight.io</a>
+  <p class="tally">
+    {{ site.data.travel.continents.size }} continents ·
+    {{ country_count }} countries ·
+    {{ region_count }} states &amp; regions ·
+    {{ city_count }} cities
+  </p>
+</header>
+
+<main>
+ <div class="layout">
+  <div>
+  <figure id="globe-figure">
+    <svg id="globe" role="img" aria-label="A globe showing the countries, regions and cities I have visited."></svg>
+    <div id="tooltip" role="status" aria-live="polite"></div>
+  </figure>
+
+  <div class="legend">
+    <span><i class="country"></i> country visited</span>
+    <span><i class="region"></i> state, province or region</span>
+    <span><i class="dot city"></i> city or point of interest</span>
+    <span><i class="unvisited"></i> not yet</span>
+  </div>
+  <p class="hint">
+    Drag to turn the globe. Scroll to move closer. Click a country, a region or a
+    city — here or in the list — to look closely at it.
+    <button type="button" id="clear-focus" hidden>Show the whole globe</button>
+  </p>
+  </div>
+
+  {%- comment -%}
+    The same places as a list, written by the server rather than by the script.
+    It is the whole hierarchy in words, it works with no JavaScript at all, and
+    it gives a keyboard a way to reach every place that the globe shows.
+
+    Each level that has children is a <details>, so it collapses, and that
+    works with no script too. The name inside each <summary> is a button, so
+    clicking the name chooses the place while clicking the rest of the row
+    opens or shuts it. Regions start shut, because the cities under them are
+    most of the list.
+
+    data-index on a city matches its position in the city-data array below,
+    because both are written by the same loops in the same order.
+  {%- endcomment -%}
+  <nav id="outline" aria-label="Everywhere I have been">
+    {%- assign city_index = 0 -%}
+    {%- for continent in site.data.travel.continents -%}
+    {%- capture continent_countries -%}
+      {%- for country in continent.countries -%}{{ country.code }}{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%}
+    {%- endcapture -%}
+    <details class="level continent" open>
+      <summary>
+        <button type="button" class="entry continent-entry" data-kind="continent"
+                data-name="{{ continent.name }}" data-countries="{{ continent_countries }}">
+          {{ continent.name }}
+        </button>
+      </summary>
+      {%- for country in continent.countries -%}
+      <details class="level country" open>
+        <summary>
+          <button type="button" class="entry country-entry" data-kind="country" data-code="{{ country.code }}">
+            {{ country.name }}
+          </button>
+        </summary>
+        {%- if country.regions.size > 0 -%}
+          {%- for region in country.regions -%}
+          <details class="level region">
+            <summary>
+              <button type="button" class="entry region-entry" data-kind="region" data-code="{{ region.code }}">
+                {{ region.name }}
+              </button>
+            </summary>
+            <ul class="cities">
+              {%- for city in region.cities -%}
+                {%- if city.name and city.name != '' -%}
+              <li>
+                {%- comment -%}
+                  The index must match the position in the city-data array, and
+                  that array holds only cities that have coordinates. So the
+                  counter advances for those and no others, and a city still
+                  waiting to be geocoded is listed but not clickable.
+                {%- endcomment -%}
+                {%- if city.lat and city.lon -%}
+                <button type="button" class="entry city-entry" data-kind="city" data-index="{{ city_index }}">
+                  {{ city.name }}
+                </button>
+                {%- assign city_index = city_index | plus: 1 -%}
+                {%- else -%}
+                <span class="entry city-entry not-located" title="No coordinates yet — run make travel-geocode">
+                  {{ city.name }}
+                </span>
+                {%- endif -%}
+              </li>
+                {%- endif -%}
+              {%- endfor -%}
+            </ul>
+          </details>
+          {%- endfor -%}
+        {%- else -%}
+        <p class="nothing-yet">no city recorded yet</p>
+        {%- endif -%}
+      </details>
+      {%- endfor -%}
+    </details>
+    {%- endfor -%}
+  </nav>
+ </div>
+</main>
+
+{%- comment -%}
+  The dots come straight from _data/travel.yml, so adding a city to the data
+  adds it to the globe. A flag, rather than forloop.last, puts the commas in:
+  the loops are nested four deep, and only the very last city of the very last
+  region must have none.
+{%- endcomment -%}
+<script id="city-data" type="application/json">
+[
+{%- assign first = true -%}
+{%- for continent in site.data.travel.continents -%}
+  {%- for country in continent.countries -%}
+    {%- for region in country.regions -%}
+      {%- for city in region.cities -%}
+        {%- if city.lat and city.lon -%}
+          {%- if first %}{% assign first = false %}{% else %},{% endif %}
+{"name":{{ city.name | jsonify }},"lat":{{ city.lat }},"lon":{{ city.lon }},"region":{{ region.name | jsonify }},"regionCode":{{ region.code | jsonify }},"country":{{ country.name | jsonify }},"countryCode":{{ country.code | jsonify }},"continent":{{ continent.name | jsonify }}}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endfor -%}
+  {%- endfor -%}
+{%- endfor -%}
+]
+</script>
+
+<footer>
+  <p>
+    Boundaries from <a href="https://www.naturalearthdata.com">Natural Earth</a>, which is public domain.
+    City coordinates from <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> via Nominatim, ODbL.
+    Made with Natural Earth.
+  </p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+<script src="/assets/js/globe.js"></script>
+</body>
+</html>

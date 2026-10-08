@@ -72,3 +72,9 @@ flycheck_*.el
 *.swp
 /build.log
 /serve.log
+
+# Build output of the travel.mcknight.io site.
+travel/_site
+
+# Natural Earth downloads, re-fetched on demand by travel/scripts/build-geo.rb.
+travel/.geo-cache

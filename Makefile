@@ -1,5 +1,64 @@
 .DEFAULT_GOAL := help
 
+# SITES
+#
+# Most actions here apply to one of two sites, so the site is named as a word of
+# its own: `make build home`, `make serve travel`, `make deploy home travel`.
+#
+# make has no arguments, only goals, so `home` and `travel` are real targets
+# that do nothing on their own. Each action reads the goal list to see which
+# sites were named. Naming both runs the action twice, once for each.
+#
+# Naming none means `home`, which is what `make build` always did.
+SITES := home travel
+SELECTED := $(filter $(SITES),$(MAKECMDGOALS))
+ifeq ($(SELECTED),)
+SELECTED := home
+endif
+
+.PHONY: $(SITES)
+$(SITES):
+	@if [ "$(words $(MAKECMDGOALS))" = "1" ]; then \
+		echo "\"$@\" names a site, not an action. Pair it with one:"; \
+		echo "    make build $@        make serve $@        make deploy $@"; \
+	fi
+
+# What each site is made of. A recipe reads these as $(src_$(s)) for the site it
+# is working on, which is why the suffixes must match the names in SITES.
+src_home      := .
+src_travel    := travel
+dest_home     := _site
+dest_travel   := travel/_site
+port_home     := 4000
+port_travel   := 4500
+bucket_home   := mcknight.io
+bucket_travel := travel.mcknight.io
+stamp_home    := DEPLOYED
+stamp_travel  := travel/DEPLOYED
+log_home      := jekyll_build
+log_travel    := travel_build
+label_home    := mcknight.io
+label_travel  := travel.mcknight.io
+
+# CloudFront distributions. travel has none yet; the cache targets say so
+# plainly rather than failing inside the aws command.
+dist_home     := E3AJVW95W5JFMD
+dist_travel   :=
+
+# Every Ruby command goes through this, never through a bare `rbenv exec`.
+#
+# tmuxinator's Homebrew wrapper starts with GEM_HOME set to its own Cellar
+# directory. When tmuxinator starts the tmux server, that variable lands in the
+# server's global environment, and every pane opened afterwards inherits it. So
+# bundler looks for this site's gems inside tmuxinator, finds none, and the
+# build dies — and a `brew upgrade tmuxinator` moves the path, which breaks it
+# again even after a re-install.
+#
+# Removing the variable for the length of one command fixes it wherever make is
+# run. To be rid of it in the shell as well: `tmux set-environment -gu GEM_HOME`
+# now, and `set -e GEM_HOME` in config.fish for later shells.
+RUBY := env -u GEM_HOME -u GEM_PATH rbenv exec
+
 # Lists every target with a one-line summary. It is the default goal, so a bare
 # `make` explains itself instead of doing something.
 #
@@ -14,6 +73,10 @@ help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(firstword $(MAKEFILE_LIST)) \
 		| sort \
 		| awk 'BEGIN {FS = ":.*?## "} {printf "  \033[36m%-32s\033[0m %s\n", $$1, $$2}'
+	@echo
+	@echo "  Targets marked <site> take \033[36mhome\033[0m, \033[36mtravel\033[0m, or both:"
+	@echo "    make build travel       make serve home travel      make deploy home"
+	@echo "  Naming no site means home."
 	@echo
 	@echo "  Every target above has a longer explainer. To read one:"
 	@echo "    make help-deploy        make help-bust-cache        make help-<target>"
@@ -54,7 +117,7 @@ help-%:
 #
 # Installs Homebrew if it is missing, then everything in the Brewfile (awscli,
 # exiftool, imageoptim, the TeX bits the resume needs), then the pinned Ruby
-# through rbenv and the gems through bundler.
+# through rbenv and the gems through bundler. Both sites share these gems.
 #
 # Run this before anything else, and again after the Gemfile or Brewfile changes.
 .PHONY: init
@@ -62,13 +125,61 @@ init: ## Install Homebrew, the Brewfile, the pinned Ruby, and the gems
 	which brew || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 	brew bundle ||:
 	rbenv install --skip-existing
-	rbenv exec gem update bundler
-	rbenv exec bundle update
+	$(RUBY) gem update bundler
+	$(RUBY) bundle update
 
 # Internal. `build` and `deploy` tee their output into logs/, which git ignores,
 # and neither would survive the directory being absent.
 _logs-dir:
 	mkdir -p logs
+
+# Builds a site into its own output directory, with the full Jekyll output kept
+# in logs/ rather than scrolling past.
+#
+#   make build            the main site, into _site/
+#   make build travel     the travel site, into travel/_site/
+#   make build home travel   both
+#
+# `--source travel` makes Jekyll read travel/_config.yml, so the subdomain keeps
+# its own title, url and excludes. The parent config excludes travel/, so the
+# two builds never reach into each other.
+#
+# optimize-images runs once first, whichever sites are named, since it works
+# from what git reports rather than from a directory.
+#
+# This only builds. Nothing reaches the internet until `deploy`, and `deploy`
+# uploads whatever is in the output directory without building it.
+.PHONY: build
+build: _logs-dir optimize-images ## <site> Build a site into its output directory
+	$(foreach s,$(SELECTED),echo "building $(label_$(s))"; set -o pipefail; $(RUBY) bundle exec jekyll build --source $(src_$(s)) --destination $(dest_$(s)) 2>&1 | tee logs/$(log_$(s)).log;)
+
+# Serves a built site and opens it.
+#
+#   make serve                 mcknight.io  at localhost:4000
+#   make serve travel          travel       at localhost:4500
+#   make serve home travel     both at once
+#
+# They are separate servers because they are separate sites: _site/ excludes
+# travel/ exactly as the real mcknight.io does, so one server cannot answer for
+# both. Two ports stand in for two hostnames.
+#
+# Browsers resolve any *.localhost name to 127.0.0.1 with no /etc/hosts entry,
+# so http://travel.localhost:4500 works too and reads more like production.
+#
+# It serves the build, not the sources: there is no watch and no live reload, so
+# each change needs another build.
+.PHONY: serve
+serve: ## <site> Serve a built site and open it
+	$(foreach s,$(SELECTED),(cd $(dest_$(s)) && nohup python3 -m http.server $(port_$(s)) --bind localhost >/dev/null 2>&1 &); echo "serving $(label_$(s)) at http://localhost:$(port_$(s))"; open http://localhost:$(port_$(s));)
+
+# Stops a served site, by the port it is on rather than by killing every Python
+# process on the machine, which is what this used to do.
+#
+#   make endserve              stops the main site
+#   make endserve home travel  stops both
+.PHONY: endserve
+endserve: ## <site> Stop a served site
+	@$(foreach s,$(SELECTED),pids=$$(lsof -ti :$(port_$(s)) 2>/dev/null); if [ -n "$$pids" ]; then echo "$$pids" | xargs kill && echo "stopped $(label_$(s)) on port $(port_$(s))"; else echo "nothing was serving $(label_$(s)) on port $(port_$(s))"; fi;)
 
 # Rebuilds the LaTeX resume and CV, then copies the two PDFs the site links to
 # into assets/pdf/.
@@ -86,7 +197,7 @@ resume: ## Rebuild the resume and CV PDFs from LaTeX and copy them into assets/p
 	cp resume/build/pdfs/ios_resume.pdf assets/pdf/andrew-mcknight-resume-ios.pdf
 
 # Refreshes _data/releases.yml with the latest release version and date for every
-# app and devtool on the projects page.
+# app and devtool on the projects page of the main site.
 #
 # Deliberately not part of `build`: some source repos are private, so the lookup
 # needs an authenticated gh, and the result is committed. That keeps builds and
@@ -101,7 +212,7 @@ resume: ## Rebuild the resume and CV PDFs from LaTeX and copy them into assets/p
 # The versions on the site are only as fresh as the last run.
 .PHONY: releases
 releases: ## Refresh _data/releases.yml with each project's latest release
-	rbenv exec ruby scripts/fetch-releases.rb
+	$(RUBY) ruby scripts/fetch-releases.rb
 
 # Strips EXIF metadata and losslessly compresses images, in place.
 #
@@ -121,101 +232,92 @@ optimize-images: ## Strip EXIF from and compress any images git sees as changed
 		imageoptim $$new_images; \
 	fi
 
-# Builds the site into _site/, with the full Jekyll output kept in
-# logs/jekyll_build.log rather than scrolling past.
+# MARK: - travel.mcknight.io data
 #
-# Runs optimize-images first, so a new image is stripped and compressed before it
-# is ever copied into the output.
-#
-# This only builds. Nothing reaches the internet until `deploy`, and `deploy`
-# uploads whatever is in _site/ without building it — so build, then deploy.
-.PHONY: build
-build: _logs-dir optimize-images ## Build the site into _site/
-	rbenv exec bundle exec jekyll build --destination _site 2>&1 | tee logs/jekyll_build.log
+# These two produce the committed files the globe reads. They belong to the
+# travel site's content rather than to a site operation, so they are not
+# <site> targets.
 
-# Refuses to deploy from a dirty tree, so the hash in DEPLOYED always describes
-# exactly what is live. DEPLOYED itself is excluded from the check: every deploy
-# rewrites it, so counting it would block the next deploy over the artifact this
-# one just produced.
+# Fills in `lat:` and `lon:` for any city in travel/_data/travel.yml that lacks
+# them, using the Nominatim geocoder of OpenStreetMap.
+#
+# Only new cities cost anything: a city that already has coordinates is skipped,
+# so a re-run with nothing to do finishes in well under a second. A first run
+# over every city takes about a second per city, because Nominatim's usage
+# policy permits one request per second and the script obeys it.
+#
+# A city with no name yet is skipped and reported, rather than geocoded as
+# ", Region, Country", which would answer with the middle of the region.
+#
+# The answers are committed, so neither the build nor a visitor's browser ever
+# contacts the geocoder. A city listed without coordinates appears in the page's
+# outline but has no dot, until this is run.
+.PHONY: travel-geocode
+travel-geocode: ## Add missing city coordinates to travel/_data/travel.yml
+	$(RUBY) ruby travel/scripts/geocode-travel.rb
+
+# Rebuilds the two map files the globe draws, from Natural Earth.
+#
+# Run it after adding a country or a region to travel.yml. Adding only a city
+# needs travel-geocode instead, unless that city is in a region not drawn yet.
+#
+# The sources are cached in travel/.geo-cache/, which git ignores. The first run
+# downloads about 42 MB; later runs read the cache. Only the filtered result is
+# committed, which is about a megabyte, or 350 KB as a visitor receives it.
+.PHONY: travel-geo
+travel-geo: ## Rebuild the globe geometry from Natural Earth
+	$(RUBY) ruby travel/scripts/build-geo.rb
+
+# MARK: - Publishing
+
+# Refuses to deploy from a dirty tree, so the hash in a DEPLOYED stamp always
+# describes exactly what is live. The stamps themselves are excluded: every
+# deploy rewrites one, so counting them would block the next deploy over the
+# artifact the last one produced.
 .PHONY: check-clean
 check-clean: ## Fail unless the working tree is clean (a deploy prerequisite)
-	@changes=$$(git status --porcelain -- . ':!DEPLOYED'); \
+	@changes=$$(git status --porcelain -- . ':!DEPLOYED' ':!travel/DEPLOYED'); \
 	if [ -n "$$changes" ]; then \
 		echo "Refusing to deploy: the working tree has uncommitted changes."; \
 		echo "$$changes"; \
 		echo; \
-		echo "Commit or stash them, rebuild, then deploy — otherwise DEPLOYED would"; \
-		echo "record a commit that does not match what was uploaded."; \
+		echo "Commit or stash them, rebuild, then deploy — otherwise a DEPLOYED stamp"; \
+		echo "would record a commit that does not match what was uploaded."; \
 		exit 1; \
 	fi
 
-# Records what is live. The stamp goes into the synced output as well as the
-# repo, so https://mcknight.io/DEPLOYED answers "which commit is serving right
-# now?" without a checkout, and the tracked file answers it from the repo.
+# Uploads a built site and records what is live.
 #
-# Line 1 is the commit hash, line 2 the UTC deploy time — `head -1 DEPLOYED` is
-# the hash on its own.
+#   make deploy              mcknight.io, from _site/
+#   make deploy travel       travel.mcknight.io, from travel/_site/
+#   make deploy home travel  both
 #
-# The repo copy is written only after the sync succeeds, so a failed deploy never
-# claims to be live. `deploy` syncs whatever `build` last produced; it does not
-# build for you.
+# Each site has its own stamp: DEPLOYED for the main site, travel/DEPLOYED for
+# the subdomain. The stamp goes into the upload as well as the repo, so
+# https://mcknight.io/DEPLOYED answers "which commit is serving right now?"
+# without a checkout. Line 1 is the commit hash and line 2 the UTC deploy time,
+# so `head -1` is the hash on its own.
 #
-# The stamp can never be part of the commit it names, so it is committed on its
-# own straight afterwards — leaving the tree clean, and leaving DEPLOYED naming
-# the commit just before the one that records it. Since the tree was verified
-# clean before the sync, DEPLOYED must be the only thing that changed; anything
-# else means something moved underneath the deploy, so the stamp is left
-# uncommitted for a human to look at rather than swept into a commit.
+# The repo copy is written only after the upload succeeds, so a failed deploy
+# never claims to be live, and it is committed straight afterwards, which leaves
+# the tree clean for the next deploy. A stamp can never be inside the commit it
+# names, so it names the commit just before the one that records it.
 #
-# The commit is local. Push it yourself.
+# `deploy` uploads whatever `build` last produced; it does not build for you.
+# The commit it makes is local — push it yourself.
 #
 # CloudFront still holds the old objects afterwards — follow with `bust-cache`.
+#
+# The sequence lives in scripts/deploy-site.sh, because it is a sequence with
+# conditions in it and would be unreadable folded onto one line per site.
 .PHONY: deploy
-deploy: _logs-dir check-clean ## Sync _site/ to S3, then stamp and commit DEPLOYED
-	@mkdir -p _site
-	@sha=$$(git rev-parse HEAD); \
-	printf '%s\n%s\n' "$$sha" "$$(date -u +%Y-%m-%dT%H:%M:%SZ)" > _site/DEPLOYED; \
-	echo "deploying $$sha"
-	set -o pipefail; aws s3 sync _site/ s3://mcknight.io/ --profile armcknight --delete | tee logs/web_deploy.log
-	@cp _site/DEPLOYED DEPLOYED
-	@echo "stamped DEPLOYED: $$(head -1 DEPLOYED)"
-	@changes=$$(git status --porcelain); \
-	unexpected=$$(printf '%s\n' "$$changes" | grep -v '^..[ ]DEPLOYED$$' | grep -v '^$$' || true); \
-	if [ -n "$$unexpected" ]; then \
-		echo; \
-		echo "Deploy finished, but something other than DEPLOYED changed, so the"; \
-		echo "stamp was NOT committed. Look at these, then commit it yourself:"; \
-		printf '%s\n' "$$unexpected"; \
-		exit 1; \
-	fi; \
-	if [ -z "$$changes" ]; then \
-		echo "DEPLOYED unchanged; nothing to commit."; \
-	else \
-		git add -- DEPLOYED && \
-		git commit --quiet --only -m "record $$(head -1 DEPLOYED | cut -c1-12) as deployed" -- DEPLOYED && \
-		echo "committed DEPLOYED as $$(git rev-parse --short HEAD)"; \
-	fi
-
-# Serves the built site at http://localhost:4000 and opens it.
-#
-# It serves _site/, not the sources, so there is no watching and no live reload:
-# every change needs another `build` before it shows up. The server is
-# backgrounded and outlives this command — `endserve` stops it.
-.PHONY: serve
-serve: ## Serve _site/ at localhost:4000 in the background and open it
-	pushd _site && python3 -m http.server 4000 --bind localhost &
-	open http://localhost:4000
-
-# Stops the backgrounded `serve`.
-#
-# Blunt instrument: it kills every Python process you own, not only this server.
-# If something else of yours is running under Python, stop the server by hand
-# instead — `lsof -ti :4000 | xargs kill`.
-.PHONY: endserve
-endserve: ## Stop the backgrounded serve (kills all your Python processes)
-	killall Python
+deploy: _logs-dir check-clean ## <site> Upload a built site, then stamp and commit what is live
+	$(foreach s,$(SELECTED),scripts/deploy-site.sh "$(label_$(s))" "$(dest_$(s))" "$(bucket_$(s))" "$(stamp_$(s))";)
 
 # Invalidate CloudFront, so a fresh deploy is actually what gets served.
+#
+#   make bust-cache PATHS="/ /index.html"
+#   make bust-cache travel PATHS="/*"
 #
 # PATHS is a SPACE-separated list, each entry starting with `/`. That is what
 # `create-invalidation --paths` wants — one argument per path. Commas do not
@@ -234,30 +336,28 @@ endserve: ## Stop the backgrounded serve (kills all your Python processes)
 #
 #   make bust-cache PATHS="/*"
 #
-# One section and its index:
-#
-#   make bust-cache PATHS="/experience/ /experience/index.html"
-#
 # $(PATHS) is deliberately unquoted so the shell splits it into separate
 # arguments. `set -f` turns globbing off first, so a wildcard like `/*` reaches
 # CloudFront instead of expanding against the local filesystem.
 #
-# Invalidation is asynchronous — `check-cache-invalidation-status` says whether it
-# has finished.
+# Invalidation is asynchronous — `check-cache-invalidation-status` says whether
+# it has finished.
 .PHONY: bust-cache
-bust-cache: ## Invalidate CloudFront paths, e.g. PATHS="/ /index.html"
-	@test -n "$(PATHS)" || { echo 'usage: make bust-cache PATHS="/ /index.html"'; exit 1; }
-	set -f; aws --profile armcknight cloudfront create-invalidation --distribution-id E3AJVW95W5JFMD --paths $(PATHS)
+bust-cache: ## <site> Invalidate CloudFront paths, e.g. PATHS="/ /index.html"
+	@test -n "$(PATHS)" || { echo 'usage: make bust-cache [site] PATHS="/ /index.html"'; exit 1; }
+	@$(foreach s,$(SELECTED),test -n "$(dist_$(s))" || { echo "No CloudFront distribution is recorded for $(label_$(s)). Set dist_$(s) in the Makefile once it exists."; exit 1; };)
+	$(foreach s,$(SELECTED),set -f; aws --profile armcknight cloudfront create-invalidation --distribution-id $(dist_$(s)) --paths $(PATHS);)
 
 # Shorthand for the blog index's two cache keys, the pair that goes stale on every
 # new post. Identical to:
 #
 #   make bust-cache PATHS="/blog/ /blog/index.html"
 #
-# It does not touch the post itself, or the tag pages and feeds that also list it.
+# The main site only: the subdomain has no blog. It does not touch the post
+# itself, or the tag pages and feeds that also list it.
 .PHONY: bust-blog-cache
 bust-blog-cache: ## Invalidate the blog index (/blog/ and /blog/index.html)
-	aws --profile armcknight cloudfront create-invalidation --distribution-id E3AJVW95W5JFMD --paths "/blog/" "/blog/index.html"
+	aws --profile armcknight cloudfront create-invalidation --distribution-id $(dist_home) --paths "/blog/" "/blog/index.html"
 
 # Lists recent invalidations newest first, with the status of each: InProgress
 # while CloudFront is still working through the edge locations, Completed once a
@@ -266,5 +366,6 @@ bust-blog-cache: ## Invalidate the blog index (/blog/ and /blog/index.html)
 # A bust that reports Completed but still serves the old page is a browser cache,
 # not this one.
 .PHONY: check-cache-invalidation-status
-check-cache-invalidation-status: ## List recent CloudFront invalidations and their status
-	aws --profile armcknight cloudfront list-invalidations --distribution-id E3AJVW95W5JFMD
+check-cache-invalidation-status: ## <site> List recent CloudFront invalidations and their status
+	@$(foreach s,$(SELECTED),test -n "$(dist_$(s))" || { echo "No CloudFront distribution is recorded for $(label_$(s))."; exit 1; };)
+	$(foreach s,$(SELECTED),echo "== $(label_$(s))"; aws --profile armcknight cloudfront list-invalidations --distribution-id $(dist_$(s));)

@@ -1,0 +1,559 @@
+/* An interactive globe of everywhere I have been.
+ *
+ * Three layers, each saying a different thing:
+ *   - a country I have visited, filled pale
+ *   - a state, province or region I have visited, filled strong on top
+ *   - a city or point of interest, a dot
+ *
+ * The projection is orthographic, which is a real globe: half the Earth is
+ * behind the sphere and must not be drawn. d3.geoPath does that for the shapes,
+ * because clipAngle is set; the dots are not shapes, so they are hidden by hand.
+ *
+ * SVG, not canvas: every country and every dot answers the pointer, and the
+ * browser does that work for free in SVG. The cost is redrawing paths on each
+ * frame of a drag, which a few hundred simplified shapes absorb easily.
+ */
+
+(function () {
+  'use strict';
+
+  var svg = d3.select('#globe');
+  var tooltip = d3.select('#tooltip');
+  var figure = document.getElementById('globe-figure');
+  var cities = JSON.parse(document.getElementById('city-data').textContent);
+
+  // Opening on the Americas, where most of the data is, rather than on the
+  // Atlantic at 0,0 where there is nothing to see.
+  var projection = d3.geoOrthographic().clipAngle(90).precision(0.4).rotate([75, -25]);
+  var path = d3.geoPath(projection);
+  var graticule = d3.geoGraticule10();
+
+  var layers = {
+    sphere: svg.append('path').attr('class', 'sphere'),
+    graticule: svg.append('path').attr('class', 'graticule'),
+    countries: svg.append('g'),
+    regions: svg.append('g'),
+    cities: svg.append('g'),
+    labels: svg.append('g'),
+    outline: svg.append('path').attr('class', 'globe-outline')
+  };
+
+  // The closest the globe will go, as a multiple of the whole-globe scale.
+  //
+  // One number for every way of moving in — the wheel, a pinch, and focus mode
+  // — because two numbers is how scrolling in while focused used to compute a
+  // larger scale and then clamp it back down to a smaller cap, which read as
+  // zooming out. Beyond about this the 10m boundaries have no more detail to
+  // show, so going closer only magnifies the same corners.
+  var MAX_MAGNIFICATION = 60;
+
+  var size = 0;
+  var spinning = true;
+  var frame = null;
+  var outline = document.getElementById('outline');
+  var clearButton = document.getElementById('clear-focus');
+
+  // One place decides how big the globe is: the narrower of the available width
+  // and the height left over under the header, so the whole sphere always fits
+  // without the page scrolling.
+  function measure() {
+    // How far in the globe currently is, as a multiple of its whole-globe
+    // scale. Resizing must keep that, not throw it away: this used to reset
+    // the scale outright, so any resize — including the one a browser fires
+    // while a page settles — silently undid the reader's zoom and any focus.
+    var magnification = size ? projection.scale() / baseScale() : 1;
+
+    var available = Math.min(
+      figure.clientWidth,
+      window.innerHeight - figure.getBoundingClientRect().top - 150
+    );
+    size = Math.max(280, Math.min(available, 760));
+    svg.attr('width', size).attr('height', size).attr('viewBox', '0 0 ' + size + ' ' + size);
+    projection.translate([size / 2, size / 2]).scale(baseScale() * magnification);
+  }
+
+  function visible(city) {
+    var rotation = projection.rotate();
+    return d3.geoDistance([city.lon, city.lat], [-rotation[0], -rotation[1]]) < Math.PI / 2;
+  }
+
+  // Every city carries its name, but only the names that fit are drawn.
+  //
+  // Placement is greedy: the city nearest the middle of the globe is labelled
+  // first, and any label that would cover one already placed is left out. So a
+  // crowded coast shows a few names now and more as the globe is magnified,
+  // rather than a solid block of overlapping text. Whatever is left out still
+  // answers the pointer.
+  //
+  // Widths are estimated from the letter count. Measuring 71 real text boxes on
+  // every frame of a drag costs far more than the estimate costs in accuracy.
+  function placeLabels(radius) {
+    var rotation = projection.rotate();
+    var centre = [-rotation[0], -rotation[1]];
+    var fontSize = Math.max(9.5, Math.min(13, size / 58));
+    var candidates = [];
+
+    layers.labels.selectAll('text').each(function (d) {
+      var point = visible(d) ? projection([d.lon, d.lat]) : null;
+      if (!point) {
+        this.style.display = 'none';
+        return;
+      }
+      candidates.push({
+        node: this,
+        x: point[0] + radius + 3,
+        y: point[1] + (fontSize * 0.35),
+        width: d.name.length * fontSize * 0.55,
+        height: fontSize,
+        distance: d3.geoDistance([d.lon, d.lat], centre)
+      });
+    });
+
+    candidates.sort(function (a, b) { return a.distance - b.distance; });
+
+    var placed = [];
+    candidates.forEach(function (candidate) {
+      var clashes = placed.some(function (other) {
+        return candidate.x < other.x + other.width &&
+               candidate.x + candidate.width > other.x &&
+               candidate.y - candidate.height < other.y &&
+               candidate.y > other.y - other.height;
+      });
+      if (clashes) {
+        candidate.node.style.display = 'none';
+        return;
+      }
+      placed.push(candidate);
+      candidate.node.style.display = null;
+      candidate.node.setAttribute('x', candidate.x);
+      candidate.node.setAttribute('y', candidate.y);
+      candidate.node.setAttribute('font-size', fontSize);
+    });
+  }
+
+  function render() {
+    layers.sphere.attr('d', path({ type: 'Sphere' }));
+    layers.graticule.attr('d', path(graticule));
+    layers.outline.attr('d', path({ type: 'Sphere' }));
+    layers.countries.selectAll('path').attr('d', path);
+    layers.regions.selectAll('path').attr('d', path);
+
+    var radius = Math.max(2.4, size / 230);
+
+    // A dot has no extent, so it is drawn only when its side of the Earth faces
+    // the viewer. Without this the back of the globe shows through.
+    layers.cities.selectAll('circle')
+      .attr('transform', function (d) {
+        var point = projection([d.lon, d.lat]);
+        return point ? 'translate(' + point[0] + ',' + point[1] + ')' : null;
+      })
+      .attr('display', function (d) { return visible(d) ? null : 'none'; })
+      .attr('r', radius);
+
+    placeLabels(radius);
+  }
+
+  function schedule() {
+    if (frame) return;
+    frame = requestAnimationFrame(function () {
+      frame = null;
+      render();
+    });
+  }
+
+  function showTooltip(event, title, where) {
+    var box = figure.getBoundingClientRect();
+    tooltip
+      .html('<strong>' + title + '</strong>' + (where ? '<div class="where">' + where + '</div>' : ''))
+      .style('left', (event.clientX - box.left + 14) + 'px')
+      .style('top', (event.clientY - box.top + 14) + 'px')
+      .classed('visible', true);
+  }
+
+  function hideTooltip() {
+    tooltip.classed('visible', false);
+  }
+
+  function stopSpinning() {
+    spinning = false;
+  }
+
+  // Drag turns the globe. The sensitivity falls as the globe is magnified, so a
+  // pixel of pointer movement always covers about the same distance on screen.
+  function enableDrag() {
+    var start = null;
+    var startRotation = null;
+
+    svg.call(d3.drag()
+      .on('start', function (event) {
+        stopSpinning();
+        svg.classed('dragging', true);
+        start = [event.x, event.y];
+        startRotation = projection.rotate();
+        hideTooltip();
+      })
+      .on('drag', function (event) {
+        var degreesPerPixel = 90 / projection.scale();
+        var lambda = startRotation[0] + (event.x - start[0]) * degreesPerPixel;
+        var phi = startRotation[1] - (event.y - start[1]) * degreesPerPixel;
+        projection.rotate([lambda, Math.max(-90, Math.min(90, phi))]);
+        schedule();
+      })
+      .on('end', function () {
+        svg.classed('dragging', false);
+      }));
+  }
+
+  // The wheel and the trackpad magnify, and so does a pinch.
+  //
+  // The step follows how far the wheel or fingers moved, rather than being a
+  // fixed amount per event: a mouse wheel sends a few large deltas and a
+  // trackpad sends a stream of small ones, and a fixed step makes one of the
+  // two feel wrong. The factor is bounded so a violent flick cannot jump the
+  // whole range at once.
+  //
+  // The globe keeps its centre, so there is nothing to translate.
+  function magnify(factor) {
+    stopSpinning();
+    var limited = Math.max(0.5, Math.min(factor, 2));
+    var next = projection.scale() * limited;
+    projection.scale(Math.max(baseScale(), Math.min(next, baseScale() * MAX_MAGNIFICATION)));
+    schedule();
+  }
+
+  function enableZoom() {
+    // A trackpad pinch arrives as a wheel event with ctrlKey set, so both are
+    // handled here. preventDefault stops the browser zooming the page instead.
+    figure.addEventListener('wheel', function (event) {
+      event.preventDefault();
+      magnify(Math.pow(1.0015, -event.deltaY));
+    }, { passive: false });
+
+    // A pinch on a touchscreen is not a wheel event, so it is measured from
+    // the distance between the two fingers.
+    var pinchStart = null;
+
+    function spread(touches) {
+      var dx = touches[0].clientX - touches[1].clientX;
+      var dy = touches[0].clientY - touches[1].clientY;
+      return Math.sqrt((dx * dx) + (dy * dy));
+    }
+
+    figure.addEventListener('touchstart', function (event) {
+      if (event.touches.length === 2) pinchStart = spread(event.touches);
+    }, { passive: true });
+
+    figure.addEventListener('touchmove', function (event) {
+      if (event.touches.length !== 2 || pinchStart === null) return;
+      event.preventDefault();
+      var now = spread(event.touches);
+      magnify(now / pinchStart);
+      pinchStart = now;
+    }, { passive: false });
+
+    figure.addEventListener('touchend', function (event) {
+      if (event.touches.length < 2) pinchStart = null;
+    }, { passive: true });
+  }
+
+  // A slow turn on arrival shows that the globe can be turned at all. It stops
+  // at the first touch, and never starts for a visitor who asked for less
+  // motion.
+  function spin() {
+    var still = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (still.matches) {
+      spinning = false;
+      return;
+    }
+    var last = performance.now();
+    d3.timer(function () {
+      var now = performance.now();
+      var elapsed = now - last;
+      last = now;
+      if (!spinning) return true;   // returning true stops the timer
+      var rotation = projection.rotate();
+      projection.rotate([rotation[0] + elapsed * 0.006, rotation[1]]);
+      render();
+    });
+  }
+
+  // FOCUS MODE
+  //
+  // Choosing a place, on the globe or in the list, turns the globe to it and
+  // moves in far enough to see it, fades everything else back, and marks the
+  // matching row in the list. The two views therefore always agree about what
+  // is being looked at, whichever one was clicked.
+
+  var focused = null;   // { kind: 'country'|'region'|'city', key: string }
+
+  function baseScale() {
+    return (size / 2) - 2;
+  }
+
+  // In an orthographic projection a point an angle away from the centre lands
+  // at scale * sin(angle) pixels from the middle. So to fit something of a
+  // known angular size, divide the pixels available by the sine of it.
+  function scaleToFit(radians) {
+    var fitted = ((size / 2) * 0.72) / Math.max(Math.sin(radians), 0.015);
+    // A province is a small thing on a planet. Capping at a few times the
+    // whole-globe scale would leave it a speck in the middle.
+    return Math.max(baseScale(), Math.min(fitted, baseScale() * MAX_MAGNIFICATION));
+  }
+
+  // How wide the thing is, as an angle from its own middle. The corners of its
+  // bounding box are enough: this only has to choose a sensible magnification,
+  // not a tight one.
+  function angularRadius(feature, centre) {
+    var bounds = d3.geoBounds(feature);
+    var corners = [
+      [bounds[0][0], bounds[0][1]], [bounds[1][0], bounds[1][1]],
+      [bounds[0][0], bounds[1][1]], [bounds[1][0], bounds[0][1]]
+    ];
+    return d3.max(corners, function (corner) { return d3.geoDistance(corner, centre); }) || 0.02;
+  }
+
+  function moveTo(centre, scale) {
+    stopSpinning();
+    d3.transition()
+      .duration(850)
+      .ease(d3.easeCubicInOut)
+      .tween('focus', function () {
+        var turn = d3.interpolate(projection.rotate(), [-centre[0], -centre[1], 0]);
+        var magnify = d3.interpolate(projection.scale(), scale);
+        return function (t) {
+          projection.rotate(turn(t)).scale(magnify(t));
+          render();
+        };
+      });
+  }
+
+  function markOutline() {
+    if (!outline) return;
+    outline.querySelectorAll('.entry.focused').forEach(function (node) {
+      node.classList.remove('focused');
+    });
+    if (!focused) return;
+
+    var selector;
+    if (focused.kind === 'city') {
+      selector = '.city-entry[data-index="' + focused.key + '"]';
+    } else if (focused.kind === 'continent') {
+      selector = '.continent-entry[data-name="' + focused.label + '"]';
+    } else {
+      selector = '.' + focused.kind + '-entry[data-code="' + focused.key + '"]';
+    }
+
+    var row = outline.querySelector(selector);
+    if (!row) return;
+
+    // A row inside a shut level cannot be scrolled to, so open everything
+    // above it first.
+    var level = row.closest('details');
+    while (level) {
+      level.open = true;
+      level = level.parentElement ? level.parentElement.closest('details') : null;
+    }
+
+    row.classList.add('focused');
+    row.scrollIntoView({ block: 'nearest' });
+  }
+
+  function markGlobe() {
+    svg.classed('focus-active', focused !== null);
+    layers.countries.selectAll('path').classed('focused', function (d) {
+      if (focused === null) return false;
+      if (focused.kind === 'country') return d.properties.iso === focused.key;
+      if (focused.kind === 'continent') return String(focused.key).split(',').indexOf(d.properties.iso) !== -1;
+      return false;
+    });
+    layers.regions.selectAll('path').classed('focused', function (d) {
+      return focused !== null && focused.kind === 'region' && d.properties.code === focused.key;
+    });
+    // A city counts as focused when it is the chosen city, or when it belongs to
+    // the chosen region or country. Fading a region's own cities along with
+    // everything else would hide the very thing being looked at.
+    function cityIsFocused(d, i) {
+      if (focused === null) return false;
+      if (focused.kind === 'city') return String(i) === String(focused.key);
+      if (focused.kind === 'region') return d.regionCode === focused.key;
+      if (focused.kind === 'continent') return String(focused.key).split(',').indexOf(d.countryCode) !== -1;
+      return d.countryCode === focused.key;
+    }
+    layers.cities.selectAll('circle').classed('focused', cityIsFocused);
+    layers.labels.selectAll('text').classed('focused', cityIsFocused);
+    if (clearButton) clearButton.hidden = focused === null;
+  }
+
+  // Which visited cities belong to the thing being focused.
+  function citiesOf(kind, key) {
+    if (kind === 'country') {
+      return cities.filter(function (d) { return d.countryCode === key; });
+    }
+    if (kind === 'region') {
+      return cities.filter(function (d) { return d.regionCode === key; });
+    }
+    var wanted = String(key).split(',');
+    return cities.filter(function (d) { return wanted.indexOf(d.countryCode) !== -1; });
+  }
+
+  // A place is framed by where I actually went in it, not by the outline of the
+  // whole thing.
+  //
+  // That is both more useful and more correct. France's geometry reaches from
+  // French Guiana to Réunion, so its bounding box spans half the planet: framing
+  // by geometry put the centre in the Atlantic and zoomed to nothing. Alaska's
+  // reaches across the date line, for the same kind of reason. The cities have
+  // neither problem, and they are the point of the map.
+  //
+  // A country with no city recorded yet — India — has nothing to frame, so it
+  // falls back to its geometry.
+  function frameOf(kind, key) {
+    var members = citiesOf(kind, key);
+
+    if (members.length) {
+      var points = { type: 'MultiPoint', coordinates: members.map(function (d) { return [d.lon, d.lat]; }) };
+      var centre = d3.geoCentroid(points);
+      var reach = d3.max(members, function (d) { return d3.geoDistance([d.lon, d.lat], centre); }) || 0;
+      // A margin, and a floor for the single-city case, so the place has room
+      // around it instead of sitting against the edge.
+      return { centre: centre, radius: Math.max(reach * 1.35, 0.035) };
+    }
+
+    var layer = kind === 'country' ? layers.countries : layers.regions;
+    var property = kind === 'country' ? 'iso' : 'code';
+    var parts = layer.selectAll('path').data().filter(function (d) {
+      return d.properties[property] === key;
+    });
+    if (!parts.length) return null;
+
+    var group = { type: 'FeatureCollection', features: parts };
+    var geometricCentre = d3.geoCentroid(group);
+    return { centre: geometricCentre, radius: angularRadius(group, geometricCentre) };
+  }
+
+  function focusOn(kind, key, label) {
+    var centre;
+    var scale;
+
+    if (kind === 'city') {
+      var city = cities[Number(key)];
+      if (!city) return;
+      centre = [city.lon, city.lat];
+      scale = baseScale() * 20;
+    } else {
+      var frame = frameOf(kind, key);
+      if (!frame) return;
+      centre = frame.centre;
+      scale = scaleToFit(frame.radius);
+    }
+
+    focused = { kind: kind, key: String(key), label: label };
+    markGlobe();
+    markOutline();
+    moveTo(centre, scale);
+  }
+
+  function clearFocus() {
+    if (!focused) return;
+    focused = null;
+    markGlobe();
+    markOutline();
+    stopSpinning();
+    d3.transition().duration(650).ease(d3.easeCubicInOut).tween('unfocus', function () {
+      var magnify = d3.interpolate(projection.scale(), baseScale());
+      return function (t) {
+        projection.scale(magnify(t));
+        render();
+      };
+    });
+  }
+
+  function wireOutline() {
+    if (!outline) return;
+    outline.addEventListener('click', function (event) {
+      var entry = event.target.closest('.entry');
+      if (!entry || entry.classList.contains('not-located')) return;
+
+      // Without this the click reaches the <summary> it sits in and toggles
+      // the level as well as choosing the place.
+      event.preventDefault();
+
+      var kind = entry.dataset.kind;
+      var key = kind === 'city' ? entry.dataset.index
+              : kind === 'continent' ? entry.dataset.countries
+              : entry.dataset.code;
+      focusOn(kind, key, entry.dataset.name);
+    });
+    if (clearButton) clearButton.addEventListener('click', clearFocus);
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape') clearFocus();
+    });
+  }
+
+  Promise.all([
+    d3.json('/assets/geo/countries.json'),
+    d3.json('/assets/geo/regions.json')
+  ]).then(function (data) {
+    var countries = data[0];
+    var regions = data[1];
+
+    layers.countries.selectAll('path')
+      .data(countries.features)
+      .join('path')
+      .attr('class', function (d) { return 'country' + (d.properties.visited ? ' visited' : ''); })
+      .on('pointerenter', function (event, d) {
+        if (!d.properties.visited) return;
+        showTooltip(event, d.properties.name, 'country');
+      })
+      .on('pointerleave', hideTooltip)
+      .on('click', function (event, d) {
+        if (d.properties.visited) focusOn('country', d.properties.iso);
+      });
+
+    layers.regions.selectAll('path')
+      .data(regions.features)
+      .join('path')
+      .attr('class', 'region')
+      .on('pointerenter', function (event, d) {
+        showTooltip(event, d.properties.name, d.properties.code);
+      })
+      .on('pointerleave', hideTooltip)
+      .on('click', function (event, d) { focusOn('region', d.properties.code); });
+
+    layers.cities.selectAll('circle')
+      .data(cities)
+      .join('circle')
+      .attr('class', 'city')
+      .on('pointerenter', function (event, d) {
+        showTooltip(event, d.name, [d.region, d.country].filter(Boolean).join(' · '));
+      })
+      .on('pointerleave', hideTooltip)
+      .on('click', function (event, d, i) { focusOn('city', cities.indexOf(d)); });
+
+    layers.labels.selectAll('text')
+      .data(cities)
+      .join('text')
+      .attr('class', 'city-label')
+      .text(function (d) { return d.name; });
+
+    layers.sphere.style('cursor', 'default').on('click', clearFocus);
+
+    measure();
+    render();
+    enableDrag();
+    enableZoom();
+    wireOutline();
+    spin();
+
+    window.addEventListener('resize', function () {
+      measure();
+      schedule();
+    });
+  }).catch(function (error) {
+    document.getElementById('globe-figure').insertAdjacentHTML(
+      'beforeend',
+      '<p class="hint">The map data did not load, so the globe cannot be drawn.</p>'
+    );
+    console.error(error);
+  });
+})();

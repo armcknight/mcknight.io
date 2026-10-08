@@ -4,6 +4,10 @@ url: https://mcknight.io
 exclude:
   - Makefile
   - README.md
+  # travel.mcknight.io is a separate Jekyll site that happens to live in this
+  # repo. Without this, the parent would render its pages a second time and
+  # copy its build output into its own.
+  - travel
   # Written straight into _site by `make deploy`, so a build never copies a
   # stale stamp over the live one.
   - DEPLOYED

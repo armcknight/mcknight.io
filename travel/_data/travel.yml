@@ -1,0 +1,716 @@
+# Places visited, for a future travel visualization.
+#
+# Four nested dimensions, so a visualization can aggregate at any level without
+# deriving the hierarchy itself: continent > country > region > city.
+#
+#   continents:
+#     - name:                  display name
+#       countries:
+#         - name:
+#           code:              ISO 3166-1 alpha-2
+#           regions:
+#             - name:
+#               code:          ISO 3166-2
+#               kind:          state | province | territory | region | prefecture |
+#                              county | federal district
+#               cities:
+#                 - name:
+#
+# `kind` exists because the second level is not "state or province" everywhere:
+# Japan has prefectures, Ireland counties, France régions, and Washington is in a
+# federal district that is not a state at all.
+#
+# DATES (to add later)
+#
+# Any entry at any level may carry a `dates:` list, so a country or region passed
+# through without stopping in a listed city can still be dated. Each element is
+# either a single day or a range:
+#
+#   cities:
+#     - name: Reykjavík
+#       dates:
+#         - 2019-06-12                        # a single day
+#         - { from: 2022-08-01, to: 2022-08-09 }   # a stay
+#         - { from: 2024-03, to: 2024-04 }    # month precision, when the day is lost
+#
+# Unquoted full dates parse as dates in Jekyll; a bare `2024-03` stays a string.
+# Keep whichever precision is true rather than inventing a day.
+#
+# A city appears once, however many times it was visited — repeat visits are
+# entries in its `dates` list, not duplicate cities.
+
+continents:
+  - name: North America
+    countries:
+      - name: United States
+        code: US
+        regions:
+          - name: Alabama
+            kind: state
+
+          - name: Alaska
+            code: US-AK
+            kind: state
+            cities:
+              - name: Anchorage
+                lat: 61.21631
+                lon: -149.89485
+              - name: Fairbanks
+                lat: 64.83785
+                lon: -147.71668
+              - name: Gustavus
+                lat: 58.41242
+                lon: -135.73078
+              - name: Haines
+                lat: 59.08312
+                lon: -135.34306
+              - name: Juneau
+                lat: 58.30196
+                lon: -134.41968
+              - name: Tok
+              - name: North Pole
+              - name: Cantwell
+              - name: Talkeetna
+              - name: Valdez
+              - name: McCarthy
+              - name: Kennicott
+
+          - name: Arizona
+            code: US-AZ
+            kind: state
+            cities:
+              - name: Tuba City
+              - name: Flagstaff
+                lat: 35.19875
+                lon: -111.65182
+
+          - name: California
+            code: US-CA
+            kind: state
+            cities:
+              - name: Oakland
+                lat: 37.80446
+                lon: -122.27136
+              - name: San Francisco
+                lat: 37.78794
+                lon: -122.40752
+              - name: San Jose
+                lat: 37.33617
+                lon: -121.89059
+              - name: Napa
+              - name: Sonoma
+              - name: Sausalito
+              - name: Fresno
+              - name: Bakersfield
+              - name: Palo Alto
+              - name: Cupertino
+              - name: San Mateo
+              - name: Mountain View
+              - name: Redwood City
+
+          - name: Colorado
+            code: US-CO
+            kind: state
+            cities:
+              - name: Alamosa
+                lat: 37.5781
+                lon: -105.78905
+              - name: Del Norte
+              - name: Buena Vista
+              - name: Monte Vista
+              - name: Salida
+              - name: Cortez
+              - name: Leadville
+              - name: Nederland
+              - name: Steamboat Springs
+              - name: Creede
+              - name: Pagosa Springs
+              - name: Colorado Springs
+              - name: Pueblo
+              - name: Loveland
+              - name: Boulder
+                lat: 40.01499
+                lon: -105.27055
+              - name: Denver
+                lat: 39.73924
+                lon: -104.98486
+              - name: Durango
+                lat: 37.27695
+                lon: -107.8766
+              - name: Fort Collins
+                lat: 40.58718
+                lon: -105.07701
+
+          - name: Connecticut
+            kind: state
+            cities:
+              - name: New Haven
+              - name: Hartford
+
+          - name: Delaware
+            kind: state
+            cities:
+              - name: Dewey Beach
+              - name: Rehoboth Beach
+              - name: Bethany Beach
+              - name: Wilmington
+
+          - name: District of Columbia
+            code: US-DC
+            kind: federal district
+            cities:
+              - name: Washington
+                lat: 38.8951
+                lon: -77.03638
+
+          - name: Florida
+            kind: state
+            cities:
+              - name: Orlando
+
+          - name: Georgia
+            kind: state
+            cities:
+              - name: Atlanta
+
+          - name: Hawaii
+            code: US-HI
+            kind: state
+            cities:
+              - name: Waimea
+              - name: Kapa'au
+              - name: Waikoloa
+              - name: Naalehu
+              - name: Hāwī
+              - name: Hilo
+                lat: 19.70737
+                lon: -155.08158
+              - name: Kailua-Kona
+                lat: 19.64194
+                lon: -155.99693
+
+          - name: Illinois
+            code: US-IL
+            kind: state
+            cities:
+              - name: Chicago
+                lat: 41.87556
+                lon: -87.62442
+
+          - name: Indiana
+            kind: state
+
+          - name: Kentucky
+            code: US-KY
+            kind: state
+            cities:
+              - name: Louisville
+                lat: 38.25424
+                lon: -85.75941
+
+          - name: Louisiana
+            code: US-LA
+            kind: state
+            cities:
+              - name: Lafayette
+                lat: 30.22622
+                lon: -92.01782
+              - name: New Orleans
+                lat: 29.95747
+                lon: -90.06295
+
+          - name: Maine
+            code: US-ME
+            kind: state
+            cities:
+              - name: Kennebunkport
+              - name: Portland
+                lat: 43.65736
+                lon: -70.25866
+
+          - name: Michigan
+            kind: state
+            cities:
+              - name: Saugatuck
+
+          - name: Mississippi
+            kind: state
+
+          - name: Rhode Island
+            kind: state
+            cities:
+              - name: Providence
+              - name: Newport
+
+          - name: New Hampshire
+            kind: state
+            cities:
+              - name: Manchester
+              - name: Concord
+
+          - name: New Jersey
+            kind: state
+            cities:
+              - name: Phillipsburg
+              - name: Trenton
+
+          - name: Maryland
+            code: US-MD
+            kind: state
+            cities:
+              - name: Annapolis
+              - name: Baltimore
+                lat: 39.29088
+                lon: -76.61076
+              - name: Ocean City
+                lat: 38.33154
+                lon: -75.08742
+
+          - name: Massachusetts
+            code: US-MA
+            kind: state
+            cities:
+              - name: Springfield
+              - name: Gloucester
+              - name: Salem
+              - name: Plymouth
+              - name: Provincetown
+              - name: Andover
+              - name: Worcester
+              - name: Adams
+              - name: Somerville
+              - name: Cambridge
+              - name: Watertown
+              - name: Newton
+              - name: Quincy
+              - name: Truro
+              - name: Boston
+                lat: 42.35883
+                lon: -71.05783
+              - name: Northampton
+                lat: 42.3179
+                lon: -72.6311
+
+          - name: Montana
+            code: US-MT
+            kind: state
+            cities:
+              - name: Hungry Horse
+              - name: Coram
+              - name: Columbia Falls
+              - name: Kalispell
+              - name: Missoula
+                lat: 46.8701
+                lon: -113.99527
+              - name: Whitefish
+                lat: 48.4108
+                lon: -114.33462
+
+          - name: Nevada
+            code: US-NV
+            kind: state
+            cities:
+              - name: Rhyolite
+              - name: Las Vegas
+                lat: 36.16743
+                lon: -115.14841
+
+          - name: New Mexico
+            kind: state
+            cities:
+              - name: Truth or Consequences
+              - name: Albuquerque
+            pois:
+              - name: Very Large Array
+
+          - name: New York
+            code: US-NY
+            kind: state
+            cities:
+              - name: Watkins Glen
+              - name: New York City
+                lat: 40.71273
+                lon: -74.00602
+
+          - name: North Carolina
+            code: US-NC
+            kind: state
+            cities:
+              - name: Kitty Hawk
+              - name: Ocracoke
+              - name: Buxton
+              - name: Hatteras
+              - name: Duck
+              - name: Carova
+              - name: Morehead City
+              - name: Atlantic Beach
+              - name: Manteo
+              - name: Nags Head
+              - name: Kill Devil Hills
+              - name: Avon
+              - name: Frisco
+              - name: Raleigh
+              - name: Winston-Salem
+              - name: Asheville
+                lat: 35.59536
+                lon: -82.55084
+              - name: Charlotte
+                lat: 35.22721
+                lon: -80.84308
+
+          - name: Ohio
+            kind: state
+            cities:
+              - name: Cleveland
+
+          - name: Oregon
+            code: US-OR
+            kind: state
+            cities:
+              - name: Hood River
+              - name: Portland
+                lat: 45.52025
+                lon: -122.67419
+
+          - name: Pennsylvania
+            code: US-PA
+            kind: state
+            cities:
+              - name: Harrisburg
+              - name: Allentown
+              - name: Easton
+                lat: 40.69161
+                lon: -75.20999
+              - name: Philadelphia
+                lat: 39.95272
+                lon: -75.16353
+
+          - name: South Carolina
+            kind: state
+            cities:
+              - name: Myrtle Beach
+
+          - name: Texas
+            code: US-TX
+            kind: state
+            cities:
+              - name: El Paso
+                lat: 31.7601
+                lon: -106.48705
+              - name: Houston
+                lat: 29.75894
+                lon: -95.3677
+              - name: San Antonio
+                lat: 29.4246
+                lon: -98.49514
+
+          - name: Utah
+            code: US-UT
+            kind: state
+            cities:
+              - name: Moab
+                lat: 38.57381
+                lon: -109.54621
+
+          - name: Vermont
+            code: US-VT
+            kind: state
+            cities:
+              - name: Brattleboro
+              - name: Rutland
+              - name: Killington
+              - name: Burlington
+                lat: 44.47616
+                lon: -73.21291
+              - name: Montpelier
+                lat: 44.26022
+                lon: -72.57504
+
+          - name: Virginia
+            code: US-VA
+            kind: state
+            cities:
+              - name: Lynchburg
+              - name: Manassas
+              - name: Waynesboro
+              - name: Winchester
+              - name: Front Royal
+              - name: Woodstock
+              - name: Luray
+              - name: Blacksburg
+              - name: Appomattox
+              - name: Farmville
+              - name: Crewe
+              - name: Alexandria
+              - name: Arlington
+              - name: Centerville
+              - name: Vienna
+              - name: Gainesville
+              - name: Dale City
+              - name: Springfield
+              - name: Reston
+              - name: Herndon
+              - name: Fair Oaks
+              - name: Dumfries
+              - name: Colonial Beach
+              - name: Hampton
+              - name: Williamsburg
+              - name: Virginia Beach
+              - name: Warrenton
+              - name: Suffolk
+              - name: Newport News
+              - name: Gloucester
+              - name: Charlottesville
+                lat: 38.02931
+                lon: -78.47668
+              - name: Fredericksburg
+                lat: 38.30012
+                lon: -77.45715
+              - name: Norfolk
+                lat: 36.84937
+                lon: -76.28995
+              - name: Richmond
+                lat: 37.53851
+                lon: -77.43428
+              - name: Roanoke
+                lat: 37.27097
+                lon: -79.94143
+
+          - name: Washington
+            code: US-WA
+            kind: state
+            cities:
+              - name: White Salmon
+              - name: Seattle
+                lat: 47.60383
+                lon: -122.33006
+
+          - name: Wyoming
+            code: US-WY
+            kind: state
+            cities:
+              - name: Jackson
+                lat: 43.47997
+                lon: -110.76182
+
+      - name: Canada
+        code: CA
+        regions:
+          - name: British Columbia
+            code: CA-BC
+            kind: province
+            cities:
+              - name: Vancouver
+                lat: 49.26087
+                lon: -123.11395
+
+          - name: Ontario
+            code: CA-ON
+            kind: province
+            cities:
+              - name: Toronto
+                lat: 43.65348
+                lon: -79.38393
+
+          - name: Quebec
+            code: CA-QC
+            kind: province
+            cities:
+              - name: Montreal
+                lat: 45.50318
+                lon: -73.56981
+
+          - name: Yukon
+            code: CA-YT
+            kind: territory
+            cities:
+              - name: Whitehorse
+                lat: 60.72157
+                lon: -135.05493
+
+      - name: Mexico
+        code: MX
+        regions:
+          - name: Quintana Roo
+            code: MX-ROO
+            kind: state
+            cities:
+              - name: Cancún
+                lat: 21.15275
+                lon: -86.84258
+              - name: Tulum
+                lat: 20.42965
+                lon: -87.65293
+
+  - name: South America
+    countries:
+      - name: Peru
+        code: PE
+        regions:
+          - name: Cusco
+            code: PE-CUS
+            kind: region
+            cities:
+              - name: Cusco
+                lat: -13.51709
+                lon: -71.97854
+
+  - name: Europe
+    countries:
+      - name: Ireland
+        code: IE
+        regions:
+          - name: Dublin
+            code: IE-D
+            kind: county
+            cities:
+              - name: Dublin
+                lat: 53.34371
+                lon: -6.25443
+
+      - name: France
+        code: FR
+        regions:
+          - name: Centre-Val de Loire
+            code: FR-CVL
+            kind: region
+            cities:
+              - name: Orléans
+                lat: 47.90273
+                lon: 1.90861
+
+          - name: Île-de-France
+            code: FR-IDF
+            kind: region
+            cities:
+              - name: Paris
+                lat: 48.85889
+                lon: 2.32004
+
+          - name: Provence-Alpes-Côte d'Azur
+            code: FR-PAC
+            kind: region
+            cities:
+              - name: Nice
+                lat: 43.70094
+                lon: 7.26839
+
+      - name: Netherlands
+        code: NL
+        regions:
+          - name: North Holland
+            code: NL-NH
+            kind: province
+            cities:
+              - name: Amsterdam
+                lat: 52.37308
+                lon: 4.89245
+
+      - name: Austria
+        code: AT
+        regions:
+          - name: Vienna
+            code: AT-9
+            kind: state
+            cities:
+              - name: Vienna
+                lat: 48.18572
+                lon: 16.42216
+
+      - name: Hungary
+        code: HU
+        regions:
+          - name: Budapest
+            code: HU-BU
+            kind: capital city
+            cities:
+              - name: Budapest
+                lat: 47.49788
+                lon: 19.04024
+
+      - name: Italy
+        code: IT
+        regions:
+          - name: Lazio
+            code: IT-62
+            kind: region
+            cities:
+              - name: Rome
+                lat: 41.89332
+                lon: 12.48293
+
+          - name: Liguria
+            code: IT-42
+            kind: region
+            cities:
+              - name: Genoa
+                lat: 44.40726
+                lon: 8.93386
+
+          - name: Tuscany
+            code: IT-52
+            kind: region
+            cities:
+              - name: Florence
+                lat: 43.7698
+                lon: 11.25564
+              - name: Pisa
+                lat: 43.47147
+                lon: 10.67979
+
+      - name: Czechia
+        code: CZ
+        regions:
+          - name: Prague
+            code: CZ-10
+            kind: capital city
+            cities:
+              - name: Prague
+                lat: 50.09081
+                lon: 14.40052
+
+  - name: Asia
+    countries:
+      - name: Philippines
+        code: PH
+        regions:
+          - name: Metro Manila
+            code: PH-00
+            kind: region
+            cities:
+              - name: Manila
+                lat: 14.59045
+                lon: 120.98036
+
+          - name: Central Visayas
+            code: PH-07
+            kind: region
+            cities:
+              - name: Cebu City
+                lat: 10.29349
+                lon: 123.90182
+
+      - name: Japan
+        code: JP
+        regions:
+          - name: Hokkaido
+            code: JP-01
+            kind: prefecture
+            cities:
+              - name: Sapporo
+                lat: 43.06194
+                lon: 141.35429
+
+          - name: Tokyo
+            code: JP-13
+            kind: prefecture
+            cities:
+              - name: Tokyo
+                lat: 35.68125
+                lon: 139.76671
+
+      # No city was listed for India. Add the region and city when you have it —
+      # the country is kept here so the continent count is not silently short.
+      - name: India
+        code: IN
+        regions: []

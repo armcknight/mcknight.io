@@ -1,0 +1,17 @@
+# travel.mcknight.io — its own Jekyll site, built and deployed on its own.
+#
+# It lives inside the mcknight.io repo but is not part of that site: the parent
+# _config.yml excludes this directory, so the parent neither renders these pages
+# nor copies travel/_site into its own output. Two sites, one repo, one set of
+# gems — the build borrows the parent's Gemfile rather than keeping a second
+# lockfile in step with it.
+#
+# Everything the subdomain needs is under this directory: the data, the page,
+# the geometry, and the script that fills in city coordinates.
+
+title: Travel
+description: Every place I have been, on a globe.
+url: https://travel.mcknight.io
+
+exclude:
+  - scripts
