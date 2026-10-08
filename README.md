@@ -145,7 +145,7 @@ An interactive globe. Drag to turn it, scroll or pinch to move closer, double
 tap and drag to zoom with one thumb, and click a continent, country, region or
 place — on the globe or in the list beside it — to centre and magnify it with
 everything else faded back. Escape, the button, or a click on the ocean leaves
-that focus. **Full screen** hides everything but the globe.
+that focus.
 
 The list is a collapsible tree written by the server, so the whole hierarchy is
 readable, collapsible and reachable by keyboard with no JavaScript at all.

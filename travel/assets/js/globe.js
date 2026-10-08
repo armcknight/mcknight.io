@@ -100,16 +100,14 @@
     // while a page settles — silently undid the reader's zoom and any focus.
     var magnification = size ? projection.scale() / baseScale() : 1;
 
-    // In full screen the globe takes the smaller side of the window, less a
-    // little, so the whole sphere is visible and touches the edges. Otherwise
-    // it is the column width, or whatever height is left under the header once
-    // the legend and the hint have their room.
-    var available = document.body.classList.contains('fullscreen')
-      ? Math.min(window.innerWidth, window.innerHeight) - 8
-      : Math.min(figure.clientWidth, window.innerHeight - figure.getBoundingClientRect().top - 150);
-    size = document.body.classList.contains('fullscreen')
-      ? Math.max(280, available)
-      : Math.max(280, Math.min(available, 760));
+    // The narrower of the column and the height left under the header, once the
+    // legend and the hint have their room, so the whole sphere always fits
+    // without the page scrolling.
+    var available = Math.min(
+      figure.clientWidth,
+      window.innerHeight - figure.getBoundingClientRect().top - 150
+    );
+    size = Math.max(280, Math.min(available, 760));
     svg.attr('width', size).attr('height', size).attr('viewBox', '0 0 ' + size + ' ' + size);
     projection.translate([size / 2, size / 2]).scale(baseScale() * magnification);
   }
@@ -662,55 +660,6 @@
   // Switching the unit rewrites every height already on the page: the ones in
   // the list, which the server left empty for this reason, and the ones in the
   // labels on the globe.
-  // FULL SCREEN
-  //
-  // Two things at once: the page hides its own furniture through a class, and
-  // the browser is asked for real full screen as well. They are separate
-  // because the second is not always available — iOS Safari on a phone has no
-  // Fullscreen API at all — and the first works everywhere on its own.
-  function wireFullscreen() {
-    var enter = document.getElementById('fullscreen');
-    var leave = document.getElementById('exit-fullscreen');
-    if (!enter) return;
-
-    function apply(on) {
-      document.body.classList.toggle('fullscreen', on);
-      if (leave) leave.hidden = !on;
-      measure();
-      render();
-    }
-
-    enter.addEventListener('click', function () {
-      apply(true);
-      if (document.documentElement.requestFullscreen) {
-        document.documentElement.requestFullscreen().catch(function () {
-          // Refused, which is fine: the page is already filling the window.
-        });
-      }
-    });
-
-    if (leave) {
-      leave.addEventListener('click', function () {
-        if (document.fullscreenElement && document.exitFullscreen) {
-          document.exitFullscreen();
-        }
-        apply(false);
-      });
-    }
-
-    // Leaving by Escape, or by the browser's own control, must put the page
-    // back as well.
-    document.addEventListener('fullscreenchange', function () {
-      if (!document.fullscreenElement) apply(false);
-    });
-
-    document.addEventListener('keydown', function (event) {
-      if (event.key === 'Escape' && document.body.classList.contains('fullscreen') && !document.fullscreenElement) {
-        apply(false);
-      }
-    });
-  }
-
   function wireUnits() {
     function redraw() {
       document.querySelectorAll('#outline .elevation').forEach(function (node) {
@@ -814,7 +763,6 @@
     wireOutline();
     wireLayerControls();
     wireUnits();
-    wireFullscreen();
     spin();
 
     window.addEventListener('resize', function () {
