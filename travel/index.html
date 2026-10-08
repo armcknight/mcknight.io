@@ -22,6 +22,13 @@ title: Travel
 <body>
 
 {%- comment -%}
+  The kinds of place, as "key in travel.yml, name used in the page". One list
+  drives the dot data, the outline and the layer controls, so a new kind is an
+  entry here and a colour in the stylesheet, and nothing else.
+{%- endcomment -%}
+{%- assign place_kinds = "cities,city|pois,poi|highmark,highmark" | split: "|" -%}
+
+{%- comment -%}
   The counts are derived here rather than written down, so they can never
   disagree with the data.
 {%- endcomment -%}
@@ -61,12 +68,22 @@ title: Travel
     <div id="tooltip" role="status" aria-live="polite"></div>
   </figure>
 
-  <div class="legend">
-    <span><i class="country"></i> country visited</span>
-    <span><i class="region"></i> state, province or region</span>
-    <span><i class="dot city"></i> city or point of interest</span>
-    <span><i class="unvisited"></i> not yet</span>
-  </div>
+  {%- comment -%}
+    The legend is also the control panel: a checkbox beside each colour, so
+    what a colour means and whether it is drawn are the same row. Unticking
+    countries paints the visited ones like everywhere else rather than removing
+    the land, which would leave an empty ball.
+  {%- endcomment -%}
+  <fieldset class="legend" id="layers">
+    <legend>Show</legend>
+    <label><input type="checkbox" data-layer="countries" checked><i class="country"></i> countries</label>
+    <label><input type="checkbox" data-layer="regions" checked><i class="region"></i> states &amp; regions</label>
+    <label><input type="checkbox" data-layer="city" checked><i class="dot city"></i> cities</label>
+    <label><input type="checkbox" data-layer="poi" checked><i class="dot poi"></i> points of interest</label>
+    <label><input type="checkbox" data-layer="highmark" checked><i class="dot highmark"></i> high marks</label>
+    <label><input type="checkbox" data-layer="labels" checked><i class="names"></i> names</label>
+    <span class="not-a-layer"><i class="unvisited"></i> not yet</span>
+  </fieldset>
   <p class="hint">
     Drag to turn the globe. Scroll to move closer. Click a country, a region or a
     city — here or in the list — to look closely at it.
@@ -110,34 +127,48 @@ title: Travel
         </summary>
         {%- if country.regions.size > 0 -%}
           {%- for region in country.regions -%}
+          {%- comment -%}
+            A code is optional in the data: fourteen regions have none. So the
+            key is the code when there is one and the country plus the name
+            when there is not, which is exactly what build-geo.rb writes into
+            the geometry, so the two always agree.
+          {%- endcomment -%}
+          {%- assign region_key = region.code -%}
+          {%- unless region.code -%}{%- assign region_key = country.code | append: ':' | append: region.name -%}{%- endunless -%}
           <details class="level region">
             <summary>
-              <button type="button" class="entry region-entry" data-kind="region" data-code="{{ region.code }}">
+              <button type="button" class="entry region-entry" data-kind="region" data-key="{{ region_key }}">
                 {{ region.name }}
               </button>
             </summary>
-            <ul class="cities">
-              {%- for city in region.cities -%}
-                {%- if city.name and city.name != '' -%}
+            <ul class="places">
+              {%- for pair in place_kinds -%}
+                {%- assign parts = pair | split: ',' -%}
+                {%- assign place_key = parts[0] -%}
+                {%- assign place_kind = parts[1] -%}
+                {%- assign list = region[place_key] -%}
+                {%- for place in list -%}
+                  {%- if place.name and place.name != '' -%}
               <li>
                 {%- comment -%}
-                  The index must match the position in the city-data array, and
-                  that array holds only cities that have coordinates. So the
-                  counter advances for those and no others, and a city still
+                  The index must match the position in the place-data array, and
+                  that array holds only places that have coordinates. So the
+                  counter advances for those and no others, and a place still
                   waiting to be geocoded is listed but not clickable.
                 {%- endcomment -%}
-                {%- if city.lat and city.lon -%}
-                <button type="button" class="entry city-entry" data-kind="city" data-index="{{ city_index }}">
-                  {{ city.name }}
+                {%- if place.lat and place.lon -%}
+                <button type="button" class="entry place-entry {{ place_kind }}-entry" data-kind="place" data-index="{{ city_index }}">
+                  {{ place.name }}
                 </button>
                 {%- assign city_index = city_index | plus: 1 -%}
                 {%- else -%}
-                <span class="entry city-entry not-located" title="No coordinates yet — run make travel-geocode">
-                  {{ city.name }}
+                <span class="entry place-entry {{ parts[1] }}-entry not-located" title="No coordinates yet — run make travel-geocode">
+                  {{ place.name }}
                 </span>
                 {%- endif -%}
               </li>
-                {%- endif -%}
+                  {%- endif -%}
+                {%- endfor -%}
               {%- endfor -%}
             </ul>
           </details>
@@ -154,22 +185,32 @@ title: Travel
 </main>
 
 {%- comment -%}
-  The dots come straight from _data/travel.yml, so adding a city to the data
-  adds it to the globe. A flag, rather than forloop.last, puts the commas in:
+  The dots come straight from _data/travel.yml, so adding a place to the data
+  adds it to the globe. Cities and points of interest share one array, with a
+  `kind` telling them apart, because an index then means the same thing to the
+  list and to the globe. The order here is the order the list counts in. A flag, rather than forloop.last, puts the commas in:
   the loops are nested four deep, and only the very last city of the very last
   region must have none.
 {%- endcomment -%}
-<script id="city-data" type="application/json">
+<script id="place-data" type="application/json">
 [
 {%- assign first = true -%}
 {%- for continent in site.data.travel.continents -%}
   {%- for country in continent.countries -%}
     {%- for region in country.regions -%}
-      {%- for city in region.cities -%}
-        {%- if city.lat and city.lon -%}
-          {%- if first %}{% assign first = false %}{% else %},{% endif %}
-{"name":{{ city.name | jsonify }},"lat":{{ city.lat }},"lon":{{ city.lon }},"region":{{ region.name | jsonify }},"regionCode":{{ region.code | jsonify }},"country":{{ country.name | jsonify }},"countryCode":{{ country.code | jsonify }},"continent":{{ continent.name | jsonify }}}
-        {%- endif -%}
+      {%- assign region_key = region.code -%}
+      {%- unless region.code -%}{%- assign region_key = country.code | append: ':' | append: region.name -%}{%- endunless -%}
+      {%- for pair in place_kinds -%}
+        {%- assign parts = pair | split: ',' -%}
+        {%- assign place_key = parts[0] -%}
+        {%- assign place_kind = parts[1] -%}
+        {%- assign list = region[place_key] -%}
+        {%- for place in list -%}
+          {%- if place.lat and place.lon -%}
+            {%- if first %}{% assign first = false %}{% else %},{% endif %}
+{"kind":{{ place_kind | jsonify }},"name":{{ place.name | jsonify }},"lat":{{ place.lat }},"lon":{{ place.lon }},"region":{{ region.name | jsonify }},"regionKey":{{ region_key | jsonify }},"country":{{ country.name | jsonify }},"countryCode":{{ country.code | jsonify }},"continent":{{ continent.name | jsonify }}}
+          {%- endif -%}
+        {%- endfor -%}
       {%- endfor -%}
     {%- endfor -%}
   {%- endfor -%}
@@ -181,7 +222,6 @@ title: Travel
   <p>
     Boundaries from <a href="https://www.naturalearthdata.com">Natural Earth</a>, which is public domain.
     City coordinates from <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> via Nominatim, ODbL.
-    Made with Natural Earth.
   </p>
 </footer>
 

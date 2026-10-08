@@ -159,16 +159,29 @@ It draws three things, from three sources:
 |---|---|---|
 | Country visited | pale fill | `assets/geo/countries.json`, matched on ISO 3166-1 |
 | State, province or region | strong fill | `assets/geo/regions.json` |
-| City or point of interest | dot | `_data/travel.yml`, written into the page at build time |
+| City | black dot | `cities:` in `_data/travel.yml` |
+| Point of interest | green dot | `pois:` in `_data/travel.yml` |
+
+Each layer has a checkbox in the legend, which doubles as the control panel.
+Unticking *countries* paints the visited ones like everywhere else rather than
+removing the land, since removing the land would leave an empty ball.
+
+A region may carry a `code:` (ISO 3166-2) but does not have to. Without one it
+is identified by its country and name, and found in Natural Earth by name — so
+adding a state means typing its name and nothing else.
 
 Nothing is fetched while the page builds or while a visitor reads it. The two
 geometry files and every city coordinate are committed. Two scripts produce
 them, and both are safe to re-run:
 
 - **`make travel-geocode`** adds `lat:` and `lon:` to any city in `travel.yml`
-  that has none, through the Nominatim geocoder of OpenStreetMap. A city that
-  already has coordinates is skipped, so only a new city costs a lookup. A full
-  run takes about two minutes, because Nominatim permits one request per second.
+  or point of interest that has none, through the Nominatim geocoder of
+  OpenStreetMap. A place that already has coordinates is skipped, so only a new
+  one costs a lookup, and the file is saved after **every** answer — a run cut
+  off halfway keeps what it found, and re-running carries on. Nominatim permits
+  about one request per second and answers HTTP 429 when it has had enough;
+  that is waited out and retried, with the wait growing each time, and after
+  several refusals the run stops and asks you to try later.
 - **`make travel-geo`** rebuilds the geometry from [Natural
   Earth](https://www.naturalearthdata.com), which is public domain. Sources are
   cached in `travel/.geo-cache/` (ignored by git); the first run downloads 39 MB
@@ -176,14 +189,16 @@ them, and both are safe to re-run:
 
 ### Why a region is found two ways
 
-Matching `travel.yml`'s ISO 3166-2 code against Natural Earth works for 36 of
-the 45 regions. It cannot work for the rest, because Natural Earth models some
-countries at a different level than `travel.yml` does: France as *départements*
-rather than régions, Italy and the Philippines as provinces, Czechia under a
-code of its own.
+A region is looked for by code, then by name within its country, and only then
+by the places inside it. The first two fail often enough to need the third:
+many regions carry no code, and Natural Earth models some countries at a
+different level than `travel.yml` does — France as *départements* rather than
+régions, Italy and the Philippines as provinces, Czechia under a code of its
+own.
 
-So a region the code does not find is located by its cities instead: every
-polygon that contains a visited city is a polygon to fill. That needs no table
+So a region neither a code nor a name finds is located by its places instead:
+every polygon that contains a visited city or point of interest is a polygon to
+fill. That needs no table
 of exceptions, and it cannot disagree with the dots, because it is derived from
 them. Two details follow from it:
 

@@ -20,7 +20,26 @@
   var svg = d3.select('#globe');
   var tooltip = d3.select('#tooltip');
   var figure = document.getElementById('globe-figure');
-  var cities = JSON.parse(document.getElementById('city-data').textContent);
+  // Cities and points of interest together, each carrying the kind that tells
+  // them apart. One array, so an index means the same thing to the list, the
+  // dots and the labels.
+  var places = JSON.parse(document.getElementById('place-data').textContent);
+
+  // Each place remembers where it sits in the array, because the dots are split
+  // across two groups and a position within a group identifies nothing.
+  places.forEach(function (place, i) { place.index = i; });
+
+  // The kinds present in the data, in the order they first appear. Nothing here
+  // names a kind, so adding one to travel.yml and to the page's list is enough
+  // — this follows.
+  var KINDS = [];
+  places.forEach(function (place) {
+    if (KINDS.indexOf(place.kind) === -1) KINDS.push(place.kind);
+  });
+
+  // Which layers are drawn. The legend doubles as the control for these.
+  var showing = { countries: true, regions: true, labels: true };
+  KINDS.forEach(function (kind) { showing[kind] = true; });
 
   // Opening on the Americas, where most of the data is, rather than on the
   // Atlantic at 0,0 where there is nothing to see.
@@ -33,10 +52,17 @@
     graticule: svg.append('path').attr('class', 'graticule'),
     countries: svg.append('g'),
     regions: svg.append('g'),
-    cities: svg.append('g'),
-    labels: svg.append('g'),
-    outline: svg.append('path').attr('class', 'globe-outline')
+    // One group per kind of place, created between the regions and the labels
+    // so dots sit over fills and names sit over dots. Showing or hiding a kind
+    // is then one attribute on one group.
+    dots: {},
+    labels: null,
+    outline: null
   };
+
+  KINDS.forEach(function (kind) { layers.dots[kind] = svg.append('g'); });
+  layers.labels = svg.append('g');
+  layers.outline = svg.append('path').attr('class', 'globe-outline');
 
   // The closest the globe will go, as a multiple of the whole-globe scale.
   //
@@ -94,7 +120,10 @@
     var candidates = [];
 
     layers.labels.selectAll('text').each(function (d) {
-      var point = visible(d) ? projection([d.lon, d.lat]) : null;
+      // A hidden kind gives up its place in the queue as well as its ink, so
+      // hiding the cities lets the points of interest claim the room.
+      var wanted = showing.labels && showing[d.kind];
+      var point = wanted && visible(d) ? projection([d.lon, d.lat]) : null;
       if (!point) {
         this.style.display = 'none';
         return;
@@ -142,13 +171,15 @@
 
     // A dot has no extent, so it is drawn only when its side of the Earth faces
     // the viewer. Without this the back of the globe shows through.
-    layers.cities.selectAll('circle')
-      .attr('transform', function (d) {
-        var point = projection([d.lon, d.lat]);
-        return point ? 'translate(' + point[0] + ',' + point[1] + ')' : null;
-      })
-      .attr('display', function (d) { return visible(d) ? null : 'none'; })
-      .attr('r', radius);
+    KINDS.forEach(function (kind) {
+      layers.dots[kind].selectAll('circle')
+        .attr('transform', function (d) {
+          var point = projection([d.lon, d.lat]);
+          return point ? 'translate(' + point[0] + ',' + point[1] + ')' : null;
+        })
+        .attr('display', function (d) { return visible(d) ? null : 'none'; })
+        .attr('r', radius);
+    });
 
     placeLabels(radius);
   }
@@ -284,7 +315,7 @@
   // matching row in the list. The two views therefore always agree about what
   // is being looked at, whichever one was clicked.
 
-  var focused = null;   // { kind: 'country'|'region'|'city', key: string }
+  var focused = null;   // { kind: 'continent'|'country'|'region'|'place', key: string }
 
   function baseScale() {
     return (size / 2) - 2;
@@ -335,12 +366,14 @@
     if (!focused) return;
 
     var selector;
-    if (focused.kind === 'city') {
-      selector = '.city-entry[data-index="' + focused.key + '"]';
+    if (focused.kind === 'place') {
+      selector = '.entry[data-index="' + focused.key + '"]';
     } else if (focused.kind === 'continent') {
       selector = '.continent-entry[data-name="' + focused.label + '"]';
     } else {
-      selector = '.' + focused.kind + '-entry[data-code="' + focused.key + '"]';
+      selector = focused.kind === 'country'
+        ? '.country-entry[data-code="' + focused.key + '"]'
+        : '.region-entry[data-key="' + focused.key + '"]';
     }
 
     var row = outline.querySelector(selector);
@@ -367,33 +400,38 @@
       return false;
     });
     layers.regions.selectAll('path').classed('focused', function (d) {
-      return focused !== null && focused.kind === 'region' && d.properties.code === focused.key;
+      return focused !== null && focused.kind === 'region' && d.properties.key === focused.key;
     });
-    // A city counts as focused when it is the chosen city, or when it belongs to
-    // the chosen region or country. Fading a region's own cities along with
-    // everything else would hide the very thing being looked at.
-    function cityIsFocused(d, i) {
+    // A place counts as focused when it is the chosen one, or when it belongs to
+    // the chosen region, country or continent. Fading a region's own places
+    // along with everything else would hide the very thing being looked at.
+    //
+    // Identity is the stored index, not the position in a group: the dots are
+    // split across two groups now, so a position means nothing on its own.
+    function placeIsFocused(d) {
       if (focused === null) return false;
-      if (focused.kind === 'city') return String(i) === String(focused.key);
-      if (focused.kind === 'region') return d.regionCode === focused.key;
+      if (focused.kind === 'place') return String(d.index) === String(focused.key);
+      if (focused.kind === 'region') return d.regionKey === focused.key;
       if (focused.kind === 'continent') return String(focused.key).split(',').indexOf(d.countryCode) !== -1;
       return d.countryCode === focused.key;
     }
-    layers.cities.selectAll('circle').classed('focused', cityIsFocused);
-    layers.labels.selectAll('text').classed('focused', cityIsFocused);
+    KINDS.forEach(function (kind) {
+      layers.dots[kind].selectAll('circle').classed('focused', placeIsFocused);
+    });
+    layers.labels.selectAll('text').classed('focused', placeIsFocused);
     if (clearButton) clearButton.hidden = focused === null;
   }
 
-  // Which visited cities belong to the thing being focused.
-  function citiesOf(kind, key) {
+  // Which visited places belong to the thing being focused.
+  function placesOf(kind, key) {
     if (kind === 'country') {
-      return cities.filter(function (d) { return d.countryCode === key; });
+      return places.filter(function (d) { return d.countryCode === key; });
     }
     if (kind === 'region') {
-      return cities.filter(function (d) { return d.regionCode === key; });
+      return places.filter(function (d) { return d.regionKey === key; });
     }
     var wanted = String(key).split(',');
-    return cities.filter(function (d) { return wanted.indexOf(d.countryCode) !== -1; });
+    return places.filter(function (d) { return wanted.indexOf(d.countryCode) !== -1; });
   }
 
   // A place is framed by where I actually went in it, not by the outline of the
@@ -408,7 +446,7 @@
   // A country with no city recorded yet — India — has nothing to frame, so it
   // falls back to its geometry.
   function frameOf(kind, key) {
-    var members = citiesOf(kind, key);
+    var members = placesOf(kind, key);
 
     if (members.length) {
       var points = { type: 'MultiPoint', coordinates: members.map(function (d) { return [d.lon, d.lat]; }) };
@@ -435,10 +473,10 @@
     var centre;
     var scale;
 
-    if (kind === 'city') {
-      var city = cities[Number(key)];
-      if (!city) return;
-      centre = [city.lon, city.lat];
+    if (kind === 'place') {
+      var place = places[Number(key)];
+      if (!place) return;
+      centre = [place.lon, place.lat];
       scale = baseScale() * 20;
     } else {
       var frame = frameOf(kind, key);
@@ -468,6 +506,35 @@
     });
   }
 
+  // The legend is the control panel: each row is a checkbox beside the colour
+  // it stands for, so what a colour means and whether it is drawn are one thing.
+  //
+  // Countries are the exception. Switching them off paints the visited ones like
+  // everywhere else rather than removing the land, because removing the land
+  // would leave an empty ball.
+  function wireLayerControls() {
+    var panel = document.getElementById('layers');
+    if (!panel) return;
+
+    function apply() {
+      svg.classed('hide-countries', !showing.countries);
+      layers.regions.attr('display', showing.regions ? null : 'none');
+      KINDS.forEach(function (kind) {
+        layers.dots[kind].attr('display', showing[kind] ? null : 'none');
+      });
+      layers.labels.attr('display', showing.labels ? null : 'none');
+      schedule();
+    }
+
+    panel.addEventListener('change', function (event) {
+      if (!event.target.dataset.layer) return;
+      showing[event.target.dataset.layer] = event.target.checked;
+      apply();
+    });
+
+    apply();
+  }
+
   function wireOutline() {
     if (!outline) return;
     outline.addEventListener('click', function (event) {
@@ -479,9 +546,10 @@
       event.preventDefault();
 
       var kind = entry.dataset.kind;
-      var key = kind === 'city' ? entry.dataset.index
+      var key = kind === 'place' ? entry.dataset.index
               : kind === 'continent' ? entry.dataset.countries
-              : entry.dataset.code;
+              : kind === 'country' ? entry.dataset.code
+              : entry.dataset.key;
       focusOn(kind, key, entry.dataset.name);
     });
     if (clearButton) clearButton.addEventListener('click', clearFocus);
@@ -515,25 +583,29 @@
       .join('path')
       .attr('class', 'region')
       .on('pointerenter', function (event, d) {
-        showTooltip(event, d.properties.name, d.properties.code);
+        showTooltip(event, d.properties.name, d.properties.code || d.properties.country);
       })
       .on('pointerleave', hideTooltip)
-      .on('click', function (event, d) { focusOn('region', d.properties.code); });
+      .on('click', function (event, d) { focusOn('region', d.properties.key); });
 
-    layers.cities.selectAll('circle')
-      .data(cities)
-      .join('circle')
-      .attr('class', 'city')
-      .on('pointerenter', function (event, d) {
-        showTooltip(event, d.name, [d.region, d.country].filter(Boolean).join(' · '));
-      })
-      .on('pointerleave', hideTooltip)
-      .on('click', function (event, d, i) { focusOn('city', cities.indexOf(d)); });
+    KINDS.forEach(function (kind) {
+      layers.dots[kind].selectAll('circle')
+        .data(places.filter(function (d) { return d.kind === kind; }))
+        .join('circle')
+        // The kind becomes a class, so a city and a point of interest are told
+        // apart by the stylesheet rather than by this script.
+        .attr('class', function (d) { return 'place ' + d.kind; })
+        .on('pointerenter', function (event, d) {
+          showTooltip(event, d.name, [d.region, d.country].filter(Boolean).join(' \u00b7 '));
+        })
+        .on('pointerleave', hideTooltip)
+        .on('click', function (event, d) { focusOn('place', d.index); });
+    });
 
     layers.labels.selectAll('text')
-      .data(cities)
+      .data(places)
       .join('text')
-      .attr('class', 'city-label')
+      .attr('class', function (d) { return 'place-label ' + d.kind; })
       .text(function (d) { return d.name; });
 
     layers.sphere.style('cursor', 'default').on('click', clearFocus);
@@ -543,6 +615,7 @@
     enableDrag();
     enableZoom();
     wireOutline();
+    wireLayerControls();
     spin();
 
     window.addEventListener('resize', function () {

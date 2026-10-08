@@ -13,19 +13,24 @@
 # Natural Earth is public domain (naturalearthdata.com). The page credits it
 # anyway, as its authors suggest.
 #
-# WHY REGIONS ARE FOUND TWO WAYS
+# WHY REGIONS ARE FOUND THREE WAYS
 #
-# Matching travel.yml's ISO 3166-2 code against the data works for 36 of the 45
-# regions. It cannot work for the rest, because Natural Earth's admin-1 layer
-# models some countries at a different level than travel.yml does: France as
-# departements rather than regions, Italy and the Philippines as provinces, and
-# Czechia under a code of its own invention.
+# A region's ISO 3166-2 code finds it when there is one and when Natural Earth
+# agrees about it. Neither is guaranteed. Many regions in travel.yml carry no
+# code at all, because a code is tedious to look up and is not what the data is
+# for; and Natural Earth's admin-1 layer models some countries at a different
+# level than travel.yml does: France as departements rather than regions, Italy
+# and the Philippines as provinces, and Czechia under a code of its own
+# invention.
 #
-# So any region the code does not find is instead located by its cities: every
-# polygon that geometrically contains a visited city is a polygon to fill. That
-# needs no table of exceptions and cannot disagree with the dots, because it is
-# derived from them. All matches are kept, not the first, or Tuscany would
-# highlight the province holding Pisa and lose the one holding Florence.
+# So a region is looked for by code, then by name within its country, and only
+# then by the places inside it.
+#
+# That last way uses the places themselves: every polygon containing a visited
+# city or point of interest is a polygon to fill. It needs no table of
+# exceptions and cannot disagree with the dots, because it is derived from them.
+# All matches are kept, not the first, or Tuscany would highlight the province
+# holding Pisa and lose the one holding Florence.
 
 require 'json'
 require 'net/http'
@@ -45,6 +50,11 @@ SOURCES = {
   'countries' => 'ne_50m_admin_0_countries.geojson',
   'admin1' => 'ne_10m_admin_1_states_provinces.geojson'
 }.freeze
+
+# The keys under a region that hold places. A region is located by the places
+# inside it when neither its code nor its name finds it, and every kind of
+# place counts equally for that.
+PLACE_KEYS = %w[cities pois highmark].freeze
 
 # Rounding is the cheapest size win available without a topology tool. Three
 # decimals is about 100 m, far finer than a globe can show.
@@ -226,11 +236,16 @@ travel['continents'].each do |continent|
   continent['countries'].each do |country|
     visited_countries[country['code']] = country['name']
     (country['regions'] || []).each do |region|
-      cities = (region['cities'] || []).reject { |city| city['lat'].nil? }
-      wanted_regions[region['code']] = {
+      # A code is optional in the data, so it cannot be the identifier. The
+      # country and the name together always exist and are always unique, and
+      # the page uses the same key, so the two agree without being told to.
+      key = region['code'] || "#{country['code']}:#{region['name']}"
+      places = PLACE_KEYS.flat_map { |key| region[key] || [] }.reject { |place| place['lat'].nil? }
+      wanted_regions[key] = {
         'name' => region['name'],
+        'code' => region['code'],
         'country' => country['code'],
-        'cities' => cities.map { |city| [city['lon'].to_f, city['lat'].to_f] }
+        'places' => places.map { |place| [place['lon'].to_f, place['lat'].to_f] }
       }
     end
   end
@@ -273,21 +288,29 @@ end
 region_features = []
 by_code_count = 0
 by_city_count = 0
+by_name_count = 0
 unresolved = []
 
-wanted_regions.each do |code, want|
+wanted_regions.each do |key, want|
   matches =
-    if by_code[code]
-      [[by_code[code], 'code']]
+    if want['code'] && by_code[want['code']]
+      [[by_code[want['code']], 'code']]
+    elsif (by_name = admin1['features'].find { |f|
+             f['properties']['iso_a2'] == want['country'] &&
+               f['properties']['name'].to_s.casecmp?(want['name'].to_s)
+           })
+      # No code, or a code Natural Earth does not use. The name within the
+      # right country is unambiguous for a state or a province.
+      [[by_name, 'name']]
     else
       # Every polygon of that country holding a visited city, so a region split
       # across several of Natural Earth's units keeps all of them.
       candidates = admin1['features'].select { |f| f['properties']['iso_a2'] == want['country'] }
-      inside = candidates.select { |f| want['cities'].any? { |lon, lat| geometry_contains?(f['geometry'], lon, lat) } }
+      inside = candidates.select { |f| want['places'].any? { |lon, lat| geometry_contains?(f['geometry'], lon, lat) } }
       if inside.empty?
         # Nothing contains the city, so take the closest polygon instead, as
         # long as it is genuinely close.
-        nearest = candidates.map { |f| [f, want['cities'].map { |lon, lat| distance_to(f['geometry'], lon, lat) }.min] }
+        nearest = candidates.map { |f| [f, want['places'].map { |lon, lat| distance_to(f['geometry'], lon, lat) }.min] }
                             .min_by(&:last)
         nearest && nearest.last <= NEAR_DEGREES ? [[nearest.first, 'near']] : []
       else
@@ -296,7 +319,7 @@ wanted_regions.each do |code, want|
     end
 
   if matches.empty?
-    unresolved << "#{code} #{want['name']} (cities: #{want['cities'].size})"
+    unresolved << "#{key} #{want['name']} (located places: #{want['places'].size})"
     next
   end
 
@@ -304,11 +327,16 @@ wanted_regions.each do |code, want|
     geometry = simplify_geometry(feature['geometry'])
     next if geometry.nil?
 
-    how == 'code' ? by_code_count += 1 : by_city_count += 1
+    case how
+    when 'code' then by_code_count += 1
+    when 'name' then by_name_count += 1
+    else by_city_count += 1
+    end
     region_features << {
       'type' => 'Feature',
       'properties' => {
-        'code' => code,
+        'key' => key,
+        'code' => want['code'],
         'name' => want['name'],
         'source_name' => feature['properties']['name'],
         'country' => want['country'],
@@ -317,7 +345,7 @@ wanted_regions.each do |code, want|
       'geometry' => geometry.merge('coordinates' => round_coordinates(geometry['coordinates']))
     }
   end
-  puts format('  %-8s %-28s -> %s (%s)', code, want['name'],
+  puts format('  %-22s %-26s -> %s (%s)', key, want['name'],
               matches.map { |f, _| f['properties']['name'] }.join(', '), matches.first[1])
 end
 
@@ -326,7 +354,8 @@ File.write(File.join(OUT, 'regions.json'),
 
 puts
 puts "countries: #{country_features.size} written, #{matched_countries} of #{visited_countries.size} marked visited"
-puts "regions:   #{region_features.size} of #{wanted_regions.size} written (#{by_code_count} by code, #{by_city_count} by city)"
+puts "regions:   #{region_features.size} of #{wanted_regions.size} written " \
+     "(#{by_code_count} by code, #{by_name_count} by name, #{by_city_count} by place)"
 %w[countries.json regions.json].each do |file|
   puts format('  %-16s %6d KB', file, File.size(File.join(OUT, file)) / 1024)
 end

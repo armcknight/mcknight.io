@@ -46,6 +46,7 @@ continents:
         code: US
         regions:
           - name: Alabama
+            code: US-AL
             kind: state
 
           - name: Alaska
@@ -68,21 +69,78 @@ continents:
                 lat: 58.30196
                 lon: -134.41968
               - name: Tok
+                lat: 63.32400
+                lon: -143.05122
               - name: North Pole
+                lat: 64.75100
+                lon: -147.34932
               - name: Cantwell
+                lat: 63.39819
+                lon: -148.76205
               - name: Talkeetna
+                lat: 62.26764
+                lon: -150.02953
               - name: Valdez
+                lat: 61.12994
+                lon: -146.34936
               - name: McCarthy
+                lat: 61.46114
+                lon: -142.74825
               - name: Kennicott
+                lat: 61.48629
+                lon: -142.88640
+            pois:
+              - name: Denali National Park
+                lat: 63.73021
+                lon: -148.89208
+              - name: Kenai Fjords National Park
+                lat: 59.86856
+                lon: -150.02577
+              - name: Wrangell-St. Elias National Park
+                lat: 61.1809
+                lon: -143.82764
+              - name: Glacier Bay National Park
+                lat: 58.81418
+                lon: -136.87209
+              - name: Kachemak Bay State Park
+                lat: 59.55553
+                lon: -151.23174
+              - name: Denali State Park
+                lat: 62.75367
+                lon: -149.99974
+              - name: White Mountains National Recreation Area
+                lat: 65.55471
+                lon: -147.21847
+              - name: Chena River State Recreation Area
+              - name: Thompson Pass
+                lat: 61.12942
+                lon: -145.73339
+              - name: Isabel Pass
+                lat: 63.18971
+                lon: -145.55654
+              - name: Broad Pass
+                lat: 63.23316
+                lon: -149.27369
+            highmark:
+              - name: Silvertip Peak, Eastern Alaska Range
 
           - name: Arizona
             code: US-AZ
             kind: state
             cities:
               - name: Tuba City
+                lat: 36.12325
+                lon: -111.24221
               - name: Flagstaff
                 lat: 35.19875
                 lon: -111.65182
+            pois:
+              - name: Grand Canyon National Park
+                lat: 36.30785
+                lon: -112.2929
+              - name: The Pit
+                lat: 32.50118
+                lon: -114.76225
 
           - name: California
             code: US-CA
@@ -98,36 +156,111 @@ continents:
                 lat: 37.33617
                 lon: -121.89059
               - name: Napa
+                lat: 38.48987
+                lon: -122.32184
               - name: Sonoma
+                lat: 38.51108
+                lon: -122.84734
               - name: Sausalito
+                lat: 37.85903
+                lon: -122.48547
               - name: Fresno
+                lat: 36.73944
+                lon: -119.78483
               - name: Bakersfield
+                lat: 35.37387
+                lon: -119.01946
               - name: Palo Alto
+                lat: 37.44433
+                lon: -122.15985
               - name: Cupertino
+                lat: 37.32289
+                lon: -122.03229
               - name: San Mateo
+                lat: 37.49690
+                lon: -122.33306
               - name: Mountain View
+                lat: 37.38939
+                lon: -122.08321
               - name: Redwood City
+                lat: 37.48632
+                lon: -122.23252
+            pois:
+              - name: Yosemite National Park
+                lat: 37.8393
+                lon: -119.51646
+              - name: Kings Canyon National Park
+                lat: 36.91528
+                lon: -118.60766
+              - name: Sequoia National Park
+                lat: 36.49584
+                lon: -118.55992
+              - name: Death Valley National Park
+                lat: 36.47024
+                lon: -117.08839
+              - name: Point Reyes National Seashore
+                lat: 38.07053
+                lon: -122.91761
+              - name: Mt. Diablo State Park
+                lat: 37.87213
+                lon: -121.94142
+              - name: Angel Island State Park
+                lat: 37.86293
+                lon: -122.43034
+            highmark:
+              - name: Telescope Peak
+                lat: 36.16985
+                lon: -117.08921
 
           - name: Colorado
             code: US-CO
             kind: state
             cities:
+              - name: Crestone
+                lat: 37.99544
+                lon: -105.69919
               - name: Alamosa
                 lat: 37.5781
                 lon: -105.78905
               - name: Del Norte
+                lat: 37.67889
+                lon: -106.35337
               - name: Buena Vista
+                lat: 38.84222
+                lon: -106.13113
               - name: Monte Vista
+                lat: 37.58162
+                lon: -106.14967
               - name: Salida
+                lat: 38.53712
+                lon: -105.99097
               - name: Cortez
+                lat: 37.34945
+                lon: -108.58407
               - name: Leadville
+                lat: 39.25082
+                lon: -106.29252
               - name: Nederland
+                lat: 39.96138
+                lon: -105.51083
               - name: Steamboat Springs
+                lat: 40.48480
+                lon: -106.83174
               - name: Creede
+                lat: 37.84832
+                lon: -106.92548
               - name: Pagosa Springs
+                lat: 37.26957
+                lon: -107.01082
               - name: Colorado Springs
+                lat: 38.83396
+                lon: -104.82535
               - name: Pueblo
+                lat: 38.26400
+                lon: -104.61419
               - name: Loveland
+                lat: 40.39776
+                lon: -105.07498
               - name: Boulder
                 lat: 40.01499
                 lon: -105.27055
@@ -140,20 +273,49 @@ continents:
               - name: Fort Collins
                 lat: 40.58718
                 lon: -105.07701
+            pois:
+              - name: Rocky Mountain National Park
+                lat: 40.35539
+                lon: -105.7177
+              - name: Wolf Creek Pass
+                lat: 37.48316
+                lon: -106.803
+              - name: Great Sand Dunes National Park
+                lat: 37.79119
+                lon: -105.61227
+              - name: Mesa Verde National Park
+            highmark:
+              - name: Grays Peak
+                lat: 39.63388
+                lon: -105.81751
 
           - name: Connecticut
+            code: US-CT
             kind: state
             cities:
               - name: New Haven
+                lat: 41.30821
+                lon: -72.92505
               - name: Hartford
+                lat: 41.76616
+                lon: -72.67327
 
           - name: Delaware
+            code: US-DE
             kind: state
             cities:
               - name: Dewey Beach
+                lat: 38.69118
+                lon: -75.07527
               - name: Rehoboth Beach
+                lat: 38.71648
+                lon: -75.08351
               - name: Bethany Beach
+                lat: 38.53797
+                lon: -75.05886
               - name: Wilmington
+                lat: 39.74595
+                lon: -75.54659
 
           - name: District of Columbia
             code: US-DC
@@ -164,30 +326,50 @@ continents:
                 lon: -77.03638
 
           - name: Florida
+            code: US-FL
             kind: state
             cities:
               - name: Orlando
+                lat: 28.54212
+                lon: -81.37905
 
           - name: Georgia
+            code: US-GA
             kind: state
             cities:
               - name: Atlanta
+                lat: 33.75447
+                lon: -84.38982
 
           - name: Hawaii
             code: US-HI
             kind: state
             cities:
               - name: Waimea
+                lat: 20.02170
+                lon: -155.66859
               - name: Kapa'au
+                lat: 21.08667
+                lon: -157.01361
               - name: Waikoloa
+                lat: 19.94693
+                lon: -155.78740
               - name: Naalehu
+                lat: 19.06090
+                lon: -155.58610
               - name: Hāwī
+                lat: 20.23787
+                lon: -155.83404
               - name: Hilo
                 lat: 19.70737
                 lon: -155.08158
               - name: Kailua-Kona
                 lat: 19.64194
                 lon: -155.99693
+            pois:
+              - name: Volcanoes National Park
+              - name: Ka Lae
+            highmark: Mauna Kea Recreation Area
 
           - name: Illinois
             code: US-IL
@@ -196,8 +378,11 @@ continents:
               - name: Chicago
                 lat: 41.87556
                 lon: -87.62442
+            pois:
+              - name: Dixon Springs State Park
 
           - name: Indiana
+            code: US-IN
             kind: state
 
           - name: Kentucky
@@ -207,6 +392,9 @@ continents:
               - name: Louisville
                 lat: 38.25424
                 lon: -85.75941
+            pois:
+              - name: Maker's Mark Distillery
+              - name: Abraham Lincoln Birthplace National Historical Park
 
           - name: Louisiana
             code: US-LA
@@ -224,41 +412,69 @@ continents:
             kind: state
             cities:
               - name: Kennebunkport
+                lat: 43.36150
+                lon: -70.47711
               - name: Portland
                 lat: 43.65736
                 lon: -70.25866
+            pois:
+              - name: Acadia National Park
 
           - name: Michigan
+            code: US-MI
             kind: state
             cities:
               - name: Saugatuck
+                lat: 42.65492
+                lon: -86.20406
+            pois:
+              - name: Saugatuck Dunes State Park
 
           - name: Mississippi
+            code: US-MS
             kind: state
 
           - name: Rhode Island
+            code: US-RI
             kind: state
             cities:
               - name: Providence
+                lat: 41.82399
+                lon: -71.41283
               - name: Newport
+                lat: 41.48998
+                lon: -71.31377
 
           - name: New Hampshire
+            code: US-NH
             kind: state
             cities:
               - name: Manchester
+                lat: 42.99564
+                lon: -71.45479
               - name: Concord
+                lat: 43.20718
+                lon: -71.53748
+            highmark: Mt. Adams
 
           - name: New Jersey
+            code: US-NJ
             kind: state
             cities:
               - name: Phillipsburg
+                lat: 40.69156
+                lon: -75.19525
               - name: Trenton
+                lat: 40.22031
+                lon: -74.76590
 
           - name: Maryland
             code: US-MD
             kind: state
             cities:
               - name: Annapolis
+                lat: 38.97864
+                lon: -76.49279
               - name: Baltimore
                 lat: 39.29088
                 lon: -76.61076
@@ -271,63 +487,114 @@ continents:
             kind: state
             cities:
               - name: Springfield
+                lat: 42.10188
+                lon: -72.58867
               - name: Gloucester
+                lat: 42.61536
+                lon: -70.66246
               - name: Salem
+                lat: 42.51953
+                lon: -70.89672
               - name: Plymouth
+                lat: 41.94267
+                lon: -70.76186
               - name: Provincetown
+                lat: 42.05256
+                lon: -70.18586
               - name: Andover
+                lat: 42.65717
+                lon: -71.14088
               - name: Worcester
+                lat: 42.26256
+                lon: -71.80189
               - name: Adams
+                lat: 42.62094
+                lon: -73.12041
               - name: Somerville
+                lat: 42.38760
+                lon: -71.09950
               - name: Cambridge
+                lat: 42.36563
+                lon: -71.10400
               - name: Watertown
+                lat: 42.36526
+                lon: -71.18432
               - name: Newton
+                lat: 42.33004
+                lon: -71.19486
               - name: Quincy
+                lat: 42.25099
+                lon: -71.00374
               - name: Truro
+                lat: 41.99344
+                lon: -70.04975
               - name: Boston
                 lat: 42.35883
                 lon: -71.05783
               - name: Northampton
                 lat: 42.3179
                 lon: -72.6311
+            highmark: Mt. Greylock
 
           - name: Montana
             code: US-MT
             kind: state
             cities:
               - name: Hungry Horse
+                lat: 48.38580
+                lon: -114.06095
               - name: Coram
+                lat: 48.42049
+                lon: -114.04559
               - name: Columbia Falls
+                lat: 48.36972
+                lon: -114.19158
               - name: Kalispell
+                lat: 48.20216
+                lon: -114.31532
               - name: Missoula
                 lat: 46.8701
                 lon: -113.99527
               - name: Whitefish
                 lat: 48.4108
                 lon: -114.33462
+            highmark: Garden Wall Traverse
 
           - name: Nevada
             code: US-NV
             kind: state
             cities:
               - name: Rhyolite
+                lat: 36.90382
+                lon: -116.82888
               - name: Las Vegas
                 lat: 36.16743
                 lon: -115.14841
 
           - name: New Mexico
+            code: US-NM
             kind: state
             cities:
               - name: Truth or Consequences
+                lat: 33.12835
+                lon: -107.25291
               - name: Albuquerque
+                lat: 35.08410
+                lon: -106.65099
             pois:
               - name: Very Large Array
+                lat: 34.07787
+                lon: -107.61781
+              - name: Monument Valley
+              - name: Painted Desert
 
           - name: New York
             code: US-NY
             kind: state
             cities:
               - name: Watkins Glen
+                lat: 42.38106
+                lon: -76.87058
               - name: New York City
                 lat: 40.71273
                 lon: -74.00602
@@ -337,20 +604,50 @@ continents:
             kind: state
             cities:
               - name: Kitty Hawk
+                lat: 36.06643
+                lon: -75.69354
               - name: Ocracoke
+                lat: 35.13020
+                lon: -75.91671
               - name: Buxton
+                lat: 35.24852
+                lon: -75.55028
               - name: Hatteras
+                lat: 35.22521
+                lon: -75.52791
               - name: Duck
+                lat: 36.17001
+                lon: -75.75593
               - name: Carova
+                lat: 36.54540
+                lon: -75.87220
               - name: Morehead City
+                lat: 34.72294
+                lon: -76.72604
               - name: Atlantic Beach
+                lat: 34.69905
+                lon: -76.74021
               - name: Manteo
+                lat: 35.90823
+                lon: -75.67573
               - name: Nags Head
+                lat: 35.95739
+                lon: -75.62406
               - name: Kill Devil Hills
+                lat: 36.03212
+                lon: -75.67761
               - name: Avon
+                lat: 35.34665
+                lon: -75.50793
               - name: Frisco
+                lat: 35.24935
+                lon: -75.59966
               - name: Raleigh
+                lat: 35.78040
+                lon: -78.63910
               - name: Winston-Salem
+                lat: 36.09981
+                lon: -80.24405
               - name: Asheville
                 lat: 35.59536
                 lon: -82.55084
@@ -359,15 +656,20 @@ continents:
                 lon: -80.84308
 
           - name: Ohio
+            code: US-OH
             kind: state
             cities:
               - name: Cleveland
+                lat: 41.49966
+                lon: -81.69368
 
           - name: Oregon
             code: US-OR
             kind: state
             cities:
               - name: Hood River
+                lat: 45.53116
+                lon: -121.64756
               - name: Portland
                 lat: 45.52025
                 lon: -122.67419
@@ -377,7 +679,11 @@ continents:
             kind: state
             cities:
               - name: Harrisburg
+                lat: 40.26631
+                lon: -76.88611
               - name: Allentown
+                lat: 40.60226
+                lon: -75.47161
               - name: Easton
                 lat: 40.69161
                 lon: -75.20999
@@ -386,9 +692,12 @@ continents:
                 lon: -75.16353
 
           - name: South Carolina
+            code: US-SC
             kind: state
             cities:
               - name: Myrtle Beach
+                lat: 33.69565
+                lon: -78.89004
 
           - name: Texas
             code: US-TX
@@ -417,8 +726,14 @@ continents:
             kind: state
             cities:
               - name: Brattleboro
+                lat: 42.85076
+                lon: -72.55729
               - name: Rutland
+                lat: 43.60848
+                lon: -72.97248
               - name: Killington
+                lat: 43.67433
+                lon: -72.77844
               - name: Burlington
                 lat: 44.47616
                 lon: -73.21291
@@ -431,35 +746,95 @@ continents:
             kind: state
             cities:
               - name: Lynchburg
+                lat: 37.41375
+                lon: -79.14225
               - name: Manassas
+                lat: 38.75095
+                lon: -77.47527
               - name: Waynesboro
+                lat: 38.06867
+                lon: -78.88940
               - name: Winchester
+                lat: 39.18522
+                lon: -78.16524
               - name: Front Royal
+                lat: 38.91791
+                lon: -78.19181
               - name: Woodstock
+                lat: 38.88178
+                lon: -78.50584
               - name: Luray
+                lat: 38.66547
+                lon: -78.46002
               - name: Blacksburg
+                lat: 37.22966
+                lon: -80.41368
               - name: Appomattox
+                lat: 37.35355
+                lon: -78.82727
               - name: Farmville
+                lat: 37.30247
+                lon: -78.39238
               - name: Crewe
+                lat: 37.17585
+                lon: -78.12439
               - name: Alexandria
+                lat: 38.80511
+                lon: -77.04702
               - name: Arlington
+                lat: 38.87693
+                lon: -77.08931
               - name: Centerville
+                lat: 37.75735
+                lon: -75.62104
               - name: Vienna
+                lat: 38.90137
+                lon: -77.26518
               - name: Gainesville
+                lat: 38.79274
+                lon: -77.6292
               - name: Dale City
+                lat: 38.64465
+                lon: -77.34269
               - name: Springfield
+                lat: 38.77499
+                lon: -77.18038
               - name: Reston
+                lat: 38.95328
+                lon: -77.34645
               - name: Herndon
+                lat: 38.96953
+                lon: -77.38595
               - name: Fair Oaks
+                lat: 38.86716
+                lon: -77.35769
               - name: Dumfries
+                lat: 38.56741
+                lon: -77.32677
               - name: Colonial Beach
+                lat: 38.25125
+                lon: -76.96282
               - name: Hampton
+                lat: 37.02644
+                lon: -76.34428
               - name: Williamsburg
+                lat: 37.27125
+                lon: -76.70004
               - name: Virginia Beach
+                lat: 36.84966
+                lon: -75.97608
               - name: Warrenton
+                lat: 38.71355
+                lon: -77.79537
               - name: Suffolk
+                lat: 36.72813
+                lon: -76.58347
               - name: Newport News
+                lat: 36.9775
+                lon: -76.42977
               - name: Gloucester
+                lat: 37.44523
+                lon: -76.55945
               - name: Charlottesville
                 lat: 38.02931
                 lon: -78.47668
@@ -481,9 +856,19 @@ continents:
             kind: state
             cities:
               - name: White Salmon
+                lat: 45.72762
+                lon: -121.48646
               - name: Seattle
                 lat: 47.60383
                 lon: -122.33006
+
+          - name: West Virginia
+            code: US-WV
+            kind: state
+            cities:
+              - name: Arbovale
+                lat: 38.4351
+                lon: -79.81317
 
           - name: Wyoming
             code: US-WY
