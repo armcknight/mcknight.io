@@ -83,6 +83,15 @@ title: Travel
     <label><input type="checkbox" data-layer="highmark" checked><i class="dot highmark"></i> high marks</label>
     <label><input type="checkbox" data-layer="labels" checked><i class="names"></i> names</label>
     <span class="not-a-layer"><i class="unvisited"></i> not yet</span>
+    {%- comment -%}
+      Heights are stored once, in metres, and shown in whichever unit is
+      chosen here. Radios rather than a checkbox: neither unit is the
+      "off" state of the other.
+    {%- endcomment -%}
+    <span class="units">
+      <label><input type="radio" name="elevation-unit" value="ft" checked> ft</label>
+      <label><input type="radio" name="elevation-unit" value="m"> m</label>
+    </span>
   </fieldset>
   <p class="hint">
     Drag to turn the globe. Scroll to move closer. Click a country, a region or a
@@ -141,36 +150,56 @@ title: Travel
                 {{ region.name }}
               </button>
             </summary>
-            <ul class="places">
-              {%- for pair in place_kinds -%}
-                {%- assign parts = pair | split: ',' -%}
-                {%- assign place_key = parts[0] -%}
-                {%- assign place_kind = parts[1] -%}
-                {%- assign list = region[place_key] -%}
+            {%- comment -%}
+              Each kind gets its own collapsible subheading, so a state with
+              forty cities and two points of interest does not bury the two.
+              They start shut; focusing something inside one opens it.
+            {%- endcomment -%}
+            {%- for pair in place_kinds -%}
+              {%- assign parts = pair | split: ',' -%}
+              {%- assign place_key = parts[0] -%}
+              {%- assign place_kind = parts[1] -%}
+              {%- assign list = region[place_key] -%}
+              {%- if list.size > 0 -%}
+            <details class="level kind {{ place_kind }}">
+              <summary>
+                <span class="kind-name">
+                  {%- case place_kind -%}
+                    {%- when 'city' -%}{%- if list.size == 1 -%}city{%- else -%}cities{%- endif -%}
+                    {%- when 'poi' -%}point{%- if list.size != 1 -%}s{%- endif %} of interest
+                    {%- when 'highmark' -%}high mark{%- if list.size != 1 -%}s{%- endif -%}
+                    {%- else -%}{{ place_kind }}
+                  {%- endcase -%}
+                  <span class="count">{{ list.size }}</span>
+                </span>
+              </summary>
+              <ul class="places">
                 {%- for place in list -%}
                   {%- if place.name and place.name != '' -%}
-              <li>
-                {%- comment -%}
-                  The index must match the position in the place-data array, and
-                  that array holds only places that have coordinates. So the
-                  counter advances for those and no others, and a place still
-                  waiting to be geocoded is listed but not clickable.
-                {%- endcomment -%}
-                {%- if place.lat and place.lon -%}
-                <button type="button" class="entry place-entry {{ place_kind }}-entry" data-kind="place" data-index="{{ city_index }}">
-                  {{ place.name }}
-                </button>
-                {%- assign city_index = city_index | plus: 1 -%}
-                {%- else -%}
-                <span class="entry place-entry {{ parts[1] }}-entry not-located" title="No coordinates yet — run make travel-geocode">
-                  {{ place.name }}
-                </span>
-                {%- endif -%}
-              </li>
+                <li>
+                  {%- comment -%}
+                    The index must match the position in the place-data array,
+                    and that array holds only places that have coordinates. So
+                    the counter advances for those and no others, and a place
+                    still waiting to be geocoded is listed but not clickable.
+                  {%- endcomment -%}
+                  {%- if place.lat and place.lon -%}
+                  <button type="button" class="entry place-entry {{ place_kind }}-entry" data-kind="place" data-index="{{ city_index }}">
+                    {{ place.name }}{% if place.elevation_m %}<span class="elevation" data-metres="{{ place.elevation_m }}"></span>{% endif %}
+                  </button>
+                  {%- assign city_index = city_index | plus: 1 -%}
+                  {%- else -%}
+                  <span class="entry place-entry {{ place_kind }}-entry not-located" title="No coordinates yet — run make travel-geocode">
+                    {{ place.name }}
+                  </span>
+                  {%- endif -%}
+                </li>
                   {%- endif -%}
                 {%- endfor -%}
-              {%- endfor -%}
-            </ul>
+              </ul>
+            </details>
+              {%- endif -%}
+            {%- endfor -%}
           </details>
           {%- endfor -%}
         {%- else -%}
@@ -208,7 +237,7 @@ title: Travel
         {%- for place in list -%}
           {%- if place.lat and place.lon -%}
             {%- if first %}{% assign first = false %}{% else %},{% endif %}
-{"kind":{{ place_kind | jsonify }},"name":{{ place.name | jsonify }},"lat":{{ place.lat }},"lon":{{ place.lon }},"region":{{ region.name | jsonify }},"regionKey":{{ region_key | jsonify }},"country":{{ country.name | jsonify }},"countryCode":{{ country.code | jsonify }},"continent":{{ continent.name | jsonify }}}
+{"kind":{{ place_kind | jsonify }},"name":{{ place.name | jsonify }},"lat":{{ place.lat }},"lon":{{ place.lon }},"region":{{ region.name | jsonify }},"regionKey":{{ region_key | jsonify }},"country":{{ country.name | jsonify }},"countryCode":{{ country.code | jsonify }},"continent":{{ continent.name | jsonify }}{% if place.elevation_m %},"elevation":{{ place.elevation_m }}{% endif %}}
           {%- endif -%}
         {%- endfor -%}
       {%- endfor -%}

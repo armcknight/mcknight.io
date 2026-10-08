@@ -37,6 +37,17 @@
     if (KINDS.indexOf(place.kind) === -1) KINDS.push(place.kind);
   });
 
+  // Heights are stored in metres, once, and shown in whichever unit is chosen.
+  // One function formats every one of them, so the list, the tooltips and the
+  // labels on the globe can never disagree about a number.
+  var unit = 'ft';
+
+  function elevationText(metres) {
+    if (metres === undefined || metres === null) return '';
+    var value = unit === 'ft' ? Math.round(metres * 3.28084) : Math.round(metres);
+    return value.toLocaleString() + ' ' + unit;
+  }
+
   // Which layers are drawn. The legend doubles as the control for these.
   var showing = { countries: true, regions: true, labels: true };
   KINDS.forEach(function (kind) { showing[kind] = true; });
@@ -113,6 +124,12 @@
   //
   // Widths are estimated from the letter count. Measuring 71 real text boxes on
   // every frame of a drag costs far more than the estimate costs in accuracy.
+  // A high mark carries its height on the globe as well, since that is the
+  // whole point of marking one.
+  function labelText(d) {
+    return d.elevation ? d.name + '  ' + elevationText(d.elevation) : d.name;
+  }
+
   function placeLabels(radius) {
     var rotation = projection.rotate();
     var centre = [-rotation[0], -rotation[1]];
@@ -132,7 +149,7 @@
         node: this,
         x: point[0] + radius + 3,
         y: point[1] + (fontSize * 0.35),
-        width: d.name.length * fontSize * 0.55,
+        width: labelText(d).length * fontSize * 0.55,
         height: fontSize,
         distance: d3.geoDistance([d.lon, d.lat], centre)
       });
@@ -379,8 +396,9 @@
     var row = outline.querySelector(selector);
     if (!row) return;
 
-    // A row inside a shut level cannot be scrolled to, so open everything
-    // above it first.
+    // A row inside a shut level cannot be scrolled to, so open everything above
+    // it first. That now includes the subheading for its kind, since those are
+    // <details> as well.
     var level = row.closest('details');
     while (level) {
       level.open = true;
@@ -388,6 +406,17 @@
     }
 
     row.classList.add('focused');
+
+    // Focusing a place opens the way down to it. Focusing a region, country or
+    // continent instead opens what is inside it, so choosing Colorado shows
+    // Colorado's places rather than a shut row with its name on it.
+    var container = row.closest('details');
+    if (container && focused.kind !== 'place') {
+      container.querySelectorAll('details.kind').forEach(function (kind) {
+        kind.open = true;
+      });
+    }
+
     row.scrollIntoView({ block: 'nearest' });
   }
 
@@ -535,6 +564,29 @@
     apply();
   }
 
+  // Switching the unit rewrites every height already on the page: the ones in
+  // the list, which the server left empty for this reason, and the ones in the
+  // labels on the globe.
+  function wireUnits() {
+    function redraw() {
+      document.querySelectorAll('#outline .elevation').forEach(function (node) {
+        node.textContent = ' ' + elevationText(Number(node.dataset.metres));
+      });
+      layers.labels.selectAll('text').text(labelText);
+      schedule();
+    }
+
+    document.querySelectorAll('input[name="elevation-unit"]').forEach(function (radio) {
+      radio.addEventListener('change', function () {
+        if (!radio.checked) return;
+        unit = radio.value;
+        redraw();
+      });
+    });
+
+    redraw();
+  }
+
   function wireOutline() {
     if (!outline) return;
     outline.addEventListener('click', function (event) {
@@ -596,7 +648,8 @@
         // apart by the stylesheet rather than by this script.
         .attr('class', function (d) { return 'place ' + d.kind; })
         .on('pointerenter', function (event, d) {
-          showTooltip(event, d.name, [d.region, d.country].filter(Boolean).join(' \u00b7 '));
+          var where = [d.region, d.country].filter(Boolean).join(' \u00b7 ');
+          showTooltip(event, d.name + (d.elevation ? '  ' + elevationText(d.elevation) : ''), where);
         })
         .on('pointerleave', hideTooltip)
         .on('click', function (event, d) { focusOn('place', d.index); });
@@ -606,7 +659,7 @@
       .data(places)
       .join('text')
       .attr('class', function (d) { return 'place-label ' + d.kind; })
-      .text(function (d) { return d.name; });
+      .text(labelText);
 
     layers.sphere.style('cursor', 'default').on('click', clearFocus);
 
@@ -616,6 +669,7 @@
     enableZoom();
     wireOutline();
     wireLayerControls();
+    wireUnits();
     spin();
 
     window.addEventListener('resize', function () {

@@ -129,13 +129,38 @@ main {
  * cities have no triangle of their own, so they are stepped in to line up
  * under the names above them rather than under the triangles. */
 #outline .level .level { padding-left: 0.7rem; }
-#outline ul.cities { list-style: none; margin: 0; padding-left: 1.55rem; }
+#outline ul.places { list-style: none; margin: 0; padding-left: 1.55rem; }
+
+/* A subheading for each kind of place, so forty cities do not bury two points
+ * of interest. It reads as a quiet label rather than as another place. */
+#outline .kind > summary { color: var(--text-muted); }
+#outline .kind-name {
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+#outline .kind-name .count {
+  margin-left: 0.3rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  opacity: 0.75;
+}
+#outline .kind.poi > summary .kind-name { color: var(--poi); }
+#outline .kind.highmark > summary .kind-name { color: var(--highmark); }
+
+/* The gap between a state and its first entry was the summary's own line
+ * height plus the list's margin. The list carries the spacing now, once. */
+#outline .level > summary { margin: 0; padding: 0.02rem 0; }
+#outline details.region > .level { margin-top: 0.1rem; }
+#outline details.region { margin-bottom: 0.15rem; }
 #outline .nothing-yet {
   color: var(--text-muted);
   font-style: italic;
   margin: 0 0 0 1.55rem;
   font-size: 0.75rem;
 }
+
+#outline .entry { padding-top: 0.05rem; padding-bottom: 0.05rem; }
 
 #outline .continent-entry {
   font-size: 0.6875rem;
@@ -168,6 +193,15 @@ main {
 .region-entry { color: var(--text-secondary); }
 .city-entry { color: var(--text-muted); }
 .not-located { display: block; color: #a99; font-style: italic; cursor: default; }
+
+/* A height in the list, written by the script once a unit is chosen. */
+.elevation {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+}
+
+.entry.focused .elevation { color: rgba(255, 255, 255, 0.8); }
 
 .entry.focused {
   background: var(--region-visited);
@@ -326,6 +360,17 @@ main {
 .legend label,
 .legend span { display: inline-flex; align-items: center; gap: 0.4rem; cursor: pointer; }
 .legend .not-a-layer { cursor: default; color: var(--text-muted); }
+
+/* The unit control sits apart from the layer switches: it changes how a number
+ * reads, not whether something is drawn. */
+.legend .units {
+  display: inline-flex;
+  gap: 0.5rem;
+  margin-left: auto;
+  padding-left: 0.75rem;
+  border-left: 1px solid var(--border);
+  color: var(--text-muted);
+}
 .legend input { margin: 0; cursor: pointer; }
 .legend i {
   display: inline-block;

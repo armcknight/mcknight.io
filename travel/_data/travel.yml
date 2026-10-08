@@ -112,6 +112,8 @@ continents:
                 lat: 65.55471
                 lon: -147.21847
               - name: Chena River State Recreation Area
+                lat: 64.90488
+                lon: -146.27198
               - name: Thompson Pass
                 lat: 61.12942
                 lon: -145.73339
@@ -123,6 +125,9 @@ continents:
                 lon: -149.27369
             highmark:
               - name: Silvertip Peak, Eastern Alaska Range
+                lat: 63.48890
+                lon: -145.60988
+                elevation_m: 2812
 
           - name: Arizona
             code: US-AZ
@@ -141,6 +146,12 @@ continents:
               - name: The Pit
                 lat: 32.50118
                 lon: -114.76225
+              - name: Monument Valley
+                lat: 36.98239
+                lon: -110.11111
+              - name: Painted Desert
+                lat: 35.08388
+                lon: -109.78878
 
           - name: California
             code: US-CA
@@ -211,6 +222,7 @@ continents:
               - name: Telescope Peak
                 lat: 36.16985
                 lon: -117.08921
+                elevation_m: 3369
 
           - name: Colorado
             code: US-CO
@@ -284,10 +296,13 @@ continents:
                 lat: 37.79119
                 lon: -105.61227
               - name: Mesa Verde National Park
+                lat: 37.25378
+                lon: -108.4556
             highmark:
               - name: Grays Peak
                 lat: 39.63388
                 lon: -105.81751
+                elevation_m: 4352
 
           - name: Connecticut
             code: US-CT
@@ -368,8 +383,16 @@ continents:
                 lon: -155.99693
             pois:
               - name: Volcanoes National Park
+                lat: 19.26083
+                lon: -155.35787
               - name: Ka Lae
-            highmark: Mauna Kea Recreation Area
+                lat: 18.92173
+                lon: -155.67216
+            highmark:
+              - name: Mauna Kea Recreation Area
+                lat: 19.74950
+                lon: -155.52559
+                elevation_m: 1984
 
           - name: Illinois
             code: US-IL
@@ -380,6 +403,8 @@ continents:
                 lon: -87.62442
             pois:
               - name: Dixon Springs State Park
+                lat: 37.38393
+                lon: -88.65822
 
           - name: Indiana
             code: US-IN
@@ -394,7 +419,11 @@ continents:
                 lon: -85.75941
             pois:
               - name: Maker's Mark Distillery
+                lat: 37.64683
+                lon: -85.34899
               - name: Abraham Lincoln Birthplace National Historical Park
+                lat: 37.61179
+                lon: -85.64278
 
           - name: Louisiana
             code: US-LA
@@ -419,6 +448,8 @@ continents:
                 lon: -70.25866
             pois:
               - name: Acadia National Park
+                lat: 44.35631
+                lon: -68.21548
 
           - name: Michigan
             code: US-MI
@@ -429,6 +460,8 @@ continents:
                 lon: -86.20406
             pois:
               - name: Saugatuck Dunes State Park
+                lat: 42.69813
+                lon: -86.20377
 
           - name: Mississippi
             code: US-MS
@@ -455,7 +488,11 @@ continents:
               - name: Concord
                 lat: 43.20718
                 lon: -71.53748
-            highmark: Mt. Adams
+            highmark:
+              - name: Mt. Adams
+                lat: 44.32058
+                lon: -71.29164
+                elevation_m: 1748
 
           - name: New Jersey
             code: US-NJ
@@ -534,7 +571,11 @@ continents:
               - name: Northampton
                 lat: 42.3179
                 lon: -72.6311
-            highmark: Mt. Greylock
+            highmark:
+              - name: Mt. Greylock
+                lat: 42.63726
+                lon: -73.16599
+                elevation_m: 1063
 
           - name: Montana
             code: US-MT
@@ -558,7 +599,11 @@ continents:
               - name: Whitefish
                 lat: 48.4108
                 lon: -114.33462
-            highmark: Garden Wall Traverse
+            highmark:
+              - name: Garden Wall Traverse
+                lat: 48.75771
+                lon: -113.74203
+                elevation_m: 2348
 
           - name: Nevada
             code: US-NV
@@ -585,8 +630,6 @@ continents:
               - name: Very Large Array
                 lat: 34.07787
                 lon: -107.61781
-              - name: Monument Valley
-              - name: Painted Desert
 
           - name: New York
             code: US-NY
@@ -598,6 +641,15 @@ continents:
               - name: New York City
                 lat: 40.71273
                 lon: -74.00602
+            pois:
+              - name: Watkins Glen State Park
+                lat: 42.3615
+                lon: -76.92885
+            highmark:
+              - name: Top of the Rock
+                lat: 40.75903
+                lon: -73.97940
+                elevation_m: 260
 
           - name: North Carolina
             code: US-NC
@@ -654,6 +706,13 @@ continents:
               - name: Charlotte
                 lat: 35.22721
                 lon: -80.84308
+            pois:
+              - name: Great Smoky Mountains National Park
+                lat: 35.63422
+                lon: -83.40237
+              - name: Cape Hatteras National Seashore
+                lat: 35.23127
+                lon: -75.54137
 
           - name: Ohio
             code: US-OH
@@ -712,6 +771,13 @@ continents:
               - name: San Antonio
                 lat: 29.4246
                 lon: -98.49514
+            pois:
+              - name: Big Bend National Park
+                lat: 29.33325
+                lon: -103.19433
+              - name: South Llano River State Park
+                lat: 30.42609
+                lon: -99.80024
 
           - name: Utah
             code: US-UT
@@ -720,6 +786,16 @@ continents:
               - name: Moab
                 lat: 38.57381
                 lon: -109.54621
+            pois:
+              - name: Arches National Park
+                lat: 38.72653
+                lon: -109.56305
+              - name: Canyonlands National Park
+                lat: 38.23326
+                lon: -109.92066
+              - name: Zion National Park
+                lat: 37.32217
+                lon: -113.00479
 
           - name: Vermont
             code: US-VT
@@ -740,6 +816,15 @@ continents:
               - name: Montpelier
                 lat: 44.26022
                 lon: -72.57504
+            pois:
+              - name: Long Trail
+                lat: 43.05282
+                lon: -72.97305
+            highmark:
+              - name: Killington Peak
+                lat: 43.60455
+                lon: -72.82015
+                elevation_m: 1293
 
           - name: Virginia
             code: US-VA
@@ -850,6 +935,36 @@ continents:
               - name: Roanoke
                 lat: 37.27097
                 lon: -79.94143
+              - name: Harrisonburg
+                lat: 38.44933
+                lon: -78.86888
+            highmark:
+              - name: The Priest
+                lat: 37.81986
+                lon: -79.06253
+                elevation_m: 1227
+            pois:
+              - name: Shenandoah National Park
+                lat: 38.47197
+                lon: -78.4637
+              - name: False Cape State Park
+                lat: 36.59067
+                lon: -75.88204
+              - name: Belle Isle
+                lat: 37.5292
+                lon: -77.45284
+              - name: Skyline Drive
+                lat: 38.51670
+                lon: -78.44281
+              - name: Blue Ridge Parkway
+                lat: 38.03252
+                lon: -78.85832
+              - name: Luray Caverns
+                lat: 38.66328
+                lon: -78.48356
+              - name: Shenandoah Caverns
+                lat: 38.71551
+                lon: -78.66928
 
           - name: Washington
             code: US-WA
