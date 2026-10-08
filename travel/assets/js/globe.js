@@ -235,25 +235,29 @@
 
   // ALL POINTER GESTURES IN ONE PLACE
   //
-  // One finger turns the globe. Two pinch it. A double tap held and dragged
-  // zooms, the way a map application does, for when only one thumb is free.
+  // One finger turns the globe. Two pinch it.
   //
   // Written against pointer events rather than d3.drag plus touch handlers,
   // because those two fight: d3.drag calls preventDefault on pointerdown, which
-  // suppresses the touch events a pinch handler needs. That is exactly why
-  // pinching did nothing on a phone. Pointer events describe mouse, trackpad,
-  // pen and finger alike, and counting them is how a gesture is recognised, so
-  // one handler covers every case with nothing to conflict with.
+  // suppresses the touch events a pinch handler needs. Pointer events describe
+  // mouse, trackpad, pen and finger alike, and counting them is how a gesture is
+  // recognised, so one handler covers every case with nothing to conflict with.
+  //
+  // The one subtlety is pointer capture. Capturing keeps the moves coming when a
+  // finger slides off the globe, but it also retargets the click that follows to
+  // the element that captured — so capturing on pointerdown sent every click to
+  // the <svg> instead of to the country under the finger, and nothing on the
+  // globe could be chosen any more. So capture is taken only once a drag is
+  // actually under way, and released as soon as it ends.
   function enableGestures() {
     var node = svg.node();
     var active = new Map();          // every finger or button currently down
-    var mode = null;                 // rotate | pinch | tapzoom
+    var mode = null;                 // rotate | pinch
     var startRotation = null;
     var startPoint = null;
     var startSpread = 0;
     var startScale = 0;
-    var lastTapAt = 0;
-    var lastTapPoint = null;
+    var captured = false;
     var moved = false;
 
     function spread() {
@@ -261,47 +265,46 @@
       return Math.sqrt(Math.pow(points[0].x - points[1].x, 2) + Math.pow(points[0].y - points[1].y, 2));
     }
 
-    node.addEventListener('pointerdown', function (event) {
-      // Capture keeps the moves coming even when a finger slides off the globe.
-      // It throws if the browser does not consider this pointer active, and it
-      // must not take the rest of the gesture down with it.
+    function capture(pointerId) {
+      if (captured) return;
       try {
-        node.setPointerCapture(event.pointerId);
+        node.setPointerCapture(pointerId);
+        captured = true;
       } catch (ignored) {
-        // Carry on without capture.
+        // Carry on without capture rather than lose the gesture.
       }
+    }
 
+    function releaseCapture(pointerId) {
+      if (!captured) return;
+      try {
+        node.releasePointerCapture(pointerId);
+      } catch (ignored) {
+        // Already gone.
+      }
+      captured = false;
+    }
+
+    node.addEventListener('pointerdown', function (event) {
       active.set(event.pointerId, { x: event.clientX, y: event.clientY });
       stopSpinning();
       hideTooltip();
 
       if (active.size === 2) {
+        // Two fingers can only mean a pinch, so there is no click to protect.
         mode = 'pinch';
         startSpread = spread();
         startScale = projection.scale();
+        capture(event.pointerId);
+        moved = true;
         svg.classed('dragging', false);
         return;
       }
 
-      var now = performance.now();
-      var isSecondTap = lastTapPoint && (now - lastTapAt) < 320 &&
-        Math.abs(event.clientX - lastTapPoint.x) < 30 &&
-        Math.abs(event.clientY - lastTapPoint.y) < 30;
-      lastTapAt = now;
-      lastTapPoint = { x: event.clientX, y: event.clientY };
-
+      mode = 'rotate';
       startPoint = { x: event.clientX, y: event.clientY };
+      startRotation = projection.rotate();
       moved = false;
-
-      if (isSecondTap) {
-        mode = 'tapzoom';
-        startScale = projection.scale();
-        moved = true;   // a second tap is part of a gesture, not a choice
-      } else {
-        mode = 'rotate';
-        startRotation = projection.rotate();
-        svg.classed('dragging', true);
-      }
     });
 
     node.addEventListener('pointermove', function (event) {
@@ -310,14 +313,6 @@
 
       if (mode === 'pinch' && active.size >= 2) {
         if (startSpread > 0) setScale(startScale * (spread() / startSpread));
-        moved = true;
-        schedule();
-        return;
-      }
-
-      if (mode === 'tapzoom') {
-        // Dragging down moves in, as in Apple Maps. One sign flips it.
-        setScale(startScale * Math.pow(2, (event.clientY - startPoint.y) / 120));
         schedule();
         return;
       }
@@ -326,7 +321,15 @@
 
       var dx = event.clientX - startPoint.x;
       var dy = event.clientY - startPoint.y;
-      if (Math.abs(dx) > 4 || Math.abs(dy) > 4) moved = true;
+
+      // Below this it is a tap with an unsteady hand, not a drag.
+      if (!moved && Math.abs(dx) < 4 && Math.abs(dy) < 4) return;
+
+      if (!moved) {
+        moved = true;
+        capture(event.pointerId);
+        svg.classed('dragging', true);
+      }
 
       // Sensitivity falls as the globe is magnified, so a pixel of movement
       // always covers about the same distance on screen.
@@ -340,6 +343,7 @@
 
     function release(event) {
       active.delete(event.pointerId);
+      releaseCapture(event.pointerId);
 
       if (active.size === 1 && mode === 'pinch') {
         // A finger lifted mid-pinch: carry on turning with the one left, rather
@@ -360,7 +364,7 @@
     node.addEventListener('pointerup', release);
     node.addEventListener('pointercancel', release);
 
-    // A gesture must not also count as choosing whatever was under the finger.
+    // A drag must not also count as choosing whatever was under the finger.
     // Captured, so it is decided before the shapes see the click.
     node.addEventListener('click', function (event) {
       if (!moved) return;
