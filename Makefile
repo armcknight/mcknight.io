@@ -16,6 +16,25 @@ ifeq ($(SELECTED),)
 SELECTED := home
 endif
 
+# A goal make does not recognise must stop everything, before any recipe runs.
+#
+# Without this, a misremembered site name is silently ignored: SELECTED falls
+# back to home, the action runs against the wrong site, and only afterwards does
+# make complain that it has no rule for the name. `make bust-cache main` really
+# did invalidate mcknight.io and then report a failure, which is the worst
+# possible order for those two events.
+#
+# The list of valid goals is scraped from this file, so it cannot fall out of
+# step with the targets below. `$(error)` fires while make is still reading the
+# Makefile, which is what puts it in front of the action rather than behind it.
+KNOWN_GOALS := $(SITES) \
+	$(shell grep -oE '^[a-zA-Z_][a-zA-Z0-9_-]*:' $(firstword $(MAKEFILE_LIST)) | tr -d ':' | sort -u)
+STRAY_GOALS := $(filter-out $(KNOWN_GOALS) help-%,$(MAKECMDGOALS))
+
+ifneq ($(STRAY_GOALS),)
+$(error No such target or site: $(STRAY_GOALS). Sites are: $(SITES). Run `make help`)
+endif
+
 .PHONY: $(SITES)
 $(SITES):
 	@if [ "$(words $(MAKECMDGOALS))" = "1" ]; then \
