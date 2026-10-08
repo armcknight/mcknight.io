@@ -109,6 +109,20 @@ main {
 
 #outline summary::-webkit-details-marker { display: none; }
 
+/* The name inside a summary sizes to its text rather than filling the row.
+ * Filling it left only the triangle to tap for collapsing, which is fine with
+ * a mouse and impossible with a thumb: on a phone the name covered the whole
+ * row, so every tap chose the place and nothing ever collapsed. Now the name
+ * chooses and the space beside it collapses. */
+#outline summary .entry {
+  display: inline-block;
+  width: auto;
+  flex: 0 1 auto;
+}
+
+/* And the row itself is a comfortable target for the part that toggles. */
+#outline summary { min-height: 1.6rem; }
+
 /* Drawn with borders rather than set as a character: the triangle glyphs are
  * missing from some fonts, and fell back to a mark too small to read. */
 #outline summary::before {
@@ -207,6 +221,64 @@ main {
   background: var(--region-visited);
   color: #fff;
 }
+
+#fullscreen {
+  font: inherit;
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 0.1rem 0.5rem;
+  margin-left: 0.4rem;
+  cursor: pointer;
+  color: var(--text-secondary);
+}
+
+#fullscreen:hover { border-color: var(--accent); color: var(--accent); }
+
+/* FULL SCREEN
+ *
+ * Everything but the globe goes away and the sphere fills the window. The page
+ * keeps working exactly as before underneath — this hides furniture, it does
+ * not build a second globe. */
+body.fullscreen { overflow: hidden; }
+body.fullscreen header,
+body.fullscreen footer,
+body.fullscreen #outline,
+body.fullscreen .legend,
+body.fullscreen .hint { display: none; }
+
+body.fullscreen main { max-width: none; padding: 0; }
+body.fullscreen .layout { grid-template-columns: 1fr; gap: 0; }
+body.fullscreen #globe-figure {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--background);
+}
+
+#exit-fullscreen {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+#exit-fullscreen:hover { color: var(--accent); border-color: var(--accent); }
 
 #clear-focus {
   font: inherit;

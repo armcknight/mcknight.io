@@ -46,9 +46,14 @@ BASE = 'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/ge
 # 50m rather than 110m for the countries: the focus view magnifies up to forty
 # times, and at that distance a 110m coastline is visibly a row of straight
 # lines. 50m costs about 150 KB more once filtered and simplified.
+#
+# The `_lakes` variants, because a state's legal boundary runs out into the
+# water: in the plain files Michigan is one polygon that swallows Lake Michigan,
+# rather than the two peninsulas either side of it. The `_lakes` files cut the
+# major lakes back out, which is what a map should show.
 SOURCES = {
-  'countries' => 'ne_50m_admin_0_countries.geojson',
-  'admin1' => 'ne_10m_admin_1_states_provinces.geojson'
+  'countries' => 'ne_50m_admin_0_countries_lakes.geojson',
+  'admin1' => 'ne_10m_admin_1_states_provinces_lakes.geojson'
 }.freeze
 
 # The keys under a region that hold places. A region is located by the places
@@ -191,34 +196,77 @@ def signed_area(ring)
   total / 2.0
 end
 
-# A ring must stay closed, keep at least three corners, and still describe the
-# same patch of ground. The last of those is why the area is checked:
-# simplifying hard enough can reverse a ring's winding or flatten it, and d3
-# then paints the whole globe in that country's colour instead of the country.
-# Antarctica is the usual victim, because its boundary runs along the pole,
-# those points are collinear, and dropping them destroys the ring.
+# The smallest area a ring may enclose and still be worth drawing, in square
+# degrees. Roughly a tenth of a square kilometre: far below one screen pixel.
 #
-# Where simplification would do that, the original ring is kept. A few rings
-# staying large is a far better outcome than a planet painted beige.
-def simplify_ring(ring, epsilon = EPSILON)
-  simplified = simplify(ring, epsilon)
-  return ring if simplified.length < 4
+# Size is measured by area rather than by width, because the dangerous shapes
+# are slivers — long, thin and enclosing almost nothing. Malawi gains one in the
+# lakes variant: five points enclosing two millionths of a square degree. Round
+# its corners to the grid and its winding reverses, and a reversed ring does not
+# describe a sliver, it describes everything except that sliver. d3 duly painted
+# the whole planet in Malawi's colour.
+SMALLEST_AREA = 1e-5
 
-  simplified[-1] = simplified[0]
-
-  before = signed_area(ring)
-  after = signed_area(simplified)
-  return ring if before.zero? || after.zero?
-  return ring if before.positive? != after.positive?
-  return ring if ((after - before).abs / before.abs) > 0.2
-
-  simplified
+def ring_extent(ring)
+  xs = ring.map(&:first)
+  ys = ring.map(&:last)
+  [xs.max - xs.min, ys.max - ys.min].max
 end
 
-def simplify_geometry(geometry, epsilon = EPSILON)
+# Rounding belongs here, with the checks, rather than afterwards: a ring that
+# survives simplification can still be ruined by being snapped to the grid, and
+# only a check applied to the final coordinates can see that.
+def round_ring(ring, precision)
+  rounded = ring.map { |x, y| [x.round(precision), y.round(precision)] }
+  deduped = rounded.chunk_while { |a, b| a == b }.map(&:first)
+  deduped << deduped.first unless deduped.first == deduped.last
+  deduped
+end
+
+# A ring must stay closed, keep at least three corners, enclose enough ground to
+# see, and still be wound the way it started. Anything that fails is dropped
+# rather than repaired: the obvious repair, falling back to the original ring, is
+# no repair at all when rounding is what broke it, since the original rounds the
+# same way.
+def simplify_ring(ring, epsilon = EPSILON, precision = PRECISION)
+  before = signed_area(ring)
+  return nil if before.abs < SMALLEST_AREA
+
+  simplified = simplify(ring, epsilon)
+  simplified = ring if simplified.length < 4
+  simplified[-1] = simplified[0]
+
+  final = round_ring(simplified, precision)
+  return nil if final.length < 4
+
+  after = signed_area(final)
+  return nil if after.zero?
+  return nil if before.positive? != after.positive?
+
+  return final if ((after - before).abs / before.abs) <= 0.2
+
+  # Simplified too far. The unsimplified ring, rounded, is the only other
+  # candidate, and it is used only if it survives the same tests.
+  fallback = round_ring(ring, precision)
+  fallback_area = signed_area(fallback)
+  return nil if fallback.length < 4 || fallback_area.zero?
+  return nil if before.positive? != fallback_area.positive?
+
+  fallback
+end
+
+def simplify_geometry(geometry, epsilon = EPSILON, precision = PRECISION)
   polygons = geometry['type'] == 'Polygon' ? [geometry['coordinates']] : geometry['coordinates']
-  simplified = polygons.map { |rings| rings.map { |ring| simplify_ring(ring, epsilon) }.compact }
-                       .reject { |rings| rings.empty? }
+  simplified = polygons.map do |rings|
+    outer, *holes = rings
+    kept_outer = simplify_ring(outer, epsilon, precision)
+    # The whole polygon goes when its outer ring does. Compacting the list
+    # instead would promote a hole to be the outline, which is worse than
+    # losing the shape: the hole would be drawn as land.
+    next nil if kept_outer.nil?
+
+    [kept_outer] + holes.map { |hole| simplify_ring(hole, epsilon, precision) }.compact
+  end.compact
   return nil if simplified.empty?
 
   if geometry['type'] == 'Polygon'
@@ -267,7 +315,7 @@ country_features = countries['features'].map do |feature|
       'name' => properties['NAME'],
       'visited' => visited_countries.key?(iso)
     },
-    'geometry' => simplify_geometry(feature['geometry'], COUNTRY_EPSILON).then { |g| g.merge('coordinates' => round_coordinates(g['coordinates'])) }
+    'geometry' => simplify_geometry(feature['geometry'], COUNTRY_EPSILON)
   }
 end.reject { |f| f['geometry'].nil? }
 
@@ -342,7 +390,7 @@ wanted_regions.each do |key, want|
         'country' => want['country'],
         'matched_by' => how
       },
-      'geometry' => geometry.merge('coordinates' => round_coordinates(geometry['coordinates']))
+      'geometry' => geometry
     }
   end
   puts format('  %-22s %-26s -> %s (%s)', key, want['name'],

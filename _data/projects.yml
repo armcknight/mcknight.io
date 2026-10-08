@@ -79,6 +79,11 @@ apps:
 #    website: "https://github.com/armcknight/mtg"
 #    website-name: "GitHub"
 
+  - name: "travel.mcknight.io"
+    description: "An interactive globe showing places I've spent time: continents, countries, states and provinces, cities, points of interest and some high marks."
+    website: "https://travel.mcknight.io"
+    website-name: "Visit"
+
 coding-challenges:
   - name: Project Euler
     solutions: "https://github.com/armcknight/ProjectEuler"

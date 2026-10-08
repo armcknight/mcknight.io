@@ -40,10 +40,9 @@ log_travel    := travel_build
 label_home    := mcknight.io
 label_travel  := travel.mcknight.io
 
-# CloudFront distributions. travel has none yet; the cache targets say so
-# plainly rather than failing inside the aws command.
+# CloudFront distributions.
 dist_home     := E3AJVW95W5JFMD
-dist_travel   :=
+dist_travel   := E2LVEB8WVCV9QY
 
 # Every Ruby command goes through this, never through a bare `rbenv exec`.
 #
@@ -267,6 +266,22 @@ travel-geocode: ## Add missing city coordinates to travel/_data/travel.yml
 .PHONY: travel-geo
 travel-geo: ## Rebuild the globe geometry from Natural Earth
 	$(RUBY) ruby travel/scripts/build-geo.rb
+
+# Checks every located place against the polygon of the region it is filed
+# under, and lists anything still waiting for coordinates. Reads only committed
+# files, so it needs no network.
+#
+# It exists because a geocoder is confidently wrong often enough to matter: it
+# has put Gray's Peak in Oklahoma, the Painted Desert in Anaheim, and Skyline
+# Drive on a street in Norfolk, each a plausible answer to a slightly ambiguous
+# name.
+#
+# It cannot catch a wrong answer that lands inside the right region — Ka Lae on
+# Kauai and Kapa'au on Molokai were both hundreds of kilometres out and both
+# still in Hawaii. Read new coordinates; this is a safety net, not a substitute.
+.PHONY: travel-check
+travel-check: ## Check every travel place sits inside the region it is filed under
+	$(RUBY) ruby travel/scripts/check-places.rb
 
 # MARK: - Publishing
 

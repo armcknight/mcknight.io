@@ -44,10 +44,10 @@ workflows:
   url: https://github.com/armcknight/workflows/releases/tag/2.1.0
   tag: 2.1.0
 workr:
-  version: 1.0.1
-  date: '2026-08-10'
-  url: https://github.com/armcknight/homebrew-tools/releases/tag/work-1.0.1
-  tag: work-1.0.1
+  version: 1.0.2
+  date: '2026-08-27'
+  url: https://github.com/armcknight/homebrew-tools/releases/tag/work-1.0.2
+  tag: work-1.0.2
 hammerspoons:
   version: 1.0.0
   date: '2026-08-11'

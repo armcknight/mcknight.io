@@ -100,11 +100,16 @@
     // while a page settles — silently undid the reader's zoom and any focus.
     var magnification = size ? projection.scale() / baseScale() : 1;
 
-    var available = Math.min(
-      figure.clientWidth,
-      window.innerHeight - figure.getBoundingClientRect().top - 150
-    );
-    size = Math.max(280, Math.min(available, 760));
+    // In full screen the globe takes the smaller side of the window, less a
+    // little, so the whole sphere is visible and touches the edges. Otherwise
+    // it is the column width, or whatever height is left under the header once
+    // the legend and the hint have their room.
+    var available = document.body.classList.contains('fullscreen')
+      ? Math.min(window.innerWidth, window.innerHeight) - 8
+      : Math.min(figure.clientWidth, window.innerHeight - figure.getBoundingClientRect().top - 150);
+    size = document.body.classList.contains('fullscreen')
+      ? Math.max(280, available)
+      : Math.max(280, Math.min(available, 760));
     svg.attr('width', size).attr('height', size).attr('viewBox', '0 0 ' + size + ' ' + size);
     projection.translate([size / 2, size / 2]).scale(baseScale() * magnification);
   }
@@ -226,82 +231,159 @@
     spinning = false;
   }
 
-  // Drag turns the globe. The sensitivity falls as the globe is magnified, so a
-  // pixel of pointer movement always covers about the same distance on screen.
-  function enableDrag() {
-    var start = null;
-    var startRotation = null;
-
-    svg.call(d3.drag()
-      .on('start', function (event) {
-        stopSpinning();
-        svg.classed('dragging', true);
-        start = [event.x, event.y];
-        startRotation = projection.rotate();
-        hideTooltip();
-      })
-      .on('drag', function (event) {
-        var degreesPerPixel = 90 / projection.scale();
-        var lambda = startRotation[0] + (event.x - start[0]) * degreesPerPixel;
-        var phi = startRotation[1] - (event.y - start[1]) * degreesPerPixel;
-        projection.rotate([lambda, Math.max(-90, Math.min(90, phi))]);
-        schedule();
-      })
-      .on('end', function () {
-        svg.classed('dragging', false);
-      }));
+  function setScale(value) {
+    projection.scale(Math.max(baseScale(), Math.min(value, baseScale() * MAX_MAGNIFICATION)));
   }
 
-  // The wheel and the trackpad magnify, and so does a pinch.
+  // ALL POINTER GESTURES IN ONE PLACE
   //
-  // The step follows how far the wheel or fingers moved, rather than being a
-  // fixed amount per event: a mouse wheel sends a few large deltas and a
-  // trackpad sends a stream of small ones, and a fixed step makes one of the
-  // two feel wrong. The factor is bounded so a violent flick cannot jump the
-  // whole range at once.
+  // One finger turns the globe. Two pinch it. A double tap held and dragged
+  // zooms, the way a map application does, for when only one thumb is free.
   //
-  // The globe keeps its centre, so there is nothing to translate.
-  function magnify(factor) {
-    stopSpinning();
-    var limited = Math.max(0.5, Math.min(factor, 2));
-    var next = projection.scale() * limited;
-    projection.scale(Math.max(baseScale(), Math.min(next, baseScale() * MAX_MAGNIFICATION)));
-    schedule();
+  // Written against pointer events rather than d3.drag plus touch handlers,
+  // because those two fight: d3.drag calls preventDefault on pointerdown, which
+  // suppresses the touch events a pinch handler needs. That is exactly why
+  // pinching did nothing on a phone. Pointer events describe mouse, trackpad,
+  // pen and finger alike, and counting them is how a gesture is recognised, so
+  // one handler covers every case with nothing to conflict with.
+  function enableGestures() {
+    var node = svg.node();
+    var active = new Map();          // every finger or button currently down
+    var mode = null;                 // rotate | pinch | tapzoom
+    var startRotation = null;
+    var startPoint = null;
+    var startSpread = 0;
+    var startScale = 0;
+    var lastTapAt = 0;
+    var lastTapPoint = null;
+    var moved = false;
+
+    function spread() {
+      var points = Array.from(active.values());
+      return Math.sqrt(Math.pow(points[0].x - points[1].x, 2) + Math.pow(points[0].y - points[1].y, 2));
+    }
+
+    node.addEventListener('pointerdown', function (event) {
+      // Capture keeps the moves coming even when a finger slides off the globe.
+      // It throws if the browser does not consider this pointer active, and it
+      // must not take the rest of the gesture down with it.
+      try {
+        node.setPointerCapture(event.pointerId);
+      } catch (ignored) {
+        // Carry on without capture.
+      }
+
+      active.set(event.pointerId, { x: event.clientX, y: event.clientY });
+      stopSpinning();
+      hideTooltip();
+
+      if (active.size === 2) {
+        mode = 'pinch';
+        startSpread = spread();
+        startScale = projection.scale();
+        svg.classed('dragging', false);
+        return;
+      }
+
+      var now = performance.now();
+      var isSecondTap = lastTapPoint && (now - lastTapAt) < 320 &&
+        Math.abs(event.clientX - lastTapPoint.x) < 30 &&
+        Math.abs(event.clientY - lastTapPoint.y) < 30;
+      lastTapAt = now;
+      lastTapPoint = { x: event.clientX, y: event.clientY };
+
+      startPoint = { x: event.clientX, y: event.clientY };
+      moved = false;
+
+      if (isSecondTap) {
+        mode = 'tapzoom';
+        startScale = projection.scale();
+        moved = true;   // a second tap is part of a gesture, not a choice
+      } else {
+        mode = 'rotate';
+        startRotation = projection.rotate();
+        svg.classed('dragging', true);
+      }
+    });
+
+    node.addEventListener('pointermove', function (event) {
+      if (!active.has(event.pointerId)) return;
+      active.set(event.pointerId, { x: event.clientX, y: event.clientY });
+
+      if (mode === 'pinch' && active.size >= 2) {
+        if (startSpread > 0) setScale(startScale * (spread() / startSpread));
+        moved = true;
+        schedule();
+        return;
+      }
+
+      if (mode === 'tapzoom') {
+        // Dragging down moves in, as in Apple Maps. One sign flips it.
+        setScale(startScale * Math.pow(2, (event.clientY - startPoint.y) / 120));
+        schedule();
+        return;
+      }
+
+      if (mode !== 'rotate') return;
+
+      var dx = event.clientX - startPoint.x;
+      var dy = event.clientY - startPoint.y;
+      if (Math.abs(dx) > 4 || Math.abs(dy) > 4) moved = true;
+
+      // Sensitivity falls as the globe is magnified, so a pixel of movement
+      // always covers about the same distance on screen.
+      var degreesPerPixel = 90 / projection.scale();
+      projection.rotate([
+        startRotation[0] + (dx * degreesPerPixel),
+        Math.max(-90, Math.min(90, startRotation[1] - (dy * degreesPerPixel)))
+      ]);
+      schedule();
+    });
+
+    function release(event) {
+      active.delete(event.pointerId);
+
+      if (active.size === 1 && mode === 'pinch') {
+        // A finger lifted mid-pinch: carry on turning with the one left, rather
+        // than freezing until both are lifted.
+        var remaining = Array.from(active.values())[0];
+        mode = 'rotate';
+        startPoint = { x: remaining.x, y: remaining.y };
+        startRotation = projection.rotate();
+        return;
+      }
+
+      if (active.size === 0) {
+        mode = null;
+        svg.classed('dragging', false);
+      }
+    }
+
+    node.addEventListener('pointerup', release);
+    node.addEventListener('pointercancel', release);
+
+    // A gesture must not also count as choosing whatever was under the finger.
+    // Captured, so it is decided before the shapes see the click.
+    node.addEventListener('click', function (event) {
+      if (!moved) return;
+      event.stopPropagation();
+      event.preventDefault();
+      moved = false;
+    }, true);
   }
 
   function enableZoom() {
     // A trackpad pinch arrives as a wheel event with ctrlKey set, so both are
     // handled here. preventDefault stops the browser zooming the page instead.
+    // A pinch on a touchscreen is not a wheel event at all; that lives in
+    // enableGestures with the rest of the touch handling.
     figure.addEventListener('wheel', function (event) {
       event.preventDefault();
-      magnify(Math.pow(1.0015, -event.deltaY));
+      stopSpinning();
+      var factor = Math.max(0.5, Math.min(Math.pow(1.0015, -event.deltaY), 2));
+      setScale(projection.scale() * factor);
+      schedule();
     }, { passive: false });
-
-    // A pinch on a touchscreen is not a wheel event, so it is measured from
-    // the distance between the two fingers.
-    var pinchStart = null;
-
-    function spread(touches) {
-      var dx = touches[0].clientX - touches[1].clientX;
-      var dy = touches[0].clientY - touches[1].clientY;
-      return Math.sqrt((dx * dx) + (dy * dy));
-    }
-
-    figure.addEventListener('touchstart', function (event) {
-      if (event.touches.length === 2) pinchStart = spread(event.touches);
-    }, { passive: true });
-
-    figure.addEventListener('touchmove', function (event) {
-      if (event.touches.length !== 2 || pinchStart === null) return;
-      event.preventDefault();
-      var now = spread(event.touches);
-      magnify(now / pinchStart);
-      pinchStart = now;
-    }, { passive: false });
-
-    figure.addEventListener('touchend', function (event) {
-      if (event.touches.length < 2) pinchStart = null;
-    }, { passive: true });
   }
 
   // A slow turn on arrival shows that the globe can be turned at all. It stops
@@ -417,7 +499,20 @@
       });
     }
 
-    row.scrollIntoView({ block: 'nearest' });
+    // Scroll the list, never the page. scrollIntoView moves whatever ancestor
+    // it must, and on a phone — where the list sits under the globe rather than
+    // beside it — that threw the globe off the screen the moment anything was
+    // tapped. When the list is not its own scrolling box, as on a phone, there
+    // is nothing to scroll and nothing should move.
+    if (outline.scrollHeight > outline.clientHeight) {
+      var rowBox = row.getBoundingClientRect();
+      var listBox = outline.getBoundingClientRect();
+      if (rowBox.top < listBox.top) {
+        outline.scrollTop -= listBox.top - rowBox.top;
+      } else if (rowBox.bottom > listBox.bottom) {
+        outline.scrollTop += rowBox.bottom - listBox.bottom;
+      }
+    }
   }
 
   function markGlobe() {
@@ -567,6 +662,55 @@
   // Switching the unit rewrites every height already on the page: the ones in
   // the list, which the server left empty for this reason, and the ones in the
   // labels on the globe.
+  // FULL SCREEN
+  //
+  // Two things at once: the page hides its own furniture through a class, and
+  // the browser is asked for real full screen as well. They are separate
+  // because the second is not always available — iOS Safari on a phone has no
+  // Fullscreen API at all — and the first works everywhere on its own.
+  function wireFullscreen() {
+    var enter = document.getElementById('fullscreen');
+    var leave = document.getElementById('exit-fullscreen');
+    if (!enter) return;
+
+    function apply(on) {
+      document.body.classList.toggle('fullscreen', on);
+      if (leave) leave.hidden = !on;
+      measure();
+      render();
+    }
+
+    enter.addEventListener('click', function () {
+      apply(true);
+      if (document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen().catch(function () {
+          // Refused, which is fine: the page is already filling the window.
+        });
+      }
+    });
+
+    if (leave) {
+      leave.addEventListener('click', function () {
+        if (document.fullscreenElement && document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+        apply(false);
+      });
+    }
+
+    // Leaving by Escape, or by the browser's own control, must put the page
+    // back as well.
+    document.addEventListener('fullscreenchange', function () {
+      if (!document.fullscreenElement) apply(false);
+    });
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && document.body.classList.contains('fullscreen') && !document.fullscreenElement) {
+        apply(false);
+      }
+    });
+  }
+
   function wireUnits() {
     function redraw() {
       document.querySelectorAll('#outline .elevation').forEach(function (node) {
@@ -665,11 +809,12 @@
 
     measure();
     render();
-    enableDrag();
+    enableGestures();
     enableZoom();
     wireOutline();
     wireLayerControls();
     wireUnits();
+    wireFullscreen();
     spin();
 
     window.addEventListener('resize', function () {

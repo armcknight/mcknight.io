@@ -125,94 +125,180 @@ make bust-cache PATHS="/*"
 
 ## travel.mcknight.io
 
-`travel/` is a **second Jekyll site** in this repo, for the subdomain. It has its
-own `_config.yml`, data, assets and page. The parent excludes it, so neither
+`travel/` is a **second Jekyll site** in this repo, serving the subdomain. It has
+its own `_config.yml`, data, assets and page. The parent excludes it, so neither
 site renders or copies the other; both share the one `Gemfile`, so there is a
 single set of gems to keep current.
 
 ```
 make build travel    # build it into travel/_site/
 make serve travel    # read it at localhost:4500
+make deploy travel   # upload it to its own bucket
 ```
 
 Browsers resolve any `*.localhost` name to 127.0.0.1 with no `/etc/hosts` entry,
 so `http://travel.localhost:4500` works too and reads more like production.
 
-The page is an interactive globe: drag to turn it, scroll to move closer, and
-click a continent, a country, a region or a city — on the globe or in the list
-beside it — to centre and magnify it, with everything else faded back. Escape,
-the button, or a click on the ocean leaves that focus.
+### The page
+
+An interactive globe. Drag to turn it, scroll or pinch to move closer, double
+tap and drag to zoom with one thumb, and click a continent, country, region or
+place — on the globe or in the list beside it — to centre and magnify it with
+everything else faded back. Escape, the button, or a click on the ocean leaves
+that focus. **Full screen** hides everything but the globe.
 
 The list is a collapsible tree written by the server, so the whole hierarchy is
 readable, collapsible and reachable by keyboard with no JavaScript at all.
-Regions start shut, because their cities are most of the list.
+Within a region, each kind of place has its own subheading; focusing a region
+opens them.
 
-A place is framed by **where I went in it**, not by its outline. France's
-geometry reaches from French Guiana to Réunion and Alaska's crosses the date
-line, so framing either by its bounding box aimed the camera at open ocean. The
-cities have neither problem. A country with no city recorded yet falls back to
-its geometry.
-
-It draws three things, from three sources:
+Four layers, each with a checkbox in the legend, which doubles as the control
+panel:
 
 | Layer | Drawn as | Comes from |
 |---|---|---|
 | Country visited | pale fill | `assets/geo/countries.json`, matched on ISO 3166-1 |
 | State, province or region | strong fill | `assets/geo/regions.json` |
 | City | black dot | `cities:` in `_data/travel.yml` |
-| Point of interest | green dot | `pois:` in `_data/travel.yml` |
+| Point of interest | green dot | `pois:` |
+| High mark | blue dot, with its height | `highmark:` |
 
-Each layer has a checkbox in the legend, which doubles as the control panel.
 Unticking *countries* paints the visited ones like everywhere else rather than
-removing the land, since removing the land would leave an empty ball.
+removing the land, since the country layer **is** the land. Heights are stored
+once in metres and shown in feet or metres from the control at the right of the
+legend.
 
-A region may carry a `code:` (ISO 3166-2) but does not have to. Without one it
-is identified by its country and name, and found in Natural Earth by name — so
-adding a state means typing its name and nothing else.
+### The data
 
-Nothing is fetched while the page builds or while a visitor reads it. The two
-geometry files and every city coordinate are committed. Two scripts produce
-them, and both are safe to re-run:
+`travel/_data/travel.yml` is the only source. Continent → country → region →
+places. A region may carry a `code:` (ISO 3166-2) but does not have to; without
+one it is identified by its country and name.
 
-- **`make travel-geocode`** adds `lat:` and `lon:` to any city in `travel.yml`
-  or point of interest that has none, through the Nominatim geocoder of
-  OpenStreetMap. A place that already has coordinates is skipped, so only a new
-  one costs a lookup, and the file is saved after **every** answer — a run cut
-  off halfway keeps what it found, and re-running carries on. Nominatim permits
-  about one request per second and answers HTTP 429 when it has had enough;
-  that is waited out and retried, with the wait growing each time, and after
-  several refusals the run stops and asks you to try later.
+A place is normally a list entry with a name:
+
+```yaml
+cities:
+  - name: Boston
+pois:
+  - name: Acadia National Park
+highmark:
+  - name: Mt. Greylock
+```
+
+A single place may also be written in shorthand, which `make travel-geocode`
+widens into the list form on its next run, because a string has nowhere to keep
+a latitude:
+
+```yaml
+highmark: Mt. Greylock
+```
+
+### Keeping it honest
+
+Nothing is fetched while the page builds or while a visitor reads it. Every
+coordinate, height and polygon is committed. Three commands produce them, and
+all are safe to re-run:
+
+- **`make travel-geocode`** adds `lat:`, `lon:`, and for a high mark
+  `elevation_m:`, to anything lacking them, through OpenStreetMap's Nominatim.
+  A place that already has coordinates is skipped, and the file is saved after
+  **every** answer — a run cut off halfway keeps what it found. Nominatim allows
+  about one request a second and answers HTTP 429 when it has had enough; that is
+  waited out and retried with a growing pause, and after several refusals the run
+  stops and asks you to try later. A height comes from OpenStreetMap's surveyed
+  `ele` where there is one, and from a terrain model otherwise — the model
+  samples a 90 m grid, so it reads summits low and knows nothing about buildings.
 - **`make travel-geo`** rebuilds the geometry from [Natural
   Earth](https://www.naturalearthdata.com), which is public domain. Sources are
-  cached in `travel/.geo-cache/` (ignored by git); the first run downloads 39 MB
-  and later runs read the cache. Only the filtered result is committed.
+  cached in `travel/.geo-cache/` (ignored by git); the first run downloads about
+  43 MB and later runs read the cache. Only the filtered result is committed.
+- **`make travel-check`** tests every located place against the polygon of the
+  region it is filed under. It needs no network.
 
-### Why a region is found two ways
+A geocoder is confidently wrong often enough to matter. `Gray's Peak` landed in
+Oklahoma, `Painted Desert` in Anaheim, `Skyline Drive` on a street in Norfolk,
+`Ka Lae` on Kauai and `Kapa'au` on Molokai. The region check catches the first
+three; the last two it cannot, because a wrong answer inside the right region
+looks right. **Read new coordinates before trusting them.**
 
-A region is looked for by code, then by name within its country, and only then
-by the places inside it. The first two fail often enough to need the third:
+### Why a region is found three ways
+
+A region is looked for by ISO code, then by name within its country, and only
+then by the places inside it. The first two fail often enough to need the third:
 many regions carry no code, and Natural Earth models some countries at a
-different level than `travel.yml` does — France as *départements* rather than
+different level than this data does — France as *départements* rather than
 régions, Italy and the Philippines as provinces, Czechia under a code of its
 own.
 
-So a region neither a code nor a name finds is located by its places instead:
-every polygon that contains a visited city or point of interest is a polygon to
-fill. That needs no table
-of exceptions, and it cannot disagree with the dots, because it is derived from
-them. Two details follow from it:
+So a region neither a code nor a name finds is located by its places: every
+polygon containing one of its places is a polygon to fill. All matches are kept,
+not the first, or Tuscany would highlight the province holding Pisa and lose the
+one holding Florence. A place up to 25 km outside still counts, because a coastal
+city often geocodes to the water — Genoa lands in its old port, which Natural
+Earth's coastline excludes.
 
-- **All matches are kept, not the first.** Tuscany holds both Pisa and Florence,
-  which are separate provinces in the data.
-- **A city 25 km outside still counts.** A coastal city often geocodes to the
-  water, since that is where its centre is. Genoa lands in the old port, which
-  Natural Earth's coastline excludes, so strict containment found Liguria
-  nowhere.
+Two details of the geometry are worth knowing, because both have bitten:
 
-`make travel-geo` prints how each region was matched, and exits non-zero if any
-region cannot be placed at all.
+- The **`_lakes`** variants of the Natural Earth files are used, where the Great
+  Lakes are cut out. In the plain files a state's boundary runs out into the
+  water, and Michigan is one polygon that swallows Lake Michigan instead of the
+  two peninsulas either side of it.
+- Simplification **drops a ring it cannot preserve** rather than repairing it.
+  On a sphere there is no outside: a ring wound the wrong way describes
+  everything except itself, so one broken ring paints the whole globe in that
+  country's colour. Antarctica's pole-following boundary and a sliver of Malawi
+  in the lakes file have each done it.
 
-## Layout
+### A place is framed by where you went in it
+
+Focusing a country aims at its cities, not at its outline. France's geometry
+reaches from French Guiana to Réunion and Alaska's crosses the date line, so
+framing either by its bounding box aimed the camera at open ocean. A country
+with no place recorded yet falls back to its geometry.
+
+## Hosting
+
+The two sites are separate from the DNS down: separate buckets, certificates and
+distributions, sharing only the hosted zone. Nothing the subdomain does can
+reach the main site.
+
+| | mcknight.io | travel.mcknight.io |
+|---|---|---|
+| S3 bucket | `mcknight.io` | `travel.mcknight.io` |
+| CloudFront | `E3AJVW95W5JFMD` | `E2LVEB8WVCV9QY` |
+| Distribution domain | | `d2dwk99e4mo7s.cloudfront.net` |
+| ACM certificate (us-east-1) | `72f5b93c…` | `abe6c8e7…` |
+| Route 53 zone | `Z09242013GGZP8WGFDQP3` (both) | |
+
+Both are configured the same way, and the Makefile holds each distribution id so
+`make bust-cache travel` knows which one to invalidate:
+
+- The bucket is a **website endpoint**, not a REST endpoint, with `index.html`
+  as the index document and a public-read policy. CloudFront reaches it over
+  plain HTTP as a custom origin — that is what gives directory URLs their index
+  without any function at the edge.
+- `DefaultRootObject: index.html`, viewer policy **redirect-to-https**,
+  compression on, the managed **CachingOptimized** policy
+  (`658327ea-f89d-4fab-a63d-7e88639e58f6`), PriceClass_All, HTTP/2, IPv6.
+- The certificate is DNS-validated and lives in **us-east-1**, which CloudFront
+  requires wherever the bucket is. The validation CNAME stays in the zone;
+  deleting it would break renewal.
+- `travel.mcknight.io` is an **A and AAAA alias** to the distribution, not a
+  CNAME, using CloudFront's fixed zone id `Z2FDTNDATAQYW2`.
+
+The one certificate does **not** cover both names: `mcknight.io`'s certificate
+lists only that name, which is why the subdomain needed its own.
+
+### Adding another subdomain
+
+The same five steps, in order: create the bucket and give it a website config
+and a public-read policy; request a DNS-validated certificate in us-east-1; put
+the validation CNAME in the zone and wait for ISSUED; create a distribution
+aliased to the name; add A and AAAA alias records. Then add the site to `SITES`
+in the `Makefile` with its own `src_`, `dest_`, `port_`, `bucket_`, `stamp_`,
+`log_`, `label_` and `dist_` entries.
+
+## Layout## Layout
 
 | Path | What it is |
 |---|---|
