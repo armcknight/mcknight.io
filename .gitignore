@@ -78,3 +78,6 @@ travel/_site
 
 # Natural Earth downloads, re-fetched on demand by travel/scripts/build-geo.rb.
 travel/.geo-cache
+
+# Local settings of the travel admin app, such as where the Strava export is.
+travel/admin/settings.yml

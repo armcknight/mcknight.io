@@ -212,7 +212,8 @@ by id:
 - A **trip** is a route you have done, drawn as a line: a hike, a ride, a
   rafting trip. Its `type` is any text (`hike`, `packraft`, `nordic ski`),
   kept in lower case so one type has one spelling. There is no fixed list: the
-  globe gives each type in the data its own colour, the most used types first, and lists them in the
+  admin app suggests the types already used, and the globe gives each type in
+  the data its own colour, the most used types first, and lists them in the
   legend with their counts. It has one line however many times you did it;
   each time is a date, and each Strava activity it came from is in
   `activities`. `track_activity` is the one
@@ -221,9 +222,101 @@ by id:
 
 `lib/travel/store.rb` reads and writes these files, and checks each record
 before it saves it: a name, a region that exists, coordinates in range. The
-scripts all go through it, so a later move to a database changes that one
-file. Because the Store writes the files, they have no
+admin app and the scripts all go through it, so a later move to a database
+changes that one file. Because the Store writes the files, they have no
 comments; the notes are here instead.
+
+### The admin app
+
+```
+make travel-admin    # then open http://localhost:4600
+```
+
+A local web app for the data, so you do not have to edit the YAML by hand:
+
+- **List, add, change and delete** every kind of record. A list has a filter
+  box. A record that others point at (a region with cities in it) cannot be
+  deleted.
+- **Rename safely.** Change a country's or a region's code and everything that
+  points at it is changed too. The id of a city, point of interest or high mark
+  never changes, so renaming one breaks nothing.
+- **Find coordinates.** The button on a place's form looks the name up in
+  Nominatim, with its region and country as context, and shows the form again
+  with the answer filled in, with a link to see the point on OpenStreetMap. It
+  does not save; you check the answer first. For a high mark it also gets the
+  elevation.
+- **Region check.** Each place's list row and form show whether its
+  coordinates are inside its regions, and the front page lists every place that
+  has no coordinates or is outside its regions, and every region not yet drawn.
+
+It listens on 127.0.0.1 only and has no login, so it is for your own machine.
+Every form carries a token from your session, so a different site open in the
+same browser cannot send a change to it. It saves to `travel/_data/`, so you
+review with `git diff`, commit and deploy as usual. After you add a country or
+a region, run `make travel-geo` so the globe can draw it.
+
+To try something on a copy of the data first, point the app (or any script) at
+another folder. `PORT` changes the port:
+
+```
+TRAVEL_DATA=/tmp/travel-data PORT=4601 make travel-admin
+```
+
+### Trips from Strava
+
+*Import from Strava* in the admin app makes trips from a Strava data export
+(Strava → Settings → My Account → Download or delete your account). Give it the
+export folder once; the path is kept in `travel/admin/settings.yml`, which git
+ignores, or set `STRAVA_EXPORT`. The export is only read, never copied into the
+repository.
+
+1. **Find** the activities worth keeping: filter by name, type, year, shortest
+   distance, and whether one is imported already.
+2. **Look** at one. Its line is drawn twice: solid, what the trip keeps, and
+   faint, what is removed. Removed are GPS errors (below), the points inside
+   the export's privacy zones, and 500 m at each end, since most activities
+   start and stop at home; change the 500 m and redraw if an end needs more or
+   less.
+3. **Make a trip** from it, or **add it to a trip** already made. A new trip
+   takes the activity's name, a type, and the regions the line passes through.
+   Adding to a trip adds the date, and can also replace the trip's line.
+   A new trip's type starts as Strava's (`Nordic Ski` becomes `nordic ski`);
+   change it to any type, or to one already used.
+4. **Or make many at once.** Tick activities in the list (the box in the
+   header ticks every one shown) and *Make trips from selected*. Each becomes
+   its own trip with the defaults its page would offer: Strava's name and type,
+   the regions along its line, the same trimming. One that cannot be a trip is
+   skipped and named with why: already a trip, no GPS track, too short once its
+   ends are removed, or in no region drawn on the globe yet. Rename them on
+   the Trips page after. A repeat of a trip you already have is better added
+   to that trip from the activity's own page, since bulk import makes every
+   activity a new trip.
+
+The date is the day the activity started where it started: Strava's dates are
+UTC, which would put an evening in the Americas on the next day.
+
+What a trip keeps is simplified to about 15 m, and rounded to about a metre,
+so a long day is a few hundred points. The page shows *Add it as a high mark*
+with the highest point of the track, but GPS heights are often tens of metres
+out; for a summit, the surveyed height is better.
+
+**GPS errors** are found by cutting the track wherever one point cannot
+follow from the one before: reached at over 300 km/h, or more than 2 km away
+after a pause of more than 5 minutes (a fix left over from the drive to the
+start). The pieces with fewer than 5 points are dropped: a spike is a piece of
+one point, a cluster of bad fixes a piece of two or three. A real jump, such as
+a track that carries on after a shuttle, leaves long pieces on both sides, and
+both stay. Across the whole export this removes points from 22 of 1,046
+activities, at most 8 from any one; the worst ride went from 45 times its
+distance to the right length.
+
+Tracks are GPX, TCX or FIT, gzipped or not, as Strava exports them. Only the
+position, height and time of each point are read. An activity recorded without
+GPS (an indoor swim, a gym workout) has no line to import.
+
+If the export is in iCloud Drive, its files may be in the cloud only, and each
+is downloaded the first time it is read; set the folder to *Keep Downloaded* in
+Finder to make browsing fast.
 
 ### Keeping it honest
 

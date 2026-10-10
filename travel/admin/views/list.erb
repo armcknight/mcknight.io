@@ -1,0 +1,51 @@
+<div class="title">
+  <h1><%= h @spec[:title] %> <span class="muted"><%= @records.size %></span></h1>
+  <a class="button" href="/<%= @collection %>/new">Add a <%= h @spec[:one] %></a>
+</div>
+
+<input type="search" id="filter" placeholder="Filter" aria-label="Filter the list" autofocus>
+
+<table id="records">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <% if @collection == 'countries' %><th>Code</th><th>Continent</th><th>Regions</th>
+      <% elsif @collection == 'regions' %><th>Key</th><th>Country</th><th>Kind</th><th>Places</th>
+      <% else %><th>Region</th><% if @collection == 'trips' %><th>Type</th><% end %><% if @collection == 'high_marks' %><th class="number">Elevation</th><% end %><th>Check</th>
+      <% end %>
+    </tr>
+  </thead>
+  <tbody>
+    <% @records.each do |record| %>
+      <tr>
+        <td><a href="/<%= @collection %>/<%= u id_of(@collection, record) %>/edit"><%= h record['name'] %></a></td>
+        <% if @collection == 'countries' %>
+          <td><%= h record['code'] %></td>
+          <td><%= h record['continent'] %></td>
+          <td class="number"><%= @store.references('countries', record['code'])['regions'] || 0 %></td>
+        <% elsif @collection == 'regions' %>
+          <td><code><%= h record['key'] %></code></td>
+          <td><%= h @store.country(record['country'])&.fetch('name') || record['country'] %></td>
+          <td><%= h record['kind'] %></td>
+          <td class="number"><%= @store.references('regions', record['key']).values.sum %></td>
+        <% else %>
+          <td><%= h @store.region_keys(@collection, record).map { |key| @store.region(key)&.fetch('name') || key }.join(', ') %></td>
+          <% if @collection == 'trips' %><td><%= h record['type'] %></td><% end %>
+          <% if @collection == 'high_marks' %><td class="number"><%= record['elevation_m'] ? "#{record['elevation_m']} m" : '' %></td><% end %>
+          <% word, level = check(@collection, record) %>
+          <td class="<%= level %>"><%= h word %></td>
+        <% end %>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<script>
+  // Hides the rows that do not contain what is typed, in any column.
+  document.getElementById('filter').addEventListener('input', function (event) {
+    var wanted = event.target.value.trim().toLowerCase();
+    document.querySelectorAll('#records tbody tr').forEach(function (row) {
+      row.hidden = wanted !== '' && row.textContent.toLowerCase().indexOf(wanted) === -1;
+    });
+  });
+</script>

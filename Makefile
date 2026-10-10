@@ -271,6 +271,16 @@ optimize-images: ## Strip EXIF from and compress any images git sees as changed
 # The answers are committed, so neither the build nor a visitor's browser ever
 # contacts the geocoder. A city listed without coordinates appears in the page's
 # outline but has no dot, until this is run.
+# A local web app for editing travel/_data/: add, change and delete countries,
+# regions and places, look up coordinates, and see which places sit outside
+# their regions. It listens on 127.0.0.1 only and has no login, so it is for
+# this machine alone. What it saves is ordinary changes to the data files, to
+# commit and deploy as usual.
+.PHONY: travel-admin
+travel-admin: ## Edit the travel data in a local web app at localhost:4600
+	@echo "travel admin at http://localhost:4600"
+	$(RUBY) bundle exec ruby travel/admin/app.rb
+
 .PHONY: travel-geocode
 travel-geocode: ## Add missing place coordinates to travel/_data/
 	$(RUBY) ruby travel/scripts/geocode-travel.rb

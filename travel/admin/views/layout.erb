@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Travel admin</title>
+  <link rel="stylesheet" href="/admin.css">
+</head>
+<body>
+<header>
+  <a class="home" href="/">Travel admin</a>
+  <nav>
+    <% Travel::Admin::COLLECTIONS.each do |name, spec| %>
+      <a href="/<%= name %>"<%= ' aria-current="page"' if name == @collection %>><%= h spec[:title] %></a>
+    <% end %>
+    <a href="/import"<%= ' aria-current="page"' if @importing %>>Import from Strava</a>
+  </nav>
+</header>
+<main>
+  <% if (notice = session.delete(:notice)) %>
+    <p class="notice" role="status"><%= h notice %></p>
+  <% end %>
+  <%= yield %>
+</main>
+</body>
+</html>

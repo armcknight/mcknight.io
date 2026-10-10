@@ -1,0 +1,106 @@
+<div class="title">
+  <h1><%= h @activity.name %></h1>
+  <a href="/import">Back to activities</a>
+</div>
+
+<p>
+  <%= h @activity.type %> · <%= @activity.started&.strftime('%Y-%m-%d') %> ·
+  <%= km @activity.distance %><%= " · #{@activity.climb.round} m climb" if @activity.climb %> ·
+  <a href="<%= h @activity.url %>" target="_blank" rel="noopener">on Strava</a>
+</p>
+
+<% if @problem %>
+  <p class="bad"><%= h @problem %></p>
+<% else %>
+  <% if @trip %>
+    <p class="notice">Already part of <a href="/trips/<%= u @trip['id'] %>/edit"><%= h @trip['name'] %></a>.</p>
+  <% end %>
+
+  <%= track_svg([@track[:all].map { |p| p.first(2) }, @track[:line]], classes: %w[removed kept]) %>
+  <p class="muted">
+    The solid line is what the trip keeps: <%= @track[:line].size %> points,
+    <%= km Travel::Tracks.length(@track[:line]) %>. The faint line is removed: the privacy
+    zones in the export, and <%= @ends %> m at each end.
+    <% if @track[:errors].positive? %>
+      <%= @track[:errors] %> GPS error<%= 's' unless @track[:errors] == 1 %> removed: point<%= 's' unless @track[:errors] == 1 %>
+      cut off from the rest of the track by an impossible jump.
+    <% end %>
+  </p>
+
+  <% if @track[:line].size < 2 %>
+    <p class="warn">
+      Nothing is left to draw: the track is shorter than what is removed from its ends.
+      Remove less from each end, below, and redraw.
+    </p>
+  <% end %>
+
+  <form method="get" action="/import/<%= u @activity.id %>" class="inline">
+    <label for="ends">Remove from each end</label>
+    <input id="ends" name="ends" value="<%= @ends %>" size="5" inputmode="numeric"> m
+    <button type="submit" class="secondary">Redraw</button>
+  </form>
+
+  <% if @high %>
+    <p>
+      Highest point: <%= @high[2].round %> m.
+      <a href="/high_marks/new?<%= Rack::Utils.build_nested_query('record' => { 'name' => @activity.name, 'lat' => @high[1].round(5), 'lon' => @high[0].round(5), 'elevation_m' => @high[2].round, 'regions' => @suggested.first(1) }) %>">Add it as a high mark</a>
+      <span class="muted">(GPS heights can be tens of metres out; a summit's surveyed height is better.)</span>
+    </p>
+  <% end %>
+
+  <h2>Make a new trip</h2>
+  <% if @suggested.empty? %>
+    <p class="warn">No region on the globe contains this track. Add its region first, and run <code>make travel-geo</code>.</p>
+  <% end %>
+  <form method="post" action="/import/<%= u @activity.id %>" class="record">
+    <%= csrf_field %>
+    <input type="hidden" name="ends" value="<%= @ends %>">
+    <div class="field">
+      <label for="t-name">Name</label>
+      <input id="t-name" name="record[name]" value="<%= h @activity.name %>" required>
+    </div>
+    <div class="field">
+      <label for="t-type">Type</label>
+      <input id="t-type" name="record[type]" value="<%= h @activity.type.downcase %>" list="t-types" required>
+      <datalist id="t-types">
+        <% @store.trip_types.each do |type| %><option value="<%= h type %>"><% end %>
+      </datalist>
+      <small>Strava calls it <%= h @activity.type %>. Use any type; the ones already used are suggested.</small>
+    </div>
+    <div class="field">
+      <label for="t-regions">Regions</label>
+      <select id="t-regions" name="record[regions][]" multiple size="8">
+        <% @store.all('countries').each do |country| %>
+          <% regions = @store.all('regions').select { |r| r['country'] == country['code'] } %>
+          <% next if regions.empty? %>
+          <optgroup label="<%= h country['name'] %>">
+            <% regions.sort_by { |r| r['name'] }.each do |region| %>
+              <option value="<%= h region['key'] %>"<%= ' selected' if @suggested.include?(region['key']) %>><%= h region['name'] %></option>
+            <% end %>
+          </optgroup>
+        <% end %>
+      </select>
+      <small>Chosen from where the track goes. Hold ⌘ to change.</small>
+    </div>
+    <p class="muted">Dated <%= @date %>, the day it started where it started.</p>
+    <div class="actions"><button type="submit">Make the trip</button></div>
+  </form>
+
+  <% unless @store.all('trips').empty? %>
+    <h2>Or add it to a trip</h2>
+    <form method="post" action="/import/<%= u @activity.id %>/attach" class="record">
+      <%= csrf_field %>
+      <input type="hidden" name="ends" value="<%= @ends %>">
+      <div class="field">
+        <label for="a-trip">Trip</label>
+        <select id="a-trip" name="trip" required>
+          <% @store.all('trips').sort_by { |t| t['name'] }.each do |trip| %>
+            <option value="<%= h trip['id'] %>"<%= ' selected' if @trip && @trip['id'] == trip['id'] %>><%= h trip['name'] %> (<%= Array(trip['dates']).size %> dates)</option>
+          <% end %>
+        </select>
+      </div>
+      <label class="check"><input type="checkbox" name="use_line" value="1"> Draw the trip with this activity's line</label>
+      <div class="actions"><button type="submit" class="secondary">Add <%= @date %> to the trip</button></div>
+    </form>
+  <% end %>
+<% end %>

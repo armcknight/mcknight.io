@@ -1,0 +1,41 @@
+<h1>Everything</h1>
+
+<ul class="counts">
+  <% Travel::Admin::COLLECTIONS.each do |name, spec| %>
+    <li><a href="/<%= name %>"><strong><%= @store.all(name).size %></strong> <%= h spec[:title].downcase %></a></li>
+  <% end %>
+</ul>
+
+<h2>Needs attention</h2>
+<% if @problems.empty? && @no_shape.empty? %>
+  <p class="muted">Nothing. Every place has coordinates inside its regions, and every region has a shape.</p>
+<% end %>
+
+<% unless @problems.empty? %>
+  <table>
+    <thead><tr><th>Place</th><th>Kind</th><th>Problem</th></tr></thead>
+    <tbody>
+      <% @problems.each do |collection, place, word| %>
+        <tr>
+          <td><a href="/<%= collection %>/<%= u place['id'] %>/edit"><%= h place['name'] %></a></td>
+          <td><%= h Travel::Admin::COLLECTIONS[collection][:one] %></td>
+          <td><%= h word %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>
+
+<% unless @no_shape.empty? %>
+  <p>
+    <%= @no_shape.size %> region<%= 's' unless @no_shape.size == 1 %> not drawn on the globe yet:
+    <%= @no_shape.map { |region| h region['name'] }.join(', ') %>.
+    Run <code>make travel-geo</code>.
+  </p>
+<% end %>
+
+<h2>Publishing</h2>
+<p class="muted">
+  Changes are saved to <code>travel/_data/</code>. Review them with <code>git diff</code>,
+  commit, and run <code>make deploy travel</code>.
+</p>

@@ -1,0 +1,115 @@
+<% editing = !@id.nil? %>
+<% action = editing ? "/#{@collection}/#{u @id}" : "/#{@collection}" %>
+<div class="title">
+  <h1><%= editing ? h(@record['name'].to_s.empty? ? @id : @record['name']) : "Add a #{h @spec[:one]}" %></h1>
+  <a href="/<%= @collection %>">Back to <%= h @spec[:title].downcase %></a>
+</div>
+
+<% if @errors %>
+  <div class="errors" role="alert">
+    <p>Not saved:</p>
+    <ul><% @errors.each do |error| %><li><%= h error %></li><% end %></ul>
+  </div>
+<% end %>
+
+<% if @found %>
+  <p class="notice" role="status">
+    Found at <%= @record['lat'] %>, <%= @record['lon'] %>.
+    <a href="<%= h map_link(@record['lat'], @record['lon']) %>" target="_blank" rel="noopener">Check it on the map</a>,
+    then save.
+  </p>
+<% end %>
+
+<form method="post" action="<%= action %>" class="record">
+  <%= csrf_field %>
+  <% if editing %><input type="hidden" name="id" value="<%= h @id %>"><% end %>
+
+  <% @spec[:fields].each do |field| %>
+    <% name = field[:name] %>
+    <% value = @record[name] %>
+    <% next if field[:type] == :readonly && !editing %>
+    <div class="field">
+      <label for="f-<%= name %>"><%= h field[:label] %></label>
+      <% if field[:type] == :readonly %>
+        <output id="f-<%= name %>"><code><%= h value %></code></output>
+      <% elsif field[:type] == :choice %>
+        <input id="f-<%= name %>" name="record[<%= name %>]" value="<%= h value %>" list="l-<%= name %>">
+        <datalist id="l-<%= name %>">
+          <% options = field[:options].respond_to?(:call) ? field[:options].call(@store) : field[:options] %>
+          <% options.each do |option| %><option value="<%= h option %>"><% end %>
+        </datalist>
+      <% elsif field[:type] == :select %>
+        <select id="f-<%= name %>" name="record[<%= name %>]">
+          <option value="">Choose</option>
+          <% field[:options].each do |option| %>
+            <option<%= ' selected' if option == value %>><%= h option %></option>
+          <% end %>
+        </select>
+      <% elsif field[:type] == :list %>
+        <input id="f-<%= name %>" name="record[<%= name %>]" value="<%= h Array(value).join(' ') %>">
+        <% if @collection == 'trips' && Array(value).any? %>
+          <small><% Array(value).each do |id| %><a href="https://www.strava.com/activities/<%= u id %>" target="_blank" rel="noopener"><%= h id %></a> <% end %></small>
+        <% end %>
+      <% elsif field[:type] == :country %>
+        <select id="f-<%= name %>" name="record[<%= name %>]">
+          <option value="">Choose a country</option>
+          <% @store.all('countries').sort_by { |c| c['name'] }.each do |country| %>
+            <option value="<%= h country['code'] %>"<%= ' selected' if country['code'] == value %>><%= h country['name'] %></option>
+          <% end %>
+        </select>
+      <% elsif field[:type] == :region || field[:type] == :regions %>
+        <% chosen = Array(value) %>
+        <select id="f-<%= name %>" name="record[<%= name %>]<%= '[]' if field[:type] == :regions %>"
+                <%= 'multiple size="10"' if field[:type] == :regions %>>
+          <% if field[:type] == :region %><option value="">Choose a region</option><% end %>
+          <% @store.all('countries').each do |country| %>
+            <% regions = @store.all('regions').select { |r| r['country'] == country['code'] } %>
+            <% next if regions.empty? %>
+            <optgroup label="<%= h country['name'] %>">
+              <% regions.sort_by { |r| r['name'] }.each do |region| %>
+                <option value="<%= h region['key'] %>"<%= ' selected' if chosen.include?(region['key']) %>><%= h region['name'] %></option>
+              <% end %>
+            </optgroup>
+          <% end %>
+        </select>
+        <% if field[:type] == :regions %><small>Hold ⌘ to choose more than one.</small><% end %>
+      <% elsif field[:type] == :dates %>
+        <textarea id="f-<%= name %>" name="record[<%= name %>]" rows="3"
+                  placeholder="2019-06-12&#10;2022-08-01 to 2022-08-09"><%= h Array(value).map { |d| date_text(d) }.join("\n") %></textarea>
+        <small>One per line: a day, a month such as 2024-03, or a stay as "from to to".</small>
+      <% else %>
+        <input id="f-<%= name %>" name="record[<%= name %>]" value="<%= h value %>"
+               <%= 'inputmode="decimal"' if field[:type] == :number %><%= ' required' if name == 'name' %>>
+      <% end %>
+      <% if field[:hint] %><small><%= h field[:hint] %></small><% end %>
+    </div>
+  <% end %>
+
+  <% if place?(@collection) && @record['lat'] && @record['lon'] && !@record['lat'].to_s.empty? %>
+    <% word, level = check(@collection, @record.merge('lat' => @record['lat'].to_f, 'lon' => @record['lon'].to_f)) %>
+    <p class="<%= level %>">
+      <%= h word %> ·
+      <a href="<%= h map_link(@record['lat'], @record['lon']) %>" target="_blank" rel="noopener">see on the map</a>
+    </p>
+  <% end %>
+
+  <% if @collection == 'trips' && @id && (line = @store.track(@id)) %>
+    <%= track_svg([line], classes: ['kept']) %>
+    <p class="muted"><%= line.size %> points, <%= (Travel::Tracks.length(line) / 1000).round(1) %> km.</p>
+  <% end %>
+
+  <div class="actions">
+    <button type="submit">Save</button>
+    <% if place?(@collection) %>
+      <button type="submit" class="secondary" formaction="/<%= @collection %>/locate" formnovalidate>Find coordinates</button>
+    <% end %>
+  </div>
+</form>
+
+<% if editing %>
+  <form method="post" action="/<%= @collection %>/<%= u @id %>/delete" class="delete"
+        onsubmit="return confirm('Delete <%= h @record['name'].to_s.gsub("'", '') %>?')">
+    <%= csrf_field %>
+    <button type="submit" class="danger">Delete</button>
+  </form>
+<% end %>

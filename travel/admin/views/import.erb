@@ -1,0 +1,113 @@
+<h1>Import from Strava</h1>
+
+<form method="post" action="/import/settings" class="inline">
+  <%= csrf_field %>
+  <label for="strava_export">Export folder</label>
+  <input id="strava_export" name="strava_export" size="60"
+         value="<%= h(strava&.dir || settings_file['strava_export']) %>"
+         placeholder="~/Downloads/export_12345">
+  <button type="submit" class="secondary">Use this folder</button>
+</form>
+<p class="muted">
+  The folder Strava sends (it has <code>activities.csv</code> in it). It is only read, and
+  never copied into the repository. The path is kept in <code>travel/admin/settings.yml</code>,
+  which git ignores.
+</p>
+
+<% if @strava_error %><p class="bad"><%= h @strava_error %></p><% end %>
+
+<% if strava %>
+  <form method="get" action="/import" class="filters">
+    <input type="search" name="q" value="<%= h @filters['q'] %>" placeholder="Name" aria-label="Name contains">
+    <select name="type" aria-label="Activity type">
+      <option value="">Every type</option>
+      <% @types.each do |type, count| %>
+        <option value="<%= h type %>"<%= ' selected' if type == @filters['type'] %>><%= h type %> (<%= count %>)</option>
+      <% end %>
+    </select>
+    <select name="year" aria-label="Year">
+      <option value="">Every year</option>
+      <% @years.each do |year| %><option<%= ' selected' if year.to_s == @filters['year'] %>><%= year %></option><% end %>
+    </select>
+    <input name="min_km" value="<%= h @filters['min_km'] %>" size="5" inputmode="decimal" placeholder="Min km" aria-label="Shortest distance in km">
+    <select name="show" aria-label="Imported or not">
+      <option value="">All</option>
+      <option value="new"<%= ' selected' if @filters['show'] == 'new' %>>Not imported</option>
+      <option value="imported"<%= ' selected' if @filters['show'] == 'imported' %>>Imported</option>
+    </select>
+    <button type="submit">Filter</button>
+  </form>
+
+  <p class="muted"><%= @activities.size %> of <%= strava.activities.size %> activities</p>
+
+  <%# One form around the list, separate from the filters above it: forms
+      cannot nest. The filters ride along, to come back to the same list. %>
+  <form method="post" action="/import/bulk" id="bulk">
+    <%= csrf_field %>
+    <input type="hidden" name="filters" value="<%= h Rack::Utils.build_query(@filters.reject { |_, v| v.empty? }) %>">
+    <div class="bulk-actions">
+      <button type="submit" disabled>Make trips from selected</button>
+      <label for="bulk-ends">removing</label>
+      <input id="bulk-ends" name="ends" value="<%= Travel::Admin::TRIM_ENDS %>" size="5" inputmode="numeric"> m from each end
+      <span class="muted" id="bulk-count"></span>
+    </div>
+    <p class="muted">
+      Each becomes its own trip, named and typed as on Strava, in the regions its line passes
+      through. Check them on the Trips page after; to see one first, open it.
+    </p>
+
+  <table>
+    <thead>
+      <tr><th><input type="checkbox" id="select-all" aria-label="Select every activity shown"></th><th>Date</th><th>Name</th><th>Type</th><th class="number">Distance</th><th class="number">Climb</th><th>Trip</th></tr>
+    </thead>
+    <tbody>
+      <% @activities.first(500).each do |activity| %>
+        <tr>
+          <td>
+            <% if imported[activity.id] %>
+              <input type="checkbox" disabled aria-label="Already a trip">
+            <% else %>
+              <input type="checkbox" name="ids[]" value="<%= h activity.id %>" aria-label="Select <%= h activity.name %>">
+            <% end %>
+          </td>
+          <td><%= activity.started&.strftime('%Y-%m-%d') %></td>
+          <td><a href="/import/<%= u activity.id %>"><%= h activity.name %></a></td>
+          <td><%= h activity.type %></td>
+          <td class="number"><%= km activity.distance %></td>
+          <td class="number"><%= activity.climb ? "#{activity.climb.round} m" : '' %></td>
+          <td><% if (trip = imported[activity.id]) %><a href="/trips/<%= u trip['id'] %>/edit"><%= h trip['name'] %></a><% end %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  </form>
+  <% if @activities.size > 500 %><p class="muted">Showing the newest 500. Filter to see the rest.</p><% end %>
+
+  <script>
+    // Select all, a count of what is selected, and no submitting nothing.
+    (function () {
+      var form = document.getElementById('bulk');
+      var all = document.getElementById('select-all');
+      var button = form.querySelector('button[type="submit"]');
+      var count = document.getElementById('bulk-count');
+      function boxes() { return form.querySelectorAll('input[name="ids[]"]'); }
+      function update() {
+        var chosen = form.querySelectorAll('input[name="ids[]"]:checked').length;
+        button.disabled = chosen === 0;
+        count.textContent = chosen ? chosen + ' selected' : '';
+        all.checked = chosen > 0 && chosen === boxes().length;
+        all.indeterminate = chosen > 0 && chosen < boxes().length;
+      }
+      all.addEventListener('change', function () {
+        boxes().forEach(function (box) { box.checked = all.checked; });
+        update();
+      });
+      form.addEventListener('change', update);
+      form.addEventListener('submit', function () {
+        button.disabled = true;
+        button.textContent = 'Making trips…';
+      });
+      update();
+    })();
+  </script>
+<% end %>
