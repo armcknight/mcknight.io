@@ -1,0 +1,42 @@
+- code: US
+  name: United States
+  continent: North America
+- code: CA
+  name: Canada
+  continent: North America
+- code: MX
+  name: Mexico
+  continent: North America
+- code: PE
+  name: Peru
+  continent: South America
+- code: IE
+  name: Ireland
+  continent: Europe
+- code: FR
+  name: France
+  continent: Europe
+- code: NL
+  name: Netherlands
+  continent: Europe
+- code: AT
+  name: Austria
+  continent: Europe
+- code: HU
+  name: Hungary
+  continent: Europe
+- code: IT
+  name: Italy
+  continent: Europe
+- code: CZ
+  name: Czechia
+  continent: Europe
+- code: PH
+  name: Philippines
+  continent: Asia
+- code: JP
+  name: Japan
+  continent: Asia
+- code: IN
+  name: India
+  continent: Asia

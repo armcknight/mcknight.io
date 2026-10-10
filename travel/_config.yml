@@ -7,7 +7,8 @@
 # lockfile in step with it.
 #
 # Everything the subdomain needs is under this directory: the data, the page,
-# the geometry, and the script that fills in city coordinates.
+# the geometry, the scripts that fill in coordinates, and the local admin app
+# that edits the data (lib/ and admin/, which the site itself does not serve).
 
 title: Travel
 description: Every place I have been, on a globe.
@@ -15,3 +16,5 @@ url: https://travel.mcknight.io
 
 exclude:
   - scripts
+  - lib
+  - admin

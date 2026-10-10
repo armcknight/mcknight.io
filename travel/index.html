@@ -22,41 +22,32 @@ title: Travel
 <body>
 
 {%- comment -%}
-  The kinds of place, as "key in travel.yml, name used in the page". One list
-  drives the dot data, the outline and the layer controls, so a new kind is an
-  entry here and a colour in the stylesheet, and nothing else.
+  The data is one flat list per kind of record in _data/, each pointing at
+  another by its id, as tables in a database would: a country names its
+  continent, a region its country, a city its region, and a point of interest
+  or a high mark the regions it lies in. The page puts the hierarchy back
+  together here.
+
+  The kinds of place, by the name used in the page: a class on its dot, its
+  row and its subheading.
 {%- endcomment -%}
-{%- assign place_kinds = "cities,city|pois,poi|highmark,highmark" | split: "|" -%}
+{%- assign place_kinds = "city,poi,highmark,trip" | split: "," -%}
+{%- assign continents = site.data.countries | group_by: "continent" -%}
 
 {%- comment -%}
   The counts are derived here rather than written down, so they can never
   disagree with the data.
 {%- endcomment -%}
-{%- assign country_count = 0 -%}
-{%- assign region_count = 0 -%}
-{%- assign city_count = 0 -%}
-{%- for continent in site.data.travel.continents -%}
-  {%- for country in continent.countries -%}
-    {%- assign country_count = country_count | plus: 1 -%}
-    {%- for region in country.regions -%}
-      {%- assign region_count = region_count | plus: 1 -%}
-      {%- for city in region.cities -%}
-        {%- if city.name and city.name != '' -%}
-          {%- assign city_count = city_count | plus: 1 -%}
-        {%- endif -%}
-      {%- endfor -%}
-    {%- endfor -%}
-  {%- endfor -%}
-{%- endfor -%}
+{%- assign named_cities = site.data.cities | where_exp: "city", "city.name != blank" -%}
 
 <header>
   <h1>Travel</h1>
   <a href="https://mcknight.io">← mcknight.io</a>
   <p class="tally">
-    {{ site.data.travel.continents.size }} continents ·
-    {{ country_count }} countries ·
-    {{ region_count }} states &amp; regions ·
-    {{ city_count }} cities
+    {{ continents.size }} continents ·
+    {{ site.data.countries.size }} countries ·
+    {{ site.data.regions.size }} states &amp; regions ·
+    {{ named_cities.size }} cities
   </p>
 </header>
 
@@ -81,6 +72,12 @@ title: Travel
     <label><input type="checkbox" data-layer="city" checked><i class="dot city"></i> cities</label>
     <label><input type="checkbox" data-layer="poi" checked><i class="dot poi"></i> points of interest</label>
     <label><input type="checkbox" data-layer="highmark" checked><i class="dot highmark"></i> high marks</label>
+    <label><input type="checkbox" data-layer="trips" checked><i class="line"></i> trips</label>
+    {%- comment -%}
+      Filled by the script with one swatch per trip type. Types are whatever
+      the data says, so the key is made from the data rather than written here.
+    {%- endcomment -%}
+    <span class="trip-key not-a-layer" hidden></span>
     <label><input type="checkbox" data-layer="labels" checked><i class="names"></i> names</label>
     <span class="not-a-layer"><i class="unvisited"></i> not yet</span>
     {%- comment -%}
@@ -92,6 +89,20 @@ title: Travel
       <label><input type="radio" name="elevation-unit" value="ft" checked> ft</label>
       <label><input type="radio" name="elevation-unit" value="m"> m</label>
     </span>
+  </fieldset>
+  {%- comment -%}
+    A range of heights to show high marks between, with how many there are at
+    each height drawn above it. Hidden until the script has heights to draw,
+    since without a script it could do nothing.
+  {%- endcomment -%}
+  <fieldset class="legend heights" id="heights" hidden>
+    <legend>High marks by height</legend>
+    <div class="histogram" aria-hidden="true"></div>
+    <div class="range">
+      <input type="range" class="low" aria-label="Lowest height shown" min="0" max="1" step="1" value="0">
+      <input type="range" class="high" aria-label="Highest height shown" min="0" max="1" step="1" value="1">
+    </div>
+    <output class="span" aria-live="polite"></output>
   </fieldset>
   <p class="hint">
     Drag to turn the globe. Scroll to move closer. Click a country, a region or a
@@ -111,15 +122,13 @@ title: Travel
     opens or shuts it. Regions start shut, because the cities under them are
     most of the list.
 
-    data-index on a city matches its position in the city-data array below,
-    because both are written by the same loops in the same order.
+    data-id on a place matches the id of its entry in the place-data array
+    below. A point of interest in two regions is listed under both, and both
+    rows carry the one id, so either chooses the one dot.
   {%- endcomment -%}
   <nav id="outline" aria-label="Everywhere I have been">
-    {%- assign city_index = 0 -%}
-    {%- for continent in site.data.travel.continents -%}
-    {%- capture continent_countries -%}
-      {%- for country in continent.countries -%}{{ country.code }}{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%}
-    {%- endcapture -%}
+    {%- for continent in continents -%}
+    {%- assign continent_countries = continent.items | map: "code" | join: "," -%}
     <details class="level continent" open>
       <summary>
         <button type="button" class="entry continent-entry" data-kind="continent"
@@ -127,23 +136,22 @@ title: Travel
           {{ continent.name }}
         </button>
       </summary>
-      {%- for country in continent.countries -%}
+      {%- for country in continent.items -%}
+      {%- assign country_regions = site.data.regions | where: "country", country.code -%}
       <details class="level country" open>
         <summary>
           <button type="button" class="entry country-entry" data-kind="country" data-code="{{ country.code }}">
             {{ country.name }}
           </button>
         </summary>
-        {%- if country.regions.size > 0 -%}
-          {%- for region in country.regions -%}
+        {%- if country_regions.size > 0 -%}
+          {%- for region in country_regions -%}
           {%- comment -%}
-            A code is optional in the data: fourteen regions have none. So the
-            key is the code when there is one and the country plus the name
-            when there is not, which is exactly what build-geo.rb writes into
-            the geometry, so the two always agree.
+            The key is the region's ISO 3166-2 code, or its country and name
+            when it has none. It is stored on the region, and build-geo.rb
+            writes the same key into the geometry, so the two always agree.
           {%- endcomment -%}
-          {%- assign region_key = region.code -%}
-          {%- unless region.code -%}{%- assign region_key = country.code | append: ':' | append: region.name -%}{%- endunless -%}
+          {%- assign region_key = region.key -%}
           <details class="level region">
             <summary>
               <button type="button" class="entry region-entry" data-kind="region" data-key="{{ region_key }}">
@@ -154,12 +162,21 @@ title: Travel
               Each kind gets its own collapsible subheading, so a state with
               forty cities and two points of interest does not bury the two.
               They start shut; focusing something inside one opens it.
+
+              High marks are listed highest first, so the region's own high
+              mark is the top of its list rather than a separate entry.
             {%- endcomment -%}
-            {%- for pair in place_kinds -%}
-              {%- assign parts = pair | split: ',' -%}
-              {%- assign place_key = parts[0] -%}
-              {%- assign place_kind = parts[1] -%}
-              {%- assign list = region[place_key] -%}
+            {%- for place_kind in place_kinds -%}
+              {%- case place_kind -%}
+                {%- when 'city' -%}
+                  {%- assign list = site.data.cities | where: "region", region_key -%}
+                {%- when 'poi' -%}
+                  {%- assign list = site.data.pois | where_exp: "place", "place.regions contains region_key" -%}
+                {%- when 'highmark' -%}
+                  {%- assign list = site.data.high_marks | where_exp: "place", "place.regions contains region_key" | sort: "elevation_m", "first" | reverse -%}
+                {%- when 'trip' -%}
+                  {%- assign list = site.data.trips | where_exp: "place", "place.regions contains region_key" -%}
+              {%- endcase -%}
               {%- if list.size > 0 -%}
             <details class="level kind {{ place_kind }}">
               <summary>
@@ -168,6 +185,7 @@ title: Travel
                     {%- when 'city' -%}{%- if list.size == 1 -%}city{%- else -%}cities{%- endif -%}
                     {%- when 'poi' -%}point{%- if list.size != 1 -%}s{%- endif %} of interest
                     {%- when 'highmark' -%}high mark{%- if list.size != 1 -%}s{%- endif -%}
+                    {%- when 'trip' -%}trip{%- if list.size != 1 -%}s{%- endif -%}
                     {%- else -%}{{ place_kind }}
                   {%- endcase -%}
                   <span class="count">{{ list.size }}</span>
@@ -178,18 +196,24 @@ title: Travel
                   {%- if place.name and place.name != '' -%}
                 <li>
                   {%- comment -%}
-                    The index must match the position in the place-data array,
-                    and that array holds only places that have coordinates. So
-                    the counter advances for those and no others, and a place
-                    still waiting to be geocoded is listed but not clickable.
+                    The place-data array holds only places that have
+                    coordinates, so a place still waiting to be geocoded is
+                    listed but not clickable.
                   {%- endcomment -%}
-                  {%- if place.lat and place.lon -%}
-                  <button type="button" class="entry place-entry {{ place_kind }}-entry" data-kind="place" data-index="{{ city_index }}">
+                  {%- if place_kind == 'trip' -%}
+                  {%- comment -%}
+                    A trip is a line, not a dot, so it is not in place-data:
+                    the globe finds it in trips.json by its id.
+                  {%- endcomment -%}
+                  <button type="button" class="entry trip-entry" data-kind="trip" data-id="{{ place.id | escape }}" data-type="{{ place.type | escape }}">
+                    {{ place.name }}<span class="trip-type">{{ place.type }}</span>
+                  </button>
+                  {%- elsif place.lat and place.lon -%}
+                  <button type="button" class="entry place-entry {{ place_kind }}-entry" data-kind="place" data-id="{{ place_kind }}:{{ place.id | escape }}">
                     {{ place.name }}{% if place.elevation_m %}<span class="elevation" data-metres="{{ place.elevation_m }}"></span>{% endif %}
                   </button>
-                  {%- assign city_index = city_index | plus: 1 -%}
                   {%- else -%}
-                  <span class="entry place-entry {{ place_kind }}-entry not-located" title="No coordinates yet — run make travel-geocode">
+                  <span class="entry place-entry {{ place_kind }}-entry not-located" title="No coordinates yet — run make travel-geocode, or find them in make travel-admin">
                     {{ place.name }}
                   </span>
                   {%- endif -%}
@@ -214,37 +238,46 @@ title: Travel
 </main>
 
 {%- comment -%}
-  The dots come straight from _data/travel.yml, so adding a place to the data
-  adds it to the globe. Cities and points of interest share one array, with a
-  `kind` telling them apart, because an index then means the same thing to the
-  list and to the globe. The order here is the order the list counts in. A flag, rather than forloop.last, puts the commas in:
-  the loops are nested four deep, and only the very last city of the very last
-  region must have none.
+  The dots come straight from _data/, so adding a place to the data adds it to
+  the globe. Every kind shares one array, with a `kind` telling them apart, and
+  each entry has an id the list uses to point at it: the kind and the record's
+  own id, since ids are unique only within a kind. A flag, rather than
+  forloop.last, puts the commas in: the array is written by several loops, and
+  only the very last entry of the last one must have none.
+
+  A place names its regions by key and nothing more. The names, countries and
+  continents those keys stand for are in region-data, once, rather than copied
+  into every place.
 {%- endcomment -%}
 <script id="place-data" type="application/json">
 [
 {%- assign first = true -%}
-{%- for continent in site.data.travel.continents -%}
-  {%- for country in continent.countries -%}
-    {%- for region in country.regions -%}
-      {%- assign region_key = region.code -%}
-      {%- unless region.code -%}{%- assign region_key = country.code | append: ':' | append: region.name -%}{%- endunless -%}
-      {%- for pair in place_kinds -%}
-        {%- assign parts = pair | split: ',' -%}
-        {%- assign place_key = parts[0] -%}
-        {%- assign place_kind = parts[1] -%}
-        {%- assign list = region[place_key] -%}
-        {%- for place in list -%}
-          {%- if place.lat and place.lon -%}
-            {%- if first %}{% assign first = false %}{% else %},{% endif %}
-{"kind":{{ place_kind | jsonify }},"name":{{ place.name | jsonify }},"lat":{{ place.lat }},"lon":{{ place.lon }},"region":{{ region.name | jsonify }},"regionKey":{{ region_key | jsonify }},"country":{{ country.name | jsonify }},"countryCode":{{ country.code | jsonify }},"continent":{{ continent.name | jsonify }}{% if place.elevation_m %},"elevation":{{ place.elevation_m }}{% endif %}}
-          {%- endif -%}
-        {%- endfor -%}
-      {%- endfor -%}
-    {%- endfor -%}
+{%- assign collections = "cities,city|pois,poi|high_marks,highmark" | split: "|" -%}
+{%- for pair in collections -%}
+  {%- assign parts = pair | split: ',' -%}
+  {%- assign list_key = parts[0] -%}
+  {%- assign place_kind = parts[1] -%}
+  {%- for place in site.data[list_key] -%}
+    {%- if place.lat and place.lon -%}
+      {%- if first %}{% assign first = false %}{% else %},{% endif %}
+      {%- capture place_id -%}{{ place_kind }}:{{ place.id }}{%- endcapture -%}
+      {%- if place_kind == 'city' -%}{%- assign place_regions = place.region | split: "|" -%}{%- else -%}{%- assign place_regions = place.regions -%}{%- endif %}
+{"id":{{ place_id | jsonify }},"kind":{{ place_kind | jsonify }},"name":{{ place.name | jsonify }},"lat":{{ place.lat }},"lon":{{ place.lon }},"regions":{{ place_regions | jsonify }}{% if place.elevation_m %},"elevation":{{ place.elevation_m }}{% endif %}}
+    {%- endif -%}
   {%- endfor -%}
 {%- endfor -%}
 ]
+</script>
+
+<script id="region-data" type="application/json">
+{
+{%- assign first = true -%}
+{%- for region in site.data.regions -%}
+  {%- assign country = site.data.countries | where: "code", region.country | first -%}
+  {%- if first %}{% assign first = false %}{% else %},{% endif %}
+{{ region.key | jsonify }}:{"name":{{ region.name | jsonify }},"country":{{ country.name | jsonify }},"countryCode":{{ country.code | jsonify }},"continent":{{ country.continent | jsonify }}}
+{%- endfor -%}
+}
 </script>
 
 <footer>

@@ -159,39 +159,71 @@ panel:
 |---|---|---|
 | Country visited | pale fill | `assets/geo/countries.json`, matched on ISO 3166-1 |
 | State, province or region | strong fill | `assets/geo/regions.json` |
-| City | black dot | `cities:` in `_data/travel.yml` |
-| Point of interest | green dot | `pois:` |
-| High mark | blue dot, with its height | `highmark:` |
+| City | black dot | `_data/cities.yml` |
+| Point of interest | green dot | `_data/pois.yml` |
+| High mark | blue dot, with its height | `_data/high_marks.yml` |
+| Trip | a line, one colour per type, with a key in the legend | `_data/trips.yml`, line in `assets/geo/trips.json` |
 
 Unticking *countries* paints the visited ones like everywhere else rather than
 removing the land, since the country layer **is** the land. Heights are stored
 once in metres and shown in feet or metres from the control at the right of the
 legend.
 
+Under the legend, a histogram of the high marks by height sits over a slider
+with two handles. Moving them hides the high marks outside the range, on the
+globe and in the list. The buckets are equal steps of round height (500 ft,
+200 m), not percentiles, because percentile buckets all hold the same number of
+places and would draw a flat histogram. The handles move one bucket at a time.
+Within a region, high marks are listed highest first, so the region's high mark
+is the first one.
+
 ### The data
 
-`travel/_data/travel.yml` is the only source. Continent → country → region →
-places. A region may carry a `code:` (ISO 3166-2) but does not have to; without
-one it is identified by its country and name.
+`travel/_data/` is the only source. It holds one flat list per kind of record,
+the way a database holds one table per kind, and each record points at others
+by id:
 
-A place is normally a list entry with a name:
+| File | A record has | Its id |
+|---|---|---|
+| `countries.yml` | `code`, `name`, `continent` | `code` (ISO 3166-1) |
+| `regions.yml` | `key`, `code`, `name`, `country`, `kind` | `key` |
+| `cities.yml` | `id`, `name`, `region`, `lat`, `lon`, `dates` | `id` |
+| `pois.yml` | `id`, `name`, `regions`, `lat`, `lon`, `dates` | `id` |
+| `high_marks.yml` | `id`, `name`, `regions`, `lat`, `lon`, `elevation_m`, `dates` | `id` |
+| `trips.yml` | `id`, `name`, `type`, `regions`, `dates`, `activities`, `track_activity` | `id` |
 
-```yaml
-cities:
-  - name: Boston
-pois:
-  - name: Acadia National Park
-highmark:
-  - name: Mt. Greylock
-```
+- A region's **key** is its ISO 3166-2 `code`, or its country and name when it
+  has none, such as `IT:Tuscany`. The page and the geometry both use the key.
+- A region's **kind** says what the second level is called in that country:
+  state, province, territory, region, prefecture, county, federal district. The
+  home page counts a US region as a state only when its kind is `state`, so the
+  District of Columbia is not one.
+- A city is in one region. A **point of interest** or a **high mark** is in any
+  number of regions, because a national park or a summit on a state line can
+  be in more than one. It shows under each of them in the list, and as one dot.
+- You choose the regions yourself. Nothing finds them from the coordinates,
+  because `make travel-check` compares the coordinates with the regions, and
+  that comparison is how a bad geocode is found.
+- **dates** is an optional list. Each item is a day (`2019-06-12`), a month
+  when the day is not known (`2024-03`), or a stay (`from:` and `to:`). A place
+  appears once, however many times you went; each visit is a date.
+- Points of interest are areas (parks, trails, caves), so they have no
+  elevation. Only high marks have one.
+- A **trip** is a route you have done, drawn as a line: a hike, a ride, a
+  rafting trip. Its `type` is any text (`hike`, `packraft`, `nordic ski`),
+  kept in lower case so one type has one spelling. There is no fixed list: the
+  globe gives each type in the data its own colour, the most used types first, and lists them in the
+  legend with their counts. It has one line however many times you did it;
+  each time is a date, and each Strava activity it came from is in
+  `activities`. `track_activity` is the one
+  whose line is drawn. The lines are in `assets/geo/trips.json`, not in the
+  YAML, because a line is hundreds of points.
 
-A single place may also be written in shorthand, which `make travel-geocode`
-widens into the list form on its next run, because a string has nowhere to keep
-a latitude:
-
-```yaml
-highmark: Mt. Greylock
-```
+`lib/travel/store.rb` reads and writes these files, and checks each record
+before it saves it: a name, a region that exists, coordinates in range. The
+scripts all go through it, so a later move to a database changes that one
+file. Because the Store writes the files, they have no
+comments; the notes are here instead.
 
 ### Keeping it honest
 
@@ -213,7 +245,8 @@ all are safe to re-run:
   cached in `travel/.geo-cache/` (ignored by git); the first run downloads about
   43 MB and later runs read the cache. Only the filtered result is committed.
 - **`make travel-check`** tests every located place against the polygon of the
-  region it is filed under. It needs no network.
+  region it is filed under, or any of the regions it names. It also reports a
+  place whose region does not exist in `regions.yml`. It needs no network.
 
 A geocoder is confidently wrong often enough to matter. `Gray's Peak` landed in
 Oklahoma, `Painted Desert` in Anaheim, `Skyline Drive` on a street in Norfolk,
@@ -249,15 +282,16 @@ Two details of the geometry are worth knowing, because both have bitten:
   country's colour. Antarctica's pole-following boundary and a sliver of Malawi
   in the lakes file have each done it.
 
-### The main site counts from the same file
+### The main site counts from the same files
 
 The home page sentence — *"I've visited 38 US states and 14 countries across 4
-continents"* — is counted from `travel/_data/travel.yml` at build time, so it
-cannot fall behind the map.
+continents"* — is counted from `travel/_data/` at build time, so it cannot fall
+behind the map.
 
-The main site excludes `travel/`, which also hides that file from Jekyll's own
-data loading, so `_plugins/travel_data.rb` reads it and puts it in
-`site.data.travel` for the main site too. One file, two sites, no copy to drift.
+The main site excludes `travel/`, which also hides those files from Jekyll's
+own data loading, so `_plugins/travel_data.rb` reads them and puts them in
+`site.data.travel` for the main site too: `site.data.travel.countries`,
+`site.data.travel.regions` and so on. One copy of the data, two sites.
 A US state is a region with `kind: state`, which is why the District of Columbia
 is not counted as one.
 
@@ -345,8 +379,7 @@ never means touching markup.
 | `experience.yaml`, `education.yaml`, `presentations.yaml` | The experience page |
 | `links.yml` | The links page |
 
-The travel data is not here: it belongs to the other site, at
-`travel/_data/travel.yml`.
+The travel data is not here: it belongs to the other site, in `travel/_data/`.
 
 Two conventions worth knowing:
 

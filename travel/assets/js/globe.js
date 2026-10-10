@@ -3,7 +3,12 @@
  * Three layers, each saying a different thing:
  *   - a country I have visited, filled pale
  *   - a state, province or region I have visited, filled strong on top
- *   - a city or point of interest, a dot
+ *   - a trip, a line, coloured by its type; a type is any word the data
+ *     uses, so the colours are given out here rather than in the stylesheet
+ *   - a city, point of interest or high mark, a dot
+ *
+ * High marks can also be narrowed to a range of heights, with a histogram over
+ * the range showing how many there are at each height.
  *
  * The projection is orthographic, which is a real globe: half the Earth is
  * behind the sphere and must not be drawn. d3.geoPath does that for the shapes,
@@ -20,17 +25,36 @@
   var svg = d3.select('#globe');
   var tooltip = d3.select('#tooltip');
   var figure = document.getElementById('globe-figure');
-  // Cities and points of interest together, each carrying the kind that tells
-  // them apart. One array, so an index means the same thing to the list, the
-  // dots and the labels.
+  // Every kind of place together, each carrying the kind that tells them apart
+  // and an id the list uses to point at it.
   var places = JSON.parse(document.getElementById('place-data').textContent);
 
-  // Each place remembers where it sits in the array, because the dots are split
-  // across two groups and a position within a group identifies nothing.
-  places.forEach(function (place, i) { place.index = i; });
+  // A place names its regions by key. The names and countries behind those
+  // keys are written once, in region-data, and joined on here. A point of
+  // interest can lie in several regions, and so in several countries.
+  var regionsByKey = JSON.parse(document.getElementById('region-data').textContent);
+  var placesById = {};
+  places.forEach(function (place) {
+    var regions = place.regions.map(function (key) { return regionsByKey[key]; }).filter(Boolean);
+    place.countryCodes = regions.map(function (r) { return r.countryCode; })
+      .filter(function (code, i, all) { return all.indexOf(code) === i; });
+    place.where = [
+      regions.map(function (r) { return r.name; }).join(', '),
+      regions.map(function (r) { return r.country; })
+        .filter(function (name, i, all) { return all.indexOf(name) === i; }).join(', ')
+    ].filter(Boolean).join(' \u00b7 ');
+    placesById[place.id] = place;
+  });
+
+  // Whether a place is in a region, a country, or any of a list of countries.
+  function placeIn(d, kind, key) {
+    if (kind === 'region') return d.regions.indexOf(key) !== -1;
+    var wanted = String(key).split(',');
+    return d.countryCodes.some(function (code) { return wanted.indexOf(code) !== -1; });
+  }
 
   // The kinds present in the data, in the order they first appear. Nothing here
-  // names a kind, so adding one to travel.yml and to the page's list is enough
+  // names a kind, so adding one to the data and to the page's list is enough
   // — this follows.
   var KINDS = [];
   places.forEach(function (place) {
@@ -49,8 +73,12 @@
   }
 
   // Which layers are drawn. The legend doubles as the control for these.
-  var showing = { countries: true, regions: true, labels: true };
+  var showing = { countries: true, regions: true, trips: true, labels: true };
   KINDS.forEach(function (kind) { showing[kind] = true; });
+
+  // The heights of high mark shown, as a test on each place. Everything else
+  // has no height and is never filtered by it. Set by wireHeights.
+  var inHeightRange = function () { return true; };
 
   // Opening on the Americas, where most of the data is, rather than on the
   // Atlantic at 0,0 where there is nothing to see.
@@ -63,6 +91,9 @@
     graticule: svg.append('path').attr('class', 'graticule'),
     countries: svg.append('g'),
     regions: svg.append('g'),
+    // Trips sit over the regions and under the dots, so a summit's dot is not
+    // hidden by the line that climbs to it.
+    trips: svg.append('g'),
     // One group per kind of place, created between the regions and the labels
     // so dots sit over fills and names sit over dots. Showing or hiding a kind
     // is then one attribute on one group.
@@ -142,7 +173,7 @@
     layers.labels.selectAll('text').each(function (d) {
       // A hidden kind gives up its place in the queue as well as its ink, so
       // hiding the cities lets the points of interest claim the room.
-      var wanted = showing.labels && showing[d.kind];
+      var wanted = showing.labels && showing[d.kind] && inHeightRange(d);
       var point = wanted && visible(d) ? projection([d.lon, d.lat]) : null;
       if (!point) {
         this.style.display = 'none';
@@ -186,6 +217,7 @@
     layers.outline.attr('d', path({ type: 'Sphere' }));
     layers.countries.selectAll('path').attr('d', path);
     layers.regions.selectAll('path').attr('d', path);
+    layers.trips.selectAll('path').attr('d', path);
 
     var radius = Math.max(2.4, size / 230);
 
@@ -197,7 +229,7 @@
           var point = projection([d.lon, d.lat]);
           return point ? 'translate(' + point[0] + ',' + point[1] + ')' : null;
         })
-        .attr('display', function (d) { return visible(d) ? null : 'none'; })
+        .attr('display', function (d) { return visible(d) && inHeightRange(d) ? null : 'none'; })
         .attr('r', radius);
     });
 
@@ -468,7 +500,9 @@
 
     var selector;
     if (focused.kind === 'place') {
-      selector = '.entry[data-index="' + focused.key + '"]';
+      selector = '.entry[data-id="' + CSS.escape(focused.key) + '"]';
+    } else if (focused.kind === 'trip') {
+      selector = '.trip-entry[data-id="' + CSS.escape(focused.key) + '"]';
     } else if (focused.kind === 'continent') {
       selector = '.continent-entry[data-name="' + focused.label + '"]';
     } else {
@@ -495,7 +529,7 @@
     // continent instead opens what is inside it, so choosing Colorado shows
     // Colorado's places rather than a shut row with its name on it.
     var container = row.closest('details');
-    if (container && focused.kind !== 'place') {
+    if (container && focused.kind !== 'place' && focused.kind !== 'trip') {
       container.querySelectorAll('details.kind').forEach(function (kind) {
         kind.open = true;
       });
@@ -532,32 +566,28 @@
     // the chosen region, country or continent. Fading a region's own places
     // along with everything else would hide the very thing being looked at.
     //
-    // Identity is the stored index, not the position in a group: the dots are
-    // split across two groups now, so a position means nothing on its own.
     function placeIsFocused(d) {
       if (focused === null) return false;
-      if (focused.kind === 'place') return String(d.index) === String(focused.key);
-      if (focused.kind === 'region') return d.regionKey === focused.key;
-      if (focused.kind === 'continent') return String(focused.key).split(',').indexOf(d.countryCode) !== -1;
-      return d.countryCode === focused.key;
+      if (focused.kind === 'place') return d.id === focused.key;
+      return placeIn(d, focused.kind, focused.key);
     }
     KINDS.forEach(function (kind) {
       layers.dots[kind].selectAll('circle').classed('focused', placeIsFocused);
     });
     layers.labels.selectAll('text').classed('focused', placeIsFocused);
+    // A trip is focused when it is the chosen one, or passes through the
+    // chosen region, country or continent.
+    layers.trips.selectAll('path').classed('focused', function (d) {
+      if (focused === null || focused.kind === 'place') return false;
+      if (focused.kind === 'trip') return d.properties.id === focused.key;
+      return placeIn(d.properties, focused.kind, focused.key);
+    });
     if (clearButton) clearButton.hidden = focused === null;
   }
 
   // Which visited places belong to the thing being focused.
   function placesOf(kind, key) {
-    if (kind === 'country') {
-      return places.filter(function (d) { return d.countryCode === key; });
-    }
-    if (kind === 'region') {
-      return places.filter(function (d) { return d.regionKey === key; });
-    }
-    var wanted = String(key).split(',');
-    return places.filter(function (d) { return wanted.indexOf(d.countryCode) !== -1; });
+    return places.filter(function (d) { return placeIn(d, kind, key); });
   }
 
   // A place is framed by where I actually went in it, not by the outline of the
@@ -600,10 +630,15 @@
     var scale;
 
     if (kind === 'place') {
-      var place = places[Number(key)];
+      var place = placesById[key];
       if (!place) return;
       centre = [place.lon, place.lat];
       scale = baseScale() * 20;
+    } else if (kind === 'trip') {
+      var trip = layers.trips.selectAll('path').data().filter(function (d) { return d.properties.id === key; })[0];
+      if (!trip) return;
+      centre = d3.geoCentroid(trip);
+      scale = scaleToFit(Math.max(angularRadius(trip, centre) * 1.35, 0.004));
     } else {
       var frame = frameOf(kind, key);
       if (!frame) return;
@@ -645,6 +680,7 @@
     function apply() {
       svg.classed('hide-countries', !showing.countries);
       layers.regions.attr('display', showing.regions ? null : 'none');
+      layers.trips.attr('display', showing.trips ? null : 'none');
       KINDS.forEach(function (kind) {
         layers.dots[kind].attr('display', showing[kind] ? null : 'none');
       });
@@ -661,15 +697,141 @@
     apply();
   }
 
+  // HEIGHTS
+  //
+  // Two sliders over one track choose the lowest and highest high mark shown,
+  // with a histogram above them: one bar per bucket of height, as tall as the
+  // number of high marks in it. The buckets are equal steps of height rather
+  // than percentiles, because a bucket per percentile holds the same number of
+  // places by definition, and the bars would all be one height.
+  //
+  // The steps are round numbers in whichever unit is chosen — 500 ft, or
+  // 200 m — so they are worked out again when the unit changes. The sliders
+  // move a whole bucket at a time, so the range always lines up with the bars.
+  //
+  // Returns the function that works the buckets out again, or null when there
+  // are too few heights to be worth a control.
+  function wireHeights() {
+    var panel = document.getElementById('heights');
+    var measured = places.filter(function (d) { return d.kind === 'highmark' && d.elevation; });
+    if (!panel || measured.length < 2) return null;
+
+    var histogram = panel.querySelector('.histogram');
+    var low = panel.querySelector('.low');
+    var high = panel.querySelector('.high');
+    var span = panel.querySelector('.span');
+
+    // The chosen range in metres, so it survives a change of unit. Null ends
+    // mean the whole way to the lowest or highest.
+    var chosen = { from: null, to: null };
+    var bounds = [];   // bucket edges, in the shown unit, lowest first
+
+    function shown(metres) {
+      return unit === 'ft' ? metres * 3.28084 : metres;
+    }
+
+    // The last bucket includes its top edge, so the highest high mark is in it
+    // even when it falls exactly on a round number.
+    function bucketOf(metres) {
+      var value = shown(metres);
+      var i = 0;
+      while (i < bounds.length - 2 && value >= bounds[i + 1]) i += 1;
+      return i;
+    }
+
+    function rebin() {
+      var values = measured.map(function (d) { return shown(d.elevation); });
+      var lowest = d3.min(values);
+      var highest = d3.max(values);
+      var step = d3.tickStep(lowest, highest, 20);
+      var start = Math.floor(lowest / step) * step;
+      var end = Math.max(Math.ceil(highest / step) * step, start + step);
+      bounds = d3.range(start, end + (step / 2), step);
+
+      var buckets = bounds.length - 1;
+      [low, high].forEach(function (input) { input.max = buckets; });
+
+      // The edges nearest the chosen range that still contain it.
+      var from = chosen.from === null ? 0 : d3.bisectRight(bounds, shown(chosen.from)) - 1;
+      var to = chosen.to === null ? buckets : d3.bisectLeft(bounds, shown(chosen.to));
+      low.value = Math.max(0, Math.min(from, buckets - 1));
+      high.value = Math.max(Number(low.value) + 1, Math.min(to, buckets));
+
+      var counts = bounds.slice(0, -1).map(function () { return 0; });
+      measured.forEach(function (d) { counts[bucketOf(d.elevation)] += 1; });
+      var most = d3.max(counts);
+      histogram.replaceChildren.apply(histogram, counts.map(function (count, i) {
+        var bar = document.createElement('i');
+        bar.style.height = (count / most * 100) + '%';
+        // An empty bucket keeps its slot, so the bars stay lined up with the
+        // slider, but draws nothing: even a hairline reads as one high mark.
+        bar.classList.toggle('empty', count === 0);
+        bar.title = edgeText(bounds[i]) + '\u2013' + edgeText(bounds[i + 1]) + ': ' + count;
+        return bar;
+      }));
+
+      apply();
+    }
+
+    function edgeText(value) {
+      return Math.round(value).toLocaleString();
+    }
+
+    function apply() {
+      var from = Number(low.value);
+      var to = Number(high.value);
+      var whole = from === 0 && to === bounds.length - 1;
+
+      inHeightRange = whole ? function () { return true; } : function (d) {
+        if (d.kind !== 'highmark' || !d.elevation) return true;
+        var bucket = bucketOf(d.elevation);
+        return bucket >= from && bucket < to;
+      };
+
+      Array.prototype.forEach.call(histogram.children, function (bar, i) {
+        bar.classList.toggle('out', i < from || i >= to);
+      });
+      span.textContent = edgeText(bounds[from]) + ' \u2013 ' + edgeText(bounds[to]) + ' ' + unit +
+        (whole ? '' : ' \u00b7 ' + measured.filter(inHeightRange).length + ' of ' + measured.length);
+
+      // The list hides the same high marks the globe does.
+      outline.querySelectorAll('.highmark-entry[data-id]').forEach(function (entry) {
+        var place = placesById[entry.dataset.id];
+        entry.closest('li').hidden = !(place && inHeightRange(place));
+      });
+      schedule();
+    }
+
+    // A handle cannot pass the other: the range always holds one bucket.
+    function moved(event) {
+      if (Number(low.value) >= Number(high.value)) {
+        if (event.target === low) low.value = Number(high.value) - 1;
+        else high.value = Number(low.value) + 1;
+      }
+      var buckets = bounds.length - 1;
+      var unitToMetres = unit === 'ft' ? 1 / 3.28084 : 1;
+      chosen.from = Number(low.value) === 0 ? null : bounds[low.value] * unitToMetres;
+      chosen.to = Number(high.value) === buckets ? null : bounds[high.value] * unitToMetres;
+      apply();
+    }
+
+    low.addEventListener('input', moved);
+    high.addEventListener('input', moved);
+    panel.hidden = false;
+    rebin();
+    return rebin;
+  }
+
   // Switching the unit rewrites every height already on the page: the ones in
-  // the list, which the server left empty for this reason, and the ones in the
-  // labels on the globe.
-  function wireUnits() {
+  // the list, which the server left empty for this reason, the ones in the
+  // labels on the globe, and the buckets of the height control.
+  function wireUnits(rebinHeights) {
     function redraw() {
       document.querySelectorAll('#outline .elevation').forEach(function (node) {
         node.textContent = ' ' + elevationText(Number(node.dataset.metres));
       });
       layers.labels.selectAll('text').text(labelText);
+      if (rebinHeights) rebinHeights();
       schedule();
     }
 
@@ -695,7 +857,7 @@
       event.preventDefault();
 
       var kind = entry.dataset.kind;
-      var key = kind === 'place' ? entry.dataset.index
+      var key = kind === 'place' || kind === 'trip' ? entry.dataset.id
               : kind === 'continent' ? entry.dataset.countries
               : kind === 'country' ? entry.dataset.code
               : entry.dataset.key;
@@ -707,12 +869,82 @@
     });
   }
 
+  // TRIP TYPES
+  //
+  // A trip's type is free text, so there is no list of types to colour in the
+  // stylesheet. Each type gets a colour from one palette instead, the most
+  // used type first, so the types there are most of never share a colour. The
+  // legend shows each type with its colour and how many trips it has, and the
+  // list marks each trip with its type's colour.
+  function colourTripTypes(features) {
+    var counts = d3.rollups(features, function (group) { return group.length; },
+      function (d) { return d.properties.type || ''; });
+    counts.sort(function (a, b) { return b[1] - a[1] || d3.ascending(a[0], b[0]); });
+    var colour = d3.scaleOrdinal(counts.map(function (pair) { return pair[0]; }), d3.schemeTableau10);
+
+    var key = document.querySelector('#layers .trip-key');
+    if (key && counts.length) {
+      key.replaceChildren.apply(key, counts.map(function (pair) {
+        var item = document.createElement('span');
+        var swatch = document.createElement('i');
+        swatch.className = 'line';
+        swatch.style.background = colour(pair[0]);
+        item.append(swatch, ' ' + (pair[0] || 'no type') + ' ', Object.assign(document.createElement('span'), {
+          className: 'count', textContent: pair[1]
+        }));
+        return item;
+      }));
+      key.hidden = false;
+    }
+
+    var swatch = document.querySelector('#layers i.line');
+    if (swatch && counts.length) {
+      var stops = counts.slice(0, 4).map(function (pair, i, all) {
+        return colour(pair[0]) + ' ' + (i * 100 / all.length) + '% ' + ((i + 1) * 100 / all.length) + '%';
+      });
+      swatch.style.background = 'linear-gradient(90deg, ' + stops.join(', ') + ')';
+    }
+
+    document.querySelectorAll('#outline .trip-entry .trip-type').forEach(function (label) {
+      label.style.color = colour(label.parentNode.dataset.type || '');
+    });
+
+    return colour;
+  }
+
   Promise.all([
     d3.json('/assets/geo/countries.json'),
-    d3.json('/assets/geo/regions.json')
+    d3.json('/assets/geo/regions.json'),
+    // No trips yet is no reason not to draw the rest.
+    d3.json('/assets/geo/trips.json').catch(function () { return { features: [] }; })
   ]).then(function (data) {
     var countries = data[0];
     var regions = data[1];
+    var trips = data[2];
+
+    // The countries a trip passes through, for focusing a country or a
+    // continent, worked out from its regions as a place's are.
+    trips.features.forEach(function (feature) {
+      var properties = feature.properties;
+      var known = (properties.regions || []).map(function (key) { return regionsByKey[key]; }).filter(Boolean);
+      properties.regions = properties.regions || [];
+      properties.countryCodes = known.map(function (r) { return r.countryCode; })
+        .filter(function (code, i, all) { return all.indexOf(code) === i; });
+      properties.where = known.map(function (r) { return r.name; }).join(', ');
+    });
+
+    var tripColour = colourTripTypes(trips.features);
+
+    layers.trips.selectAll('path')
+      .data(trips.features)
+      .join('path')
+      .attr('class', 'trip')
+      .style('stroke', function (d) { return tripColour(d.properties.type); })
+      .on('pointerenter', function (event, d) {
+        showTooltip(event, d.properties.name, [d.properties.type, d.properties.where].filter(Boolean).join(' \u00b7 '));
+      })
+      .on('pointerleave', hideTooltip)
+      .on('click', function (event, d) { focusOn('trip', d.properties.id, d.properties.name); });
 
     layers.countries.selectAll('path')
       .data(countries.features)
@@ -745,11 +977,10 @@
         // apart by the stylesheet rather than by this script.
         .attr('class', function (d) { return 'place ' + d.kind; })
         .on('pointerenter', function (event, d) {
-          var where = [d.region, d.country].filter(Boolean).join(' \u00b7 ');
-          showTooltip(event, d.name + (d.elevation ? '  ' + elevationText(d.elevation) : ''), where);
+          showTooltip(event, d.name + (d.elevation ? '  ' + elevationText(d.elevation) : ''), d.where);
         })
         .on('pointerleave', hideTooltip)
-        .on('click', function (event, d) { focusOn('place', d.index); });
+        .on('click', function (event, d) { focusOn('place', d.id); });
     });
 
     layers.labels.selectAll('text')
@@ -766,7 +997,7 @@
     enableZoom();
     wireOutline();
     wireLayerControls();
-    wireUnits();
+    wireUnits(wireHeights());
     spin();
 
     window.addEventListener('resize', function () {

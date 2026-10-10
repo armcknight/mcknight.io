@@ -1,0 +1,70 @@
+- id: silvertip-peak-eastern-alaska-range
+  name: Silvertip Peak, Eastern Alaska Range
+  regions:
+  - US-AK
+  lat: 63.4889
+  lon: -145.60988
+  elevation_m: 2812
+- id: telescope-peak
+  name: Telescope Peak
+  regions:
+  - US-CA
+  lat: 36.16985
+  lon: -117.08921
+  elevation_m: 3369
+- id: grays-peak
+  name: Grays Peak
+  regions:
+  - US-CO
+  lat: 39.63388
+  lon: -105.81751
+  elevation_m: 4352
+- id: mauna-kea-recreation-area
+  name: Mauna Kea Recreation Area
+  regions:
+  - US-HI
+  lat: 19.7495
+  lon: -155.52559
+  elevation_m: 1984
+- id: mt-adams
+  name: Mt. Adams
+  regions:
+  - US-NH
+  lat: 44.32058
+  lon: -71.29164
+  elevation_m: 1748
+- id: mt-greylock
+  name: Mt. Greylock
+  regions:
+  - US-MA
+  lat: 42.63726
+  lon: -73.16599
+  elevation_m: 1063
+- id: garden-wall-traverse
+  name: Garden Wall Traverse
+  regions:
+  - US-MT
+  lat: 48.75771
+  lon: -113.74203
+  elevation_m: 2348
+- id: top-of-the-rock
+  name: Top of the Rock
+  regions:
+  - US-NY
+  lat: 40.75903
+  lon: -73.9794
+  elevation_m: 260
+- id: killington-peak
+  name: Killington Peak
+  regions:
+  - US-VT
+  lat: 43.60455
+  lon: -72.82015
+  elevation_m: 1293
+- id: the-priest
+  name: The Priest
+  regions:
+  - US-VA
+  lat: 37.81986
+  lon: -79.06253
+  elevation_m: 1227

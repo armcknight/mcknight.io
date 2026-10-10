@@ -256,8 +256,9 @@ optimize-images: ## Strip EXIF from and compress any images git sees as changed
 # travel site's content rather than to a site operation, so they are not
 # <site> targets.
 
-# Fills in `lat:` and `lon:` for any city in travel/_data/travel.yml that lacks
-# them, using the Nominatim geocoder of OpenStreetMap.
+# Fills in `lat:` and `lon:` for any place in travel/_data/ that lacks them,
+# and `elevation_m:` for any high mark, using the Nominatim geocoder of
+# OpenStreetMap.
 #
 # Only new cities cost anything: a city that already has coordinates is skipped,
 # so a re-run with nothing to do finishes in well under a second. A first run
@@ -271,12 +272,12 @@ optimize-images: ## Strip EXIF from and compress any images git sees as changed
 # contacts the geocoder. A city listed without coordinates appears in the page's
 # outline but has no dot, until this is run.
 .PHONY: travel-geocode
-travel-geocode: ## Add missing city coordinates to travel/_data/travel.yml
+travel-geocode: ## Add missing place coordinates to travel/_data/
 	$(RUBY) ruby travel/scripts/geocode-travel.rb
 
 # Rebuilds the two map files the globe draws, from Natural Earth.
 #
-# Run it after adding a country or a region to travel.yml. Adding only a city
+# Run it after adding a country or a region. Adding only a city
 # needs travel-geocode instead, unless that city is in a region not drawn yet.
 #
 # The sources are cached in travel/.geo-cache/, which git ignores. The first run

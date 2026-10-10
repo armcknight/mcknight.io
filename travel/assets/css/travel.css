@@ -23,6 +23,7 @@
   --city: #1b1b1b;          /* a place I slept, ate, worked */
   --poi: #1f8a4c;           /* a place I went to see */
   --highmark: #1f63c4;      /* a high mark */
+  --trip: #c2410c;          /* a trip, until the script gives its type a colour */
 
   --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-serif: 'Charter', 'Georgia', 'Times New Roman', serif;
@@ -161,6 +162,15 @@ main {
 }
 #outline .kind.poi > summary .kind-name { color: var(--poi); }
 #outline .kind.highmark > summary .kind-name { color: var(--highmark); }
+#outline .kind.trip > summary .kind-name { color: var(--trip); }
+.trip-type {
+  margin-left: 0.35rem;
+  color: var(--text-muted);
+  font-size: 0.6875rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.entry.focused .trip-type { color: rgba(255, 255, 255, 0.8); }
 
 /* The gap between a state and its first entry was the summary's own line
  * height plus the list's margin. The list carries the spacing now, once. */
@@ -298,6 +308,20 @@ main {
 .place.poi { fill: var(--poi); }
 .place.highmark { fill: var(--highmark); }
 
+/* A trip is a line. The script colours it by its type, since types are
+ * whatever the data says. The width is in screen pixels, so it reads the same
+ * at every magnification. */
+.trip {
+  fill: none;
+  stroke: var(--trip);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.trip:hover { cursor: pointer; stroke-width: 3.5; }
+#globe.focus-active .trip { opacity: 0.35; }
+#globe.focus-active .trip.focused { opacity: 1; stroke-width: 3; }
+
 /* Unticking "countries" leaves the land where it is and takes away only the
  * mark of having been there. Removing the land would leave an empty ball. */
 #globe.hide-countries .country.visited { fill: var(--land); }
@@ -399,11 +423,123 @@ main {
 .legend i.city { background: var(--city); }
 .legend i.poi { background: var(--poi); }
 .legend i.highmark { background: var(--highmark); }
+.legend i.line {
+  height: 3px;
+  border: 0;
+  border-radius: 2px;
+  background: var(--trip);
+}
+
+/* One swatch per trip type, after the trips switch. */
+.legend .trip-key { display: inline-flex; flex-wrap: wrap; gap: 0.2rem 0.8rem; }
+.legend .trip-key[hidden] { display: none; }
+.legend .trip-key i.line { width: 0.85rem; }
+.legend .trip-key .count { font-family: var(--font-mono); font-size: 0.6875rem; }
 .legend i.names {
   background: linear-gradient(transparent 38%, var(--text-muted) 38%, var(--text-muted) 62%, transparent 62%);
   border-color: transparent;
 }
 .legend i.unvisited { background: var(--land); }
+
+/* HEIGHTS: a histogram of high marks over a two-handled range.
+ *
+ * The two sliders are stacked on one track. Each lets the pointer through
+ * everywhere but its own handle, so either handle can be dragged wherever the
+ * other sits. The histogram is inset by half a handle on each side, which is
+ * how far a handle's centre stops short of the track's ends, so each bar edge
+ * sits exactly where a handle stops. */
+.heights {
+  --thumb: 14px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.15rem 0.9rem;
+}
+.heights[hidden] { display: none; }
+
+.heights .histogram {
+  grid-column: 1;
+  display: flex;
+  align-items: flex-end;
+  gap: 1px;
+  height: 2.75rem;
+  padding: 0 calc(var(--thumb) / 2);
+}
+.heights .histogram i {
+  flex: 1 1 0;
+  background: var(--highmark);
+  border-radius: 2px 2px 0 0;
+  transition: opacity 0.12s ease;
+}
+.heights .histogram i.out { opacity: 0.2; }
+.heights .histogram i.empty { visibility: hidden; }
+
+.heights .range {
+  grid-column: 1;
+  position: relative;
+  height: var(--thumb);
+}
+.heights .range::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(50% - 2px);
+  height: 4px;
+  border-radius: 2px;
+  background: var(--border);
+}
+.heights input[type="range"] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  background: none;
+  -webkit-appearance: none;
+  appearance: none;
+  pointer-events: none;
+}
+.heights input[type="range"]::-webkit-slider-runnable-track { background: none; }
+.heights input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: var(--thumb);
+  height: var(--thumb);
+  border-radius: 50%;
+  background: var(--background);
+  border: 2px solid var(--highmark);
+  cursor: pointer;
+  pointer-events: auto;
+}
+.heights input[type="range"]::-moz-range-track { background: none; }
+.heights input[type="range"]::-moz-range-thumb {
+  box-sizing: border-box;
+  width: var(--thumb);
+  height: var(--thumb);
+  border-radius: 50%;
+  background: var(--background);
+  border: 2px solid var(--highmark);
+  cursor: pointer;
+  pointer-events: auto;
+}
+.heights input[type="range"]:focus-visible { outline: none; }
+.heights input[type="range"]:focus-visible::-webkit-slider-thumb { outline: 2px solid var(--accent-light); outline-offset: 1px; }
+.heights input[type="range"]:focus-visible::-moz-range-thumb { outline: 2px solid var(--accent-light); outline-offset: 1px; }
+
+.heights .span {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: end;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .heights { grid-template-columns: minmax(0, 1fr); }
+  .heights .span { grid-column: 1; grid-row: auto; }
+}
 
 .hint {
   font-family: var(--font-sans);

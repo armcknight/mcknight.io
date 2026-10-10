@@ -1,0 +1,302 @@
+- id: denali-national-park
+  name: Denali National Park
+  regions:
+  - US-AK
+  lat: 63.73021
+  lon: -148.89208
+- id: kenai-fjords-national-park
+  name: Kenai Fjords National Park
+  regions:
+  - US-AK
+  lat: 59.86856
+  lon: -150.02577
+- id: wrangell-st-elias-national-park
+  name: Wrangell-St. Elias National Park
+  regions:
+  - US-AK
+  lat: 61.1809
+  lon: -143.82764
+- id: glacier-bay-national-park
+  name: Glacier Bay National Park
+  regions:
+  - US-AK
+  lat: 58.81418
+  lon: -136.87209
+- id: kachemak-bay-state-park
+  name: Kachemak Bay State Park
+  regions:
+  - US-AK
+  lat: 59.55553
+  lon: -151.23174
+- id: denali-state-park
+  name: Denali State Park
+  regions:
+  - US-AK
+  lat: 62.75367
+  lon: -149.99974
+- id: white-mountains-national-recreation-area
+  name: White Mountains National Recreation Area
+  regions:
+  - US-AK
+  lat: 65.55471
+  lon: -147.21847
+- id: chena-river-state-recreation-area
+  name: Chena River State Recreation Area
+  regions:
+  - US-AK
+  lat: 64.90488
+  lon: -146.27198
+- id: thompson-pass
+  name: Thompson Pass
+  regions:
+  - US-AK
+  lat: 61.12942
+  lon: -145.73339
+- id: isabel-pass
+  name: Isabel Pass
+  regions:
+  - US-AK
+  lat: 63.18971
+  lon: -145.55654
+- id: broad-pass
+  name: Broad Pass
+  regions:
+  - US-AK
+  lat: 63.23316
+  lon: -149.27369
+- id: grand-canyon-national-park
+  name: Grand Canyon National Park
+  regions:
+  - US-AZ
+  lat: 36.30785
+  lon: -112.2929
+- id: the-pit
+  name: The Pit
+  regions:
+  - US-AZ
+  lat: 32.50118
+  lon: -114.76225
+- id: monument-valley
+  name: Monument Valley
+  regions:
+  - US-AZ
+  lat: 36.98239
+  lon: -110.11111
+- id: painted-desert
+  name: Painted Desert
+  regions:
+  - US-AZ
+  lat: 35.08388
+  lon: -109.78878
+- id: yosemite-national-park
+  name: Yosemite National Park
+  regions:
+  - US-CA
+  lat: 37.8393
+  lon: -119.51646
+- id: kings-canyon-national-park
+  name: Kings Canyon National Park
+  regions:
+  - US-CA
+  lat: 36.91528
+  lon: -118.60766
+- id: sequoia-national-park
+  name: Sequoia National Park
+  regions:
+  - US-CA
+  lat: 36.49584
+  lon: -118.55992
+- id: death-valley-national-park
+  name: Death Valley National Park
+  regions:
+  - US-CA
+  - US-NV
+  lat: 36.47024
+  lon: -117.08839
+- id: point-reyes-national-seashore
+  name: Point Reyes National Seashore
+  regions:
+  - US-CA
+  lat: 38.07053
+  lon: -122.91761
+- id: mt-diablo-state-park
+  name: Mt. Diablo State Park
+  regions:
+  - US-CA
+  lat: 37.87213
+  lon: -121.94142
+- id: angel-island-state-park
+  name: Angel Island State Park
+  regions:
+  - US-CA
+  lat: 37.86293
+  lon: -122.43034
+- id: rocky-mountain-national-park
+  name: Rocky Mountain National Park
+  regions:
+  - US-CO
+  lat: 40.35539
+  lon: -105.7177
+- id: wolf-creek-pass
+  name: Wolf Creek Pass
+  regions:
+  - US-CO
+  lat: 37.48316
+  lon: -106.803
+- id: great-sand-dunes-national-park
+  name: Great Sand Dunes National Park
+  regions:
+  - US-CO
+  lat: 37.79119
+  lon: -105.61227
+- id: mesa-verde-national-park
+  name: Mesa Verde National Park
+  regions:
+  - US-CO
+  lat: 37.25378
+  lon: -108.4556
+- id: volcanoes-national-park
+  name: Volcanoes National Park
+  regions:
+  - US-HI
+  lat: 19.26083
+  lon: -155.35787
+- id: ka-lae
+  name: Ka Lae
+  regions:
+  - US-HI
+  lat: 18.92173
+  lon: -155.67216
+- id: dixon-springs-state-park
+  name: Dixon Springs State Park
+  regions:
+  - US-IL
+  lat: 37.38393
+  lon: -88.65822
+- id: maker-s-mark-distillery
+  name: Maker's Mark Distillery
+  regions:
+  - US-KY
+  lat: 37.64683
+  lon: -85.34899
+- id: abraham-lincoln-birthplace-national-historical-park
+  name: Abraham Lincoln Birthplace National Historical Park
+  regions:
+  - US-KY
+  lat: 37.61179
+  lon: -85.64278
+- id: acadia-national-park
+  name: Acadia National Park
+  regions:
+  - US-ME
+  lat: 44.35631
+  lon: -68.21548
+- id: saugatuck-dunes-state-park
+  name: Saugatuck Dunes State Park
+  regions:
+  - US-MI
+  lat: 42.69813
+  lon: -86.20377
+- id: very-large-array
+  name: Very Large Array
+  regions:
+  - US-NM
+  lat: 34.07787
+  lon: -107.61781
+- id: watkins-glen-state-park
+  name: Watkins Glen State Park
+  regions:
+  - US-NY
+  lat: 42.3615
+  lon: -76.92885
+- id: great-smoky-mountains-national-park
+  name: Great Smoky Mountains National Park
+  regions:
+  - US-NC
+  lat: 35.63422
+  lon: -83.40237
+- id: cape-hatteras-national-seashore
+  name: Cape Hatteras National Seashore
+  regions:
+  - US-NC
+  lat: 35.23127
+  lon: -75.54137
+- id: big-bend-national-park
+  name: Big Bend National Park
+  regions:
+  - US-TX
+  lat: 29.33325
+  lon: -103.19433
+- id: south-llano-river-state-park
+  name: South Llano River State Park
+  regions:
+  - US-TX
+  lat: 30.42609
+  lon: -99.80024
+- id: arches-national-park
+  name: Arches National Park
+  regions:
+  - US-UT
+  lat: 38.72653
+  lon: -109.56305
+- id: canyonlands-national-park
+  name: Canyonlands National Park
+  regions:
+  - US-UT
+  lat: 38.23326
+  lon: -109.92066
+- id: zion-national-park
+  name: Zion National Park
+  regions:
+  - US-UT
+  lat: 37.32217
+  lon: -113.00479
+- id: long-trail
+  name: Long Trail
+  regions:
+  - US-VT
+  lat: 43.05282
+  lon: -72.97305
+- id: shenandoah-national-park
+  name: Shenandoah National Park
+  regions:
+  - US-VA
+  lat: 38.47197
+  lon: -78.4637
+- id: false-cape-state-park
+  name: False Cape State Park
+  regions:
+  - US-VA
+  lat: 36.59067
+  lon: -75.88204
+- id: belle-isle
+  name: Belle Isle
+  regions:
+  - US-VA
+  lat: 37.5292
+  lon: -77.45284
+- id: skyline-drive
+  name: Skyline Drive
+  regions:
+  - US-VA
+  lat: 38.5167
+  lon: -78.44281
+- id: blue-ridge-parkway
+  name: Blue Ridge Parkway
+  regions:
+  - US-VA
+  - US-NC
+  lat: 38.03252
+  lon: -78.85832
+- id: luray-caverns
+  name: Luray Caverns
+  regions:
+  - US-VA
+  lat: 38.66328
+  lon: -78.48356
+- id: shenandoah-caverns
+  name: Shenandoah Caverns
+  regions:
+  - US-VA
+  lat: 38.71551
+  lon: -78.66928

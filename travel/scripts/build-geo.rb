@@ -16,10 +16,10 @@
 # WHY REGIONS ARE FOUND THREE WAYS
 #
 # A region's ISO 3166-2 code finds it when there is one and when Natural Earth
-# agrees about it. Neither is guaranteed. Many regions in travel.yml carry no
+# agrees about it. Neither is guaranteed. Many regions in regions.yml carry no
 # code at all, because a code is tedious to look up and is not what the data is
 # for; and Natural Earth's admin-1 layer models some countries at a different
-# level than travel.yml does: France as departements rather than regions, Italy
+# level than regions.yml does: France as departements rather than regions, Italy
 # and the Philippines as provinces, and Czechia under a code of its own
 # invention.
 #
@@ -35,10 +35,12 @@
 require 'json'
 require 'net/http'
 require 'uri'
-require 'yaml'
+
+$LOAD_PATH.unshift(File.expand_path('../lib', __dir__))
+require 'travel/geometry'
+require 'travel/store'
 
 ROOT = File.expand_path('..', __dir__)
-TRAVEL = File.join(ROOT, '_data', 'travel.yml')
 CACHE = File.join(ROOT, '.geo-cache')
 OUT = File.join(ROOT, 'assets', 'geo')
 
@@ -55,11 +57,6 @@ SOURCES = {
   'countries' => 'ne_50m_admin_0_countries_lakes.geojson',
   'admin1' => 'ne_10m_admin_1_states_provinces_lakes.geojson'
 }.freeze
-
-# The keys under a region that hold places. A region is located by the places
-# inside it when neither its code nor its name finds it, and every kind of
-# place counts equally for that.
-PLACE_KEYS = %w[cities pois highmark].freeze
 
 # Rounding is the cheapest size win available without a topology tool. Three
 # decimals is about 100 m, far finer than a globe can show.
@@ -89,54 +86,11 @@ def round_coordinates(node)
   end
 end
 
-# Ray casting. Holes are subtracted rather than ignored, because a capital city
-# is exactly the case that needs it: Prague is a hole punched in the region that
-# surrounds it, so ignoring holes put Prague in Stredocesky.
-def ring_contains?(ring, lon, lat)
-  inside = false
-  j = ring.length - 1
-  ring.each_index do |i|
-    xi, yi = ring[i]
-    xj, yj = ring[j]
-    if (yi > lat) != (yj > lat) && lon < ((xj - xi) * (lat - yi) / (yj - yi)) + xi
-      inside = !inside
-    end
-    j = i
-  end
-  inside
-end
-
-def geometry_contains?(geometry, lon, lat)
-  polygons = geometry['type'] == 'Polygon' ? [geometry['coordinates']] : geometry['coordinates']
-  polygons.any? do |rings|
-    outer, *holes = rings
-    ring_contains?(outer, lon, lat) && holes.none? { |hole| ring_contains?(hole, lon, lat) }
-  end
-end
-
 # How far outside a polygon a city may fall and still count as inside it, in
 # degrees: about 25 km. A coastal city often geocodes to the water, because that
 # is where its centre is — Genoa's point lands in the old port, which Natural
 # Earth's coastline excludes, so strict containment put Liguria nowhere.
 NEAR_DEGREES = 0.25
-
-# Distance from a point to the closest vertex of a geometry. Vertex distance
-# rather than true distance to the edge: a coarse measure is enough to choose
-# between provinces tens of kilometres apart, and it cannot pick a far one.
-def distance_to(geometry, lon, lat)
-  best = Float::INFINITY
-  stack = [geometry['coordinates']]
-  until stack.empty?
-    node = stack.pop
-    if node[0].is_a?(Numeric)
-      d = Math.sqrt(((node[0] - lon)**2) + ((node[1] - lat)**2))
-      best = d if d < best
-    else
-      node.each { |child| stack << child }
-    end
-  end
-  best
-end
 
 # Ramer-Douglas-Peucker. The 10m geometry carries detail no globe can resolve:
 # unsimplified it is a megabyte for 45 regions. EPSILON is in degrees, so about
@@ -276,25 +230,20 @@ def simplify_geometry(geometry, epsilon = EPSILON, precision = PRECISION)
   end
 end
 
-travel = YAML.load_file(TRAVEL)
+# Every region in the data, with the coordinates of the places in it. A region
+# is located by those places when neither its code nor its name finds it, and a
+# city, a point of interest and a high mark all count equally for that.
+store = Travel::Store.new
+visited_countries = store.all('countries').to_h { |country| [country['code'], country['name']] }
+wanted_regions = store.all('regions').to_h do |region|
+  [region['key'], { 'name' => region['name'], 'code' => region['code'], 'country' => region['country'], 'places' => [] }]
+end
+Travel::Store::PLACES.each do |collection|
+  store.all(collection).each do |place|
+    next if place['lat'].nil?
 
-visited_countries = {}
-wanted_regions = {}
-travel['continents'].each do |continent|
-  continent['countries'].each do |country|
-    visited_countries[country['code']] = country['name']
-    (country['regions'] || []).each do |region|
-      # A code is optional in the data, so it cannot be the identifier. The
-      # country and the name together always exist and are always unique, and
-      # the page uses the same key, so the two agree without being told to.
-      key = region['code'] || "#{country['code']}:#{region['name']}"
-      places = PLACE_KEYS.flat_map { |key| region[key] || [] }.reject { |place| place['lat'].nil? }
-      wanted_regions[key] = {
-        'name' => region['name'],
-        'code' => region['code'],
-        'country' => country['code'],
-        'places' => places.map { |place| [place['lon'].to_f, place['lat'].to_f] }
-      }
+    store.region_keys(collection, place).each do |key|
+      wanted_regions[key]['places'] << [place['lon'], place['lat']] if wanted_regions.key?(key)
     end
   end
 end
@@ -354,11 +303,11 @@ wanted_regions.each do |key, want|
       # Every polygon of that country holding a visited city, so a region split
       # across several of Natural Earth's units keeps all of them.
       candidates = admin1['features'].select { |f| f['properties']['iso_a2'] == want['country'] }
-      inside = candidates.select { |f| want['places'].any? { |lon, lat| geometry_contains?(f['geometry'], lon, lat) } }
+      inside = candidates.select { |f| want['places'].any? { |lon, lat| Travel::Geometry.contains?(f['geometry'], lon, lat) } }
       if inside.empty?
         # Nothing contains the city, so take the closest polygon instead, as
         # long as it is genuinely close.
-        nearest = candidates.map { |f| [f, want['places'].map { |lon, lat| distance_to(f['geometry'], lon, lat) }.min] }
+        nearest = candidates.map { |f| [f, want['places'].map { |lon, lat| Travel::Geometry.distance_to(f['geometry'], lon, lat) }.min] }
                             .min_by(&:last)
         nearest && nearest.last <= NEAR_DEGREES ? [[nearest.first, 'near']] : []
       else
