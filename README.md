@@ -149,11 +149,13 @@ that focus.
 
 The list is a collapsible tree written by the server, so the whole hierarchy is
 readable, collapsible and reachable by keyboard with no JavaScript at all.
-Within a region, each kind of place has its own subheading; focusing a region
-opens them.
+It opens on continents and their countries; within a region, each kind of place
+has its own subheading, and focusing a region opens them. On a wide screen the
+list starts folded away to the right, to give the globe the room; its button
+brings it back, and choosing anything on the globe unfolds it to show where.
 
-Four layers, each with a checkbox in the legend, which doubles as the control
-panel:
+Six layers, each with a checkbox in the legend, which doubles as the control
+panel. High marks and trips each have a bordered group of their own in it:
 
 | Layer | Drawn as | Comes from |
 |---|---|---|
@@ -162,16 +164,16 @@ panel:
 | City | black dot | `_data/cities.yml` |
 | Point of interest | green dot | `_data/pois.yml` |
 | High mark | blue dot, with its height | `_data/high_marks.yml` |
-| Trip | a line, one colour per type, with a key in the legend | `_data/trips.yml`, line in `assets/geo/trips.json` |
+| Trip | a line, one colour per type, with a key in its legend group | `_data/trips.yml`, line in `assets/geo/trips.json` |
 
 Unticking *countries* paints the visited ones like everywhere else rather than
 removing the land, since the country layer **is** the land. Heights are stored
-once in metres and shown in feet or metres from the control at the right of the
-legend.
+once in metres and shown in feet or metres from the control after *not yet*.
 
-Under the legend, a histogram of the high marks by height sits over a slider
-with two handles. Moving them hides the high marks outside the range, on the
-globe and in the list. The buckets are equal steps of round height (500 ft,
+In the high marks group, a histogram of the high marks by height sits over a
+slider with two handles. Moving them hides the high marks outside the range on
+the globe, and greys them in the list; choosing a greyed one widens the range
+just enough to take it in. The buckets are equal steps of round height (500 ft,
 200 m), not percentiles, because percentile buckets all hold the same number of
 places and would draw a flat histogram. The handles move one bucket at a time.
 Within a region, high marks are listed highest first, so the region's high mark
@@ -265,10 +267,11 @@ TRAVEL_DATA=/tmp/travel-data PORT=4601 make travel-admin
 ### Trips from Strava
 
 *Import from Strava* in the admin app makes trips from a Strava data export
-(Strava → Settings → My Account → Download or delete your account). Give it the
-export folder once; the path is kept in `travel/admin/settings.yml`, which git
-ignores, or set `STRAVA_EXPORT`. The export is only read, never copied into the
-repository.
+(Strava → Settings → My Account → Download or delete your account). Drop the
+zip Strava sends, or the folder it unzips to, on the import page; drop several
+to switch between them. Only `activities.csv`, `privacy_zones.csv` and the
+tracks are sent to the app, which keeps them in a temporary folder outside the
+repository and deletes it when it stops, so each run starts with no export.
 
 1. **Find** the activities worth keeping: filter by name, type, year, shortest
    distance, and whether one is imported already.

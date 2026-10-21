@@ -17,7 +17,13 @@ title: Travel
   <meta property="og:description" content="Every country, state, province and city I have been to, on an interactive globe.">
   <meta property="twitter:card" content="summary">
 
-  <link rel="stylesheet" href="/assets/css/travel.css">
+  {%- comment -%}
+    The build time on the end of each of our own files makes a browser fetch
+    them again after every build, rather than keep a copy that no longer
+    matches the page. A stale globe.js once doubled the list's fold button.
+  {%- endcomment -%}
+  {%- assign build = site.time | date: '%s' %}
+  <link rel="stylesheet" href="/assets/css/travel.css?v={{ build }}">
 </head>
 <body>
 
@@ -40,15 +46,33 @@ title: Travel
 {%- endcomment -%}
 {%- assign named_cities = site.data.cities | where_exp: "city", "city.name != blank" -%}
 
+{%- comment -%}
+  The tally at the top: each count with its singular and plural, as
+  count:singular:plural, separated by bars (not semicolons, which &amp; has). A count of none is left out, so a kind with nothing
+  in it yet does not appear.
+{%- endcomment -%}
+{%- capture tally_counts -%}
+{{ continents.size }}:continent:continents|
+{{- site.data.countries | size }}:country:countries|
+{{- site.data.regions | size }}:state or region:states &amp; regions|
+{{- named_cities.size }}:city:cities|
+{{- site.data.trips | size }}:trip:trips
+{%- endcapture -%}
+{%- assign tally = "" | split: "" -%}
+{%- assign tally_items = tally_counts | split: "|" -%}
+{%- for item in tally_items -%}
+  {%- assign parts = item | split: ":" -%}
+  {%- if parts[0] != "0" -%}
+    {%- if parts[0] == "1" -%}{%- assign noun = parts[1] -%}{%- else -%}{%- assign noun = parts[2] -%}{%- endif -%}
+    {%- assign entry = parts[0] | append: " " | append: noun | split: "~" -%}
+    {%- assign tally = tally | concat: entry -%}
+  {%- endif -%}
+{%- endfor -%}
+
 <header>
   <h1>Travel</h1>
   <a href="https://mcknight.io">← mcknight.io</a>
-  <p class="tally">
-    {{ continents.size }} continents ·
-    {{ site.data.countries.size }} countries ·
-    {{ site.data.regions.size }} states &amp; regions ·
-    {{ named_cities.size }} cities
-  </p>
+  <p class="tally">{{ tally | join: " · " }}</p>
 </header>
 
 <main>
@@ -66,43 +90,61 @@ title: Travel
     the land, which would leave an empty ball.
   {%- endcomment -%}
   <fieldset class="legend" id="layers">
-    <legend>Show</legend>
-    <label><input type="checkbox" data-layer="countries" checked><i class="country"></i> countries</label>
-    <label><input type="checkbox" data-layer="regions" checked><i class="region"></i> states &amp; regions</label>
-    <label><input type="checkbox" data-layer="city" checked><i class="dot city"></i> cities</label>
-    <label><input type="checkbox" data-layer="poi" checked><i class="dot poi"></i> points of interest</label>
-    <label><input type="checkbox" data-layer="highmark" checked><i class="dot highmark"></i> high marks</label>
-    <label><input type="checkbox" data-layer="trips" checked><i class="line"></i> trips</label>
+    <legend>Legend</legend>
     {%- comment -%}
-      Filled by the script with one swatch per trip type. Types are whatever
-      the data says, so the key is made from the data rather than written here.
+      The switches for everything not in a group, in two rows that each wrap
+      on their own, so the groups below keep their full width whatever they
+      do: first the land, by how much of it was visited, then the places on
+      it and how they are labelled.
     {%- endcomment -%}
-    <span class="trip-key not-a-layer" hidden></span>
-    <label><input type="checkbox" data-layer="labels" checked><i class="names"></i> names</label>
-    <span class="not-a-layer"><i class="unvisited"></i> not yet</span>
-    {%- comment -%}
-      Heights are stored once, in metres, and shown in whichever unit is
-      chosen here. Radios rather than a checkbox: neither unit is the
-      "off" state of the other.
-    {%- endcomment -%}
-    <span class="units">
-      <label><input type="radio" name="elevation-unit" value="ft" checked> ft</label>
-      <label><input type="radio" name="elevation-unit" value="m"> m</label>
-    </span>
-  </fieldset>
-  {%- comment -%}
-    A range of heights to show high marks between, with how many there are at
-    each height drawn above it. Hidden until the script has heights to draw,
-    since without a script it could do nothing.
-  {%- endcomment -%}
-  <fieldset class="legend heights" id="heights" hidden>
-    <legend>High marks by height</legend>
-    <div class="histogram" aria-hidden="true"></div>
-    <div class="range">
-      <input type="range" class="low" aria-label="Lowest height shown" min="0" max="1" step="1" value="0">
-      <input type="range" class="high" aria-label="Highest height shown" min="0" max="1" step="1" value="1">
+    <div class="legend-items">
+      <label><input type="checkbox" data-layer="countries" checked><i class="country"></i> countries</label>
+      <label><input type="checkbox" data-layer="regions" checked><i class="region"></i> states &amp; regions</label>
+      <span class="not-a-layer"><i class="unvisited"></i> not yet</span>
     </div>
-    <output class="span" aria-live="polite"></output>
+    <div class="legend-items">
+      <label><input type="checkbox" data-layer="city" checked><i class="dot city"></i> cities</label>
+      <label><input type="checkbox" data-layer="poi" checked><i class="dot poi"></i> points of interest</label>
+      <label><input type="checkbox" data-layer="labels" checked> names</label>
+      {%- comment -%}
+        Heights are stored once, in metres, and shown in whichever unit is
+        chosen here. Radios rather than a checkbox: neither unit is the
+        "off" state of the other.
+      {%- endcomment -%}
+      <span class="units">
+        <label><input type="radio" name="elevation-unit" value="ft" checked> ft</label>
+        <label><input type="radio" name="elevation-unit" value="m"> m</label>
+      </span>
+    </div>
+    {%- comment -%}
+      High marks are a group of their own inside the legend: their switch,
+      and a range of heights to show them between, with how many there are
+      at each height drawn above it. The range is hidden until the script has
+      heights to draw, since without a script it could do nothing.
+    {%- endcomment -%}
+    <fieldset class="group highmark-legend">
+      <legend>High marks</legend>
+      <label><input type="checkbox" data-layer="highmark" checked><i class="dot highmark"></i> show</label>
+      <div class="heights" id="heights" hidden>
+        <div class="histogram" aria-hidden="true"></div>
+        <div class="range">
+          <input type="range" class="low" aria-label="Lowest height shown" min="0" max="1" step="1" value="0">
+          <input type="range" class="high" aria-label="Highest height shown" min="0" max="1" step="1" value="1">
+        </div>
+        <output class="span" aria-live="polite"></output>
+      </div>
+    </fieldset>
+    {%- comment -%}
+      Trips are a group too: their switch, and one colour per type of trip.
+      Types are whatever the data says, so the key is made by the script from
+      the data rather than written here, and the group stays hidden until
+      there is a trip to show.
+    {%- endcomment -%}
+    <fieldset class="group" id="trip-legend" hidden>
+      <legend>Trips</legend>
+      <label><input type="checkbox" data-layer="trips" checked> show</label>
+      <span class="trip-key not-a-layer"></span>
+    </fieldset>
   </fieldset>
   <p class="hint">
     Drag to turn the globe. Scroll to move closer. Click a country, a region or a
@@ -119,14 +161,19 @@ title: Travel
     Each level that has children is a <details>, so it collapses, and that
     works with no script too. The name inside each <summary> is a button, so
     clicking the name chooses the place while clicking the rest of the row
-    opens or shuts it. Regions start shut, because the cities under them are
-    most of the list.
+    opens or shuts it. Countries start shut, so the list opens as continents
+    and the countries in them, and the reader goes deeper from there.
+
+    The button at the top folds the whole list away to the right, to give
+    the globe the room, and the list starts folded (see the script after
+    it). The button is hidden until that script can work it.
 
     data-id on a place matches the id of its entry in the place-data array
     below. A point of interest in two regions is listed under both, and both
     rows carry the one id, so either chooses the one dot.
   {%- endcomment -%}
   <nav id="outline" aria-label="Everywhere I have been">
+    <button type="button" class="outline-toggle" aria-expanded="true" aria-controls="outline" hidden>Hide list</button>
     {%- for continent in continents -%}
     {%- assign continent_countries = continent.items | map: "code" | join: "," -%}
     <details class="level continent" open>
@@ -138,7 +185,7 @@ title: Travel
       </summary>
       {%- for country in continent.items -%}
       {%- assign country_regions = site.data.regions | where: "country", country.code -%}
-      <details class="level country" open>
+      <details class="level country">
         <summary>
           <button type="button" class="entry country-entry" data-kind="country" data-code="{{ country.code }}">
             {{ country.name }}
@@ -234,6 +281,31 @@ title: Travel
     </details>
     {%- endfor -%}
   </nav>
+  {%- comment -%}
+    The list starts folded away, so the globe has the room. This runs here,
+    as soon as the list exists, rather than in globe.js, which waits for the
+    map data: there the list would show and then jump away. With no script
+    the list is simply open. Folding fires a resize, which the globe already
+    answers by measuring itself again.
+  {%- endcomment -%}
+  <script>
+    (function () {
+      var outline = document.getElementById('outline');
+      var layout = outline.closest('.layout');
+      var toggle = outline.querySelector('.outline-toggle');
+      function fold(shut) {
+        layout.classList.toggle('outline-shut', shut);
+        toggle.setAttribute('aria-expanded', String(!shut));
+        toggle.textContent = shut ? 'Show list' : 'Hide list';
+        window.dispatchEvent(new Event('resize'));
+      }
+      toggle.hidden = false;
+      toggle.addEventListener('click', function () {
+        fold(!layout.classList.contains('outline-shut'));
+      });
+      fold(true);
+    })();
+  </script>
  </div>
 </main>
 
@@ -288,6 +360,6 @@ title: Travel
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
-<script src="/assets/js/globe.js"></script>
+<script src="/assets/js/globe.js?v={{ build }}"></script>
 </body>
 </html>

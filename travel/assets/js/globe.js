@@ -80,6 +80,10 @@
   // has no height and is never filtered by it. Set by wireHeights.
   var inHeightRange = function () { return true; };
 
+  // Widens the heights shown just enough to take in a high mark the list
+  // offers but the range leaves out. Set by wireHeights.
+  var includeHeight = function () {};
+
   // Opening on the Americas, where most of the data is, rather than on the
   // Atlantic at 0,0 where there is nothing to see.
   var projection = d3.geoOrthographic().clipAngle(90).precision(0.4).rotate([75, -25]);
@@ -498,6 +502,11 @@
     });
     if (!focused) return;
 
+    // Choosing something shows it in the list, so a folded list unfolds. The
+    // toggle does the unfolding, so its label and the globe's size follow.
+    var toggle = outline.querySelector('.outline-toggle');
+    if (toggle && toggle.getAttribute('aria-expanded') === 'false') toggle.click();
+
     var selector;
     if (focused.kind === 'place') {
       selector = '.entry[data-id="' + CSS.escape(focused.key) + '"]';
@@ -688,6 +697,7 @@
       schedule();
     }
 
+    // The trips group sits inside the legend, so its switch is heard here too.
     panel.addEventListener('change', function (event) {
       if (!event.target.dataset.layer) return;
       showing[event.target.dataset.layer] = event.target.checked;
@@ -794,10 +804,14 @@
       span.textContent = edgeText(bounds[from]) + ' \u2013 ' + edgeText(bounds[to]) + ' ' + unit +
         (whole ? '' : ' \u00b7 ' + measured.filter(inHeightRange).length + ' of ' + measured.length);
 
-      // The list hides the same high marks the globe does.
+      // The list keeps the high marks the globe leaves out, greyed, so they
+      // can still be found; choosing one widens the range to take it in.
       outline.querySelectorAll('.highmark-entry[data-id]').forEach(function (entry) {
         var place = placesById[entry.dataset.id];
-        entry.closest('li').hidden = !(place && inHeightRange(place));
+        var out = Boolean(place) && !inHeightRange(place);
+        entry.classList.toggle('filtered-out', out);
+        if (out) entry.title = 'Outside the heights shown. Choose it to widen them.';
+        else entry.removeAttribute('title');
       });
       schedule();
     }
@@ -808,6 +822,20 @@
         if (event.target === low) low.value = Number(high.value) - 1;
         else high.value = Number(low.value) + 1;
       }
+      remember();
+    }
+
+    // Only the end on the high mark's side moves, and only as far as its
+    // bucket, so the rest of the range is kept.
+    includeHeight = function (d) {
+      if (!d || !d.elevation || inHeightRange(d)) return;
+      var bucket = bucketOf(d.elevation);
+      if (bucket < Number(low.value)) low.value = bucket;
+      if (bucket >= Number(high.value)) high.value = bucket + 1;
+      remember();
+    };
+
+    function remember() {
       var buckets = bounds.length - 1;
       var unitToMetres = unit === 'ft' ? 1 / 3.28084 : 1;
       chosen.from = Number(low.value) === 0 ? null : bounds[low.value] * unitToMetres;
@@ -861,6 +889,7 @@
               : kind === 'continent' ? entry.dataset.countries
               : kind === 'country' ? entry.dataset.code
               : entry.dataset.key;
+      if (entry.classList.contains('filtered-out')) includeHeight(placesById[key]);
       focusOn(kind, key, entry.dataset.name);
     });
     if (clearButton) clearButton.addEventListener('click', clearFocus);
@@ -882,7 +911,8 @@
     counts.sort(function (a, b) { return b[1] - a[1] || d3.ascending(a[0], b[0]); });
     var colour = d3.scaleOrdinal(counts.map(function (pair) { return pair[0]; }), d3.schemeTableau10);
 
-    var key = document.querySelector('#layers .trip-key');
+    var legend = document.getElementById('trip-legend');
+    var key = legend && legend.querySelector('.trip-key');
     if (key && counts.length) {
       key.replaceChildren.apply(key, counts.map(function (pair) {
         var item = document.createElement('span');
@@ -894,15 +924,7 @@
         }));
         return item;
       }));
-      key.hidden = false;
-    }
-
-    var swatch = document.querySelector('#layers i.line');
-    if (swatch && counts.length) {
-      var stops = counts.slice(0, 4).map(function (pair, i, all) {
-        return colour(pair[0]) + ' ' + (i * 100 / all.length) + '% ' + ((i + 1) * 100 / all.length) + '%';
-      });
-      swatch.style.background = 'linear-gradient(90deg, ' + stops.join(', ') + ')';
+      legend.hidden = false;
     }
 
     document.querySelectorAll('#outline .trip-entry .trip-type').forEach(function (label) {

@@ -97,6 +97,48 @@ main {
   padding-left: 1rem;
 }
 
+/* The list folds away to the right. Folded, its column is only as wide as the
+ * button that brings it back, and the globe takes the rest. The button stays at
+ * the top while the list scrolls under it. */
+.layout.outline-shut { grid-template-columns: minmax(0, 1fr) auto; }
+.layout.outline-shut #outline { overflow: visible; padding-left: 0.5rem; }
+.layout.outline-shut #outline > :not(.outline-toggle) { display: none; }
+
+.outline-toggle {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0 0 0.4rem auto;
+  padding: 0.15rem 0.4rem;
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font: inherit;
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+.outline-toggle[hidden] { display: none; }
+.outline-toggle:hover { color: var(--text-primary); }
+.outline-toggle:focus-visible { outline: 2px solid var(--accent-light); outline-offset: 1px; }
+
+/* A triangle drawn with borders, as on the rows: it points the way the list
+ * will go. */
+.outline-toggle::after {
+  content: "";
+  width: 0;
+  height: 0;
+  border-left: 5px solid currentColor;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+}
+.outline-toggle[aria-expanded="false"]::after { transform: rotate(180deg); }
+
 /* Each level that has children is a <details>. The marker is replaced by a
  * triangle that turns, and the row is laid out as a flex line so the name sits
  * beside it rather than wrapping under it. */
@@ -226,6 +268,11 @@ main {
 }
 
 .entry.focused .elevation { color: rgba(255, 255, 255, 0.8); }
+
+/* A high mark outside the heights shown: still listed, so it can be found, but
+ * greyed like the parts of the histogram that are left out. */
+.entry.filtered-out { opacity: 0.45; }
+.entry.filtered-out:hover { opacity: 0.75; }
 
 .entry.focused {
   background: var(--region-visited);
@@ -399,12 +446,12 @@ main {
 .legend span { display: inline-flex; align-items: center; gap: 0.4rem; cursor: pointer; }
 .legend .not-a-layer { cursor: default; color: var(--text-muted); }
 
-/* The unit control sits apart from the layer switches: it changes how a number
- * reads, not whether something is drawn. */
+/* The unit control is set off from the layer switches by a line, since it
+ * changes how a number reads, not whether something is drawn, but it flows
+ * on after them like any other item. */
 .legend .units {
   display: inline-flex;
   gap: 0.5rem;
-  margin-left: auto;
   padding-left: 0.75rem;
   border-left: 1px solid var(--border);
   color: var(--text-muted);
@@ -430,15 +477,40 @@ main {
   background: var(--trip);
 }
 
-/* One swatch per trip type, after the trips switch. */
+/* The legend is four rows, each the legend's full width: two rows of the
+ * switches not in a group, each wrapping among itself, then two bordered groups, each with
+ * its own switch: high marks with their range of heights, and trips with one
+ * swatch per trip type. */
+.legend .legend-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.1rem;
+  align-items: center;
+  flex: 1 1 100%;
+}
+.legend .group[hidden] { display: none; }
+.legend .group {
+  flex: 1 1 100%;
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.2rem 0.8rem;
+  margin: 0;
+  padding: 0.1rem 0.6rem 0.35rem;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+}
+.legend .group > legend {
+  font-size: 0.625rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 0 0.25rem;
+}
+.legend .highmark-legend .heights { flex: 1 1 16rem; }
 .legend .trip-key { display: inline-flex; flex-wrap: wrap; gap: 0.2rem 0.8rem; }
-.legend .trip-key[hidden] { display: none; }
 .legend .trip-key i.line { width: 0.85rem; }
 .legend .trip-key .count { font-family: var(--font-mono); font-size: 0.6875rem; }
-.legend i.names {
-  background: linear-gradient(transparent 38%, var(--text-muted) 38%, var(--text-muted) 62%, transparent 62%);
-  border-color: transparent;
-}
 .legend i.unvisited { background: var(--land); }
 
 /* HEIGHTS: a histogram of high marks over a two-handled range.
@@ -561,7 +633,10 @@ footer {
 footer a { color: var(--text-secondary); }
 
 @media (max-width: 860px) {
-  .layout { grid-template-columns: 1fr; }
+  /* Under the globe there is nothing to fold away to, so the list stays. */
+  .layout, .layout.outline-shut { grid-template-columns: 1fr; }
+  .layout.outline-shut #outline > :not(.outline-toggle) { display: revert; }
+  .outline-toggle { display: none; }
   #outline {
     max-height: none;
     border-left: 0;
