@@ -1,0 +1,63 @@
+/* The globe's own look, shared by travel.mcknight.io and books.mcknight.io
+ * with globe-core.js: the figure it sits in, the ocean, the graticule, the
+ * edge and the tooltip. Each site defines the colours it uses — --ocean,
+ * --border, --text-muted, --font-sans — and styles its own layers.
+ *
+ * A site links this before its own stylesheet, so its own rules win.
+ */
+
+/* The globe sizes itself to the viewport so the whole sphere is always on
+ * screen, with room left for the header, legend and footer. */
+#globe-figure {
+  position: relative;
+  margin: 0;
+  touch-action: none;   /* dragging rotates the globe; it must not scroll */
+}
+
+/* The script sets width and height in pixels so the whole sphere fits the
+ * viewport. CSS must not stretch it past that, or the globe overflows and
+ * pushes the legend off the screen — only shrink it on a narrow phone. */
+#globe {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+  height: auto;
+  cursor: grab;
+}
+
+#globe.dragging { cursor: grabbing; }
+
+.sphere { fill: var(--ocean); }
+.graticule {
+  fill: none;
+  stroke: #d8dee6;
+  stroke-width: 0.4;
+}
+
+/* The outline sits above everything, so the sphere keeps a crisp edge no matter
+ * what is drawn under it. */
+.globe-outline {
+  fill: none;
+  stroke: #b9c4d0;
+  stroke-width: 1;
+  pointer-events: none;
+}
+
+#tooltip {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.12s ease;
+  background: rgba(255, 255, 255, 0.97);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.4rem 0.6rem;
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  line-height: 1.35;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+  max-width: 16rem;
+}
+
+#tooltip.visible { opacity: 1; }
+#tooltip .where { color: var(--text-muted); font-size: 0.75rem; }
