@@ -1,1 +1,330 @@
-[]
+- id: equinox-marathon-relay-leg-1
+  name: 'Equinox Marathon Relay Leg #1'
+  type: run
+  regions:
+  - US-AK
+  dates:
+  - '2026-09-19'
+  activities:
+  - '20244572700'
+  track_activity: '20244572700'
+- id: silvertip-redemption
+  name: Silvertip redemption
+  type: backcountry ski
+  regions:
+  - US-AK
+  dates:
+  - '2022-04-17'
+  activities:
+  - '6999680247'
+  track_activity: '6999680247'
+- id: white-princess-climb
+  name: White Princess climb
+  type: hike
+  regions:
+  - US-AK
+  dates:
+  - '2020-05-01'
+  activities:
+  - '3409900490'
+  track_activity: '3409900490'
+- id: mt-healy-thru-hike
+  name: Mt. Healy Thru Hike
+  type: hike
+  regions:
+  - US-AK
+  dates:
+  - '2024-07-20'
+  activities:
+  - '11940183162'
+  track_activity: '11940183162'
+- id: mts-madison-and-adams-circuit
+  name: Mts Madison and Adams Circuit
+  type: hike
+  regions:
+  - US-NH
+  dates:
+  - '2015-09-05'
+  activities:
+  - '386866844'
+  track_activity: '386866844'
+- id: beautiful-institute-ski
+  name: Beautiful Institute Ski
+  type: backcountry ski
+  regions:
+  - US-AK
+  dates:
+  - '2024-04-20'
+  activities:
+  - '11228837335'
+  track_activity: '11228837335'
+- id: rumdoodle-doo
+  name: Rumdoodle-doo
+  type: backcountry ski
+  regions:
+  - US-AK
+  dates:
+  - '2021-03-20'
+  activities:
+  - '4986543041'
+  track_activity: '4986543041'
+- id: checking-out-python-peak
+  name: Checking out Python Peak
+  type: backcountry ski
+  regions:
+  - US-AK
+  dates:
+  - '2025-03-25'
+  activities:
+  - '13996948164'
+  track_activity: '13996948164'
+- id: nebesna-solstice-ride
+  name: Nebesna Solstice Ride
+  type: ride
+  regions:
+  - US-AK
+  dates:
+  - '2020-06-20'
+  activities:
+  - '3651227324'
+  track_activity: '3651227324'
+- id: chena-river2ridge-26
+  name: Chena River2Ridge 26
+  type: ride
+  regions:
+  - US-AK
+  dates:
+  - '2023-03-04'
+  activities:
+  - '8661584906'
+  track_activity: '8661584906'
+- id: tough-mudder-new-england-mt-snow
+  name: Tough Mudder New England & Mt. Snow
+  type: run
+  regions:
+  - US-VT
+  dates:
+  - '2015-06-06'
+  activities:
+  - '319678168'
+  track_activity: '319678168'
+- id: ptarmigan-hunt
+  name: Ptarmigan hunt
+  type: backcountry ski
+  regions:
+  - US-AK
+  dates:
+  - '2020-12-05'
+  activities:
+  - '4435520221'
+  track_activity: '4435520221'
+- id: chitina-madness
+  name: Chitina madness
+  type: ride
+  regions:
+  - US-AK
+  dates:
+  - '2021-06-19'
+  activities:
+  - '5502641744'
+  track_activity: '5502641744'
+- id: boston-midnight-marathon-bike-ride-2015
+  name: Boston Midnight Marathon Bike Ride 2015
+  type: ride
+  regions:
+  - US-MA
+  dates:
+  - '2015-04-19'
+  activities:
+  - '288937466'
+  track_activity: '288937466'
+- id: donnelly-dome-jaunt
+  name: Donnelly Dome jaunt
+  type: hike
+  regions:
+  - US-AK
+  dates:
+  - '2024-07-05'
+  activities:
+  - '11818525051'
+  track_activity: '11818525051'
+- id: upper-chatanika-day-2
+  name: Upper Chatanika day 2
+  type: kayaking
+  regions:
+  - US-AK
+  dates:
+  - '2021-06-13'
+  activities:
+  - '5469472508'
+  track_activity: '5469472508'
+- id: ester-dome-tricolore
+  name: Ester dome tricolore
+  type: ride
+  regions:
+  - US-AK
+  dates:
+  - '2023-06-12'
+  activities:
+  - '9255103797'
+  track_activity: '9255103797'
+- id: sled-in-to-colorado-creek-cabin
+  name: Sled in to Colorado Creek cabin
+  type: snowmachine
+  regions:
+  - US-AK
+  dates:
+  - '2025-03-29'
+  activities:
+  - '14026473563'
+  track_activity: '14026473563'
+- id: blanca-base-run
+  name: Blanca base run
+  type: run
+  regions:
+  - US-CO
+  dates:
+  - '2018-01-08'
+  activities:
+  - '1347549831'
+  track_activity: '1347549831'
+- id: white-bear-moilanen-s-meadow
+  name: White bear + Moilanen’s Meadow
+  type: nordic ski
+  regions:
+  - US-AK
+  dates:
+  - '2022-02-09'
+  activities:
+  - '6659465098'
+  track_activity: '6659465098'
+- id: memorial-day-float-down-the-chena
+  name: Memorial day float down the Chena
+  type: kayaking
+  regions:
+  - US-AK
+  dates:
+  - '2021-05-31'
+  activities:
+  - '5392141104'
+  track_activity: '5392141104'
+- id: tors-trot
+  name: Tors trot
+  type: run
+  regions:
+  - US-AK
+  dates:
+  - '2021-08-14'
+  activities:
+  - '5798870056'
+  track_activity: '5798870056'
+- id: walk-up-star-dune
+  name: Walk up Star Dune
+  type: run
+  regions:
+  - US-CO
+  dates:
+  - '2018-01-07'
+  activities:
+  - '1345599851'
+  track_activity: '1345599851'
+- id: hike-to-jack-river-put-in
+  name: Hike to Jack River put in
+  type: hike
+  regions:
+  - US-AK
+  dates:
+  - '2022-08-20'
+  activities:
+  - '7672865171'
+  track_activity: '7672865171'
+- id: delta-clearwater-part-1
+  name: Delta clearwater part 1
+  type: kayaking
+  regions:
+  - US-AK
+  dates:
+  - '2026-05-29'
+  activities:
+  - '18709571598'
+  track_activity: '18709571598'
+- id: bike-around-kluane-lake
+  name: Bike around Kluane Lake
+  type: ride
+  regions:
+  - CA-YT
+  dates:
+  - '2020-08-11'
+  activities:
+  - '3904384457'
+  track_activity: '3904384457'
+- id: end-of-spring-ride
+  name: End of spring ride
+  type: ride
+  regions:
+  - US-AK
+  dates:
+  - '2023-06-17'
+  activities:
+  - '9305186276'
+  track_activity: '9305186276'
+- id: river-rippin
+  name: River rippin’
+  type: ride
+  regions:
+  - US-AK
+  dates:
+  - '2023-04-01'
+  activities:
+  - '8815740348'
+  track_activity: '8815740348'
+- id: back-bay-false-cape-nc-fatbike
+  name: Back Bay <—> False Cape <—> NC Fatbike
+  type: ride
+  regions:
+  - US-VA
+  dates:
+  - '2023-09-02'
+  activities:
+  - '9770216822'
+  track_activity: '9770216822'
+- id: jack-river-float
+  name: Jack River float
+  type: kayaking
+  regions:
+  - US-AK
+  dates:
+  - '2022-08-20'
+  activities:
+  - '7672865100'
+  track_activity: '7672865100'
+- id: upper-chatanika-day-1
+  name: Upper Chatanika day 1
+  type: kayaking
+  regions:
+  - US-AK
+  dates:
+  - '2021-06-12'
+  activities:
+  - '5469471384'
+  track_activity: '5469471384'
+- id: cape-point-trot
+  name: Cape point trot
+  type: run
+  regions:
+  - US-NC
+  dates:
+  - '2022-06-11'
+  activities:
+  - '7293366144'
+  track_activity: '7293366144'
+- id: 80-streets-in-an-hour
+  name: 80 streets in an hour
+  type: run
+  regions:
+  - US-VA
+  dates:
+  - '2023-02-23'
+  activities:
+  - '8612265950'
+  track_activity: '8612265950'
