@@ -93,6 +93,7 @@ h2 { font-size: 1.05rem; margin: 1.75rem 0 0.5rem; }
 table { width: 100%; border-collapse: collapse; }
 th, td { text-align: left; padding: 0.3rem 0.5rem; border-bottom: 1px solid var(--border); vertical-align: top; }
 th { font-size: 0.8rem; color: var(--muted); font-weight: 600; }
+th a { color: inherit; }
 td.number, th.number { text-align: right; font-family: var(--font-mono); font-size: 0.85rem; }
 tbody tr:hover { background: var(--background-alt); }
 
@@ -129,13 +130,27 @@ button, .button {
   border-radius: 5px;
   border: 1px solid var(--accent);
 }
-button.secondary { background: none; color: var(--accent); }
+button.secondary, .button.secondary { background: none; color: var(--accent); }
 button.danger { background: none; color: var(--bad); border-color: var(--bad); }
 form.delete { margin-top: 2.5rem; }
 
 /* Import from Strava. */
 form.inline, form.filters { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin: 0.5rem 0; }
-form.inline input[size="60"] { flex: 1 1 20rem; min-width: 0; }
+
+/* Where an export is dropped. Its two buttons are labels for hidden file
+ * inputs, for choosing one without dragging. */
+.dropzone {
+  border: 2px dashed var(--border);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  margin: 0.5rem 0;
+}
+.dropzone p { margin: 0.4rem 0; }
+.dropzone .button { display: inline-block; }
+.dropzone.over { border-color: var(--accent); background: var(--background-alt); }
+.dropzone.busy { opacity: 0.7; pointer-events: none; }
+table.exports { width: auto; margin-bottom: 1rem; }
+table.exports form.inline { display: inline-flex; margin: 0; }
 label.check { display: flex; gap: 0.4rem; align-items: center; }
 
 svg.track {

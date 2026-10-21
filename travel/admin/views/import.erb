@@ -1,20 +1,47 @@
 <h1>Import from Strava</h1>
 
-<form method="post" action="/import/settings" class="inline">
-  <%= csrf_field %>
-  <label for="strava_export">Export folder</label>
-  <input id="strava_export" name="strava_export" size="60"
-         value="<%= h(strava&.dir || settings_file['strava_export']) %>"
-         placeholder="~/Downloads/export_12345">
-  <button type="submit" class="secondary">Use this folder</button>
-</form>
+<%# Dropped files are read by the script below and sent in parts, since a
+    form cannot send a folder. Without a script there is no way in, but this
+    page is for one person on their own machine. %>
+<div class="dropzone" id="dropzone" data-csrf="<%= csrf_token %>">
+  <p><strong>Drop a Strava export here</strong> — the zip Strava sends, or the folder it unzips to.</p>
+  <p>
+    <label class="button secondary">Choose a zip<input type="file" id="pick-zip" accept=".zip,application/zip" hidden></label>
+    <label class="button secondary">Choose a folder<input type="file" id="pick-folder" webkitdirectory hidden></label>
+  </p>
+  <p class="muted" id="drop-status" role="status" aria-live="polite"></p>
+</div>
 <p class="muted">
-  The folder Strava sends (it has <code>activities.csv</code> in it). It is only read, and
-  never copied into the repository. The path is kept in <code>travel/admin/settings.yml</code>,
-  which git ignores.
+  Only <code>activities.csv</code>, <code>privacy_zones.csv</code> and the tracks are kept, in a
+  temporary folder outside the repository that is deleted when the admin server stops.
+  Nothing is remembered from one run to the next.
 </p>
 
-<% if @strava_error %><p class="bad"><%= h @strava_error %></p><% end %>
+<% if Travel::Admin::EXPORTS.any? %>
+  <table class="exports">
+    <tbody>
+      <% Travel::Admin::EXPORTS.each do |id, export| %>
+        <% next unless export['strava'] %>
+        <tr>
+          <td><%= h export['name'] %></td>
+          <td class="number"><%= export['strava'].activities.size %> activities</td>
+          <td>
+            <% if id == session[:export] %>
+              <span class="muted">Shown</span>
+            <% else %>
+              <form method="post" action="/import/exports/<%= u id %>/use" class="inline">
+                <%= csrf_field %><button type="submit" class="secondary">Show</button>
+              </form>
+            <% end %>
+            <form method="post" action="/import/exports/<%= u id %>/delete" class="inline">
+              <%= csrf_field %><button type="submit" class="secondary">Close</button>
+            </form>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>
 
 <% if strava %>
   <form method="get" action="/import" class="filters">
@@ -35,6 +62,8 @@
       <option value="new"<%= ' selected' if @filters['show'] == 'new' %>>Not imported</option>
       <option value="imported"<%= ' selected' if @filters['show'] == 'imported' %>>Imported</option>
     </select>
+    <input type="hidden" name="sort" value="<%= h @filters['sort'] %>">
+    <input type="hidden" name="dir" value="<%= h @filters['dir'] %>">
     <button type="submit">Filter</button>
   </form>
 
@@ -58,7 +87,7 @@
 
   <table>
     <thead>
-      <tr><th><input type="checkbox" id="select-all" aria-label="Select every activity shown"></th><th>Date</th><th>Name</th><th>Type</th><th class="number">Distance</th><th class="number">Climb</th><th>Trip</th></tr>
+      <tr><th><input type="checkbox" id="select-all" aria-label="Select every activity shown"></th><th><%= sort_link 'Date', 'date' %></th><th>Name</th><th>Type</th><th class="number"><%= sort_link 'Distance', 'distance' %></th><th class="number"><%= sort_link 'Climb', 'climb' %></th><th>Trip</th></tr>
     </thead>
     <tbody>
       <% @activities.first(500).each do |activity| %>
@@ -81,7 +110,7 @@
     </tbody>
   </table>
   </form>
-  <% if @activities.size > 500 %><p class="muted">Showing the newest 500. Filter to see the rest.</p><% end %>
+  <% if @activities.size > 500 %><p class="muted">Showing the first 500. Filter or sort to see the rest.</p><% end %>
 
   <script>
     // Select all, a count of what is selected, and no submitting nothing.
@@ -111,3 +140,136 @@
     })();
   </script>
 <% end %>
+
+<script>
+  // Sending an export: a zip as it is, or from a folder only what the import
+  // reads, which leaves out the photos. A folder is sent a hundred files at a
+  // time, since a server takes only so many files in one request.
+  (function () {
+    var zone = document.getElementById('dropzone');
+    var status = document.getElementById('drop-status');
+    var BATCH = 100;
+
+    // A path with the export's own folder taken off the front.
+    function inside(path) { return path.replace(/^\/?[^\/]+\/?/, ''); }
+    function wanted(rest) {
+      return rest === 'activities.csv' || rest === 'privacy_zones.csv' || rest.indexOf('activities/') === 0;
+    }
+
+    function post(url, fields, files) {
+      var body = new FormData();
+      body.append('csrf', zone.dataset.csrf);
+      Object.keys(fields || {}).forEach(function (key) { body.append(key, fields[key]); });
+      (files || []).forEach(function (item) {
+        body.append('paths[]', item.path);
+        body.append('files[]', item.file);
+      });
+      return fetch(url, { method: 'POST', body: body, credentials: 'same-origin' }).then(function (response) {
+        if (response.ok) return response;
+        return response.text().then(function (text) { throw new Error(text || response.statusText); });
+      });
+    }
+
+    // One export: { name, files: [{ path, file }] }.
+    function send(upload) {
+      if (!upload.files.length) throw new Error(upload.name + ' has no activities.csv or tracks in it.');
+      return post('/import/exports', { name: upload.name }).then(function (response) {
+        return response.json();
+      }).then(function (made) {
+        var base = '/import/exports/' + made.id;
+        function next(start) {
+          if (start >= upload.files.length) {
+            status.textContent = 'Reading ' + upload.name + '…';
+            return post(base + '/open');
+          }
+          status.textContent = 'Sending ' + upload.name + ': ' +
+            Math.min(start + BATCH, upload.files.length) + ' of ' + upload.files.length + ' files…';
+          return post(base + '/files', {}, upload.files.slice(start, start + BATCH)).then(function () {
+            return next(start + BATCH);
+          });
+        }
+        return next(0).catch(function (error) {
+          post(base + '/delete').catch(function () {});
+          throw error;
+        });
+      });
+    }
+
+    function sendAll(uploads) {
+      zone.classList.add('busy');
+      uploads.reduce(function (done, upload) {
+        return done.then(function () { return Promise.resolve(upload).then(send); });
+      }, Promise.resolve()).then(function () {
+        window.location.reload();
+      }).catch(function (error) {
+        zone.classList.remove('busy');
+        status.textContent = error.message;
+      });
+    }
+
+    function zip(file) {
+      if (!/\.zip$/i.test(file.name)) throw new Error(file.name + ' is not a zip or a folder.');
+      return { name: file.name.replace(/\.zip$/i, ''), files: [{ path: file.name, file: file }] };
+    }
+
+    // Every wanted file under a dropped folder, opening only the folders that
+    // can hold one.
+    function walk(entry) {
+      if (entry.isFile) {
+        return new Promise(function (resolve, reject) {
+          entry.file(function (file) { resolve([{ path: entry.fullPath.replace(/^\//, ''), file: file }]); }, reject);
+        });
+      }
+      var reader = entry.createReader();
+      var children = [];
+      return new Promise(function (resolve, reject) {
+        (function more() {
+          reader.readEntries(function (batch) {
+            if (!batch.length) return resolve(children);
+            children = children.concat(batch);
+            more();
+          }, reject);
+        })();
+      }).then(function (found) {
+        return Promise.all(found.filter(function (child) {
+          var rest = inside(child.fullPath);
+          return child.isDirectory ? rest === 'activities' : wanted(rest);
+        }).map(walk));
+      }).then(function (lists) { return [].concat.apply([], lists); });
+    }
+
+    function fromEntry(entry) {
+      if (entry.isDirectory) {
+        return walk(entry).then(function (files) { return { name: entry.name, files: files }; });
+      }
+      return new Promise(function (resolve, reject) { entry.file(resolve, reject); }).then(zip);
+    }
+
+    zone.addEventListener('dragover', function (event) {
+      event.preventDefault();
+      zone.classList.add('over');
+    });
+    zone.addEventListener('dragleave', function () { zone.classList.remove('over'); });
+    zone.addEventListener('drop', function (event) {
+      event.preventDefault();
+      zone.classList.remove('over');
+      // The entries must be taken now: the drop's items are gone once the
+      // event is over.
+      var entries = Array.prototype.map.call(event.dataTransfer.items, function (item) {
+        return item.webkitGetAsEntry();
+      }).filter(Boolean);
+      sendAll(entries.map(fromEntry));
+    });
+
+    document.getElementById('pick-zip').addEventListener('change', function (event) {
+      sendAll(Array.prototype.map.call(event.target.files, zip));
+    });
+    document.getElementById('pick-folder').addEventListener('change', function (event) {
+      var files = Array.prototype.filter.call(event.target.files, function (file) {
+        return wanted(inside(file.webkitRelativePath));
+      });
+      var name = (event.target.files[0] || { webkitRelativePath: 'export' }).webkitRelativePath.split('/')[0];
+      sendAll([{ name: name, files: files.map(function (file) { return { path: file.webkitRelativePath, file: file }; }) }]);
+    });
+  })();
+</script>

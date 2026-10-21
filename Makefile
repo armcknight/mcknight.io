@@ -278,7 +278,7 @@ optimize-images: ## Strip EXIF from and compress any images git sees as changed
 # commit and deploy as usual.
 .PHONY: travel-admin
 travel-admin: ## Edit the travel data in a local web app at localhost:4600
-	@echo "travel admin at http://localhost:4600"
+	@echo "travel admin at http://localhost:$${PORT:-4600}"
 	$(RUBY) bundle exec ruby travel/admin/app.rb
 
 .PHONY: travel-geocode

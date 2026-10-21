@@ -183,6 +183,15 @@ module Travel
       end
     end
 
+    # Every 404, in the layout. A route that finds nothing halts with its own
+    # message, already escaped, which comes here as the body and is shown; an
+    # address no route answers has none, and says so.
+    not_found do
+      @message = Array(response.body).join
+      @message = "There is nothing at <code>#{h request.path}</code>." if @message.strip.empty?
+      erb '<h1>Not found</h1><p><%= @message %> <a href="/">Back to the start</a>.</p>'
+    end
+
     get '/' do
       @problems = Store::PLACES.flat_map do |collection|
         @store.all(collection).filter_map do |place|
@@ -223,7 +232,7 @@ module Travel
     # place and for one being edited alike.
     post '/:collection/locate' do
       collection!
-      halt 404 unless place?(@collection)
+      halt 404, 'Only a place can be looked up.' unless place?(@collection)
       @id = params['id'].to_s.empty? ? nil : params['id']
       @record = attributes
       context = @store.context(@collection, @record)
@@ -250,14 +259,14 @@ module Travel
     get '/:collection/:id/edit' do
       collection!
       @id = params['id']
-      @record = @store.find(@collection, @id) or halt 404
+      @record = @store.find(@collection, @id) or halt 404, "No #{@spec[:one]} #{h @id}."
       erb :form
     end
 
     post '/:collection/:id' do
       collection!
       @id = params['id']
-      halt 404 unless @store.find(@collection, @id)
+      halt 404, "No #{@spec[:one]} #{h @id}." unless @store.find(@collection, @id)
       record = @store.update(@collection, @id, attributes)
       session[:notice] = "Saved #{record['name']}."
       redirect to("/#{@collection}")
@@ -270,7 +279,7 @@ module Travel
 
     post '/:collection/:id/delete' do
       collection!
-      record = @store.find(@collection, params['id']) or halt 404
+      record = @store.find(@collection, params['id']) or halt 404, "No #{@spec[:one]} #{h params['id']}."
       @store.delete(@collection, params['id'])
       session[:notice] = "Deleted #{record['name']}."
       redirect to("/#{@collection}")
@@ -324,4 +333,10 @@ module Travel
 end
 
 require_relative 'import'
-Travel::Admin.run! if $PROGRAM_NAME == __FILE__
+if $PROGRAM_NAME == __FILE__
+  # Said again once the server is up, below the server's own start-up lines.
+  Travel::Admin.run! do
+    puts "\nTravel admin is at http://localhost:#{Travel::Admin.port}\n\n"
+    $stdout.flush
+  end
+end

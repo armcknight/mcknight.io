@@ -1,11 +1,15 @@
 # frozen_string_literal: true
 
-require 'yaml'
+require 'fileutils'
+require 'json'
+require 'tmpdir'
 
 module Travel
   # Making trips from a Strava export.
   #
-  # The export is read where it lies, never copied. Its list of activities is
+  # An export is dropped onto the import page each time the server runs, and
+  # only the parts read here are kept, in a temporary folder that is deleted
+  # when the server stops. Its list of activities is
   # filtered to the few worth keeping; an activity is looked at on its own
   # page, with its line drawn and the private ends shown; and then it becomes a
   # new trip, or another time an existing trip was done.
@@ -14,29 +18,35 @@ module Travel
   # removed, and the ids and dates of every activity that was that trip. So a
   # route done five times is one line on the globe with five dates.
   class Admin
-    SETTINGS = File.join(__dir__, 'settings.yml')
+    # The exports dropped onto the import page, by id, for as long as the
+    # server runs: the folder each is unpacked into, its name, and once it is
+    # read, the Strava export itself. Nothing is remembered between runs, and
+    # nothing is put in the repository. Which one the list shows is kept in
+    # the session.
+    EXPORTS = {}
+    at_exit { EXPORTS.each_value { |export| FileUtils.rm_rf(export['dir']) } }
+
+    # How a zip from Strava is unpacked: without the photos and videos, which
+    # are most of it and never read.
+    UNZIP_LEAVING_OUT = ['media/*', '*/media/*'].freeze
 
     # How much of each end of a track is removed by default, in metres. Most
     # activities start and end at home, and a privacy zone covers only the
     # home it was set for.
     TRIM_ENDS = 500
 
+    # The columns the import list sorts by, and the value each sorts on. An
+    # activity without one, such as a climb Strava did not record, goes last
+    # either way.
+    SORTS = {
+      'date' => :started.to_proc,
+      'distance' => :distance.to_proc,
+      'climb' => :climb.to_proc
+    }.freeze
+
     helpers do
-      def settings_file
-        File.exist?(SETTINGS) ? (YAML.safe_load(File.read(SETTINGS)) || {}) : {}
-      end
-
-      # The export, from STRAVA_EXPORT or from the path saved on the import
-      # page. Nil when neither is set or the folder holds no export.
-      def strava
-        return @strava if defined?(@strava)
-
-        dir = ENV['STRAVA_EXPORT'] || settings_file['strava_export']
-        @strava = dir && Strava.new(dir)
-      rescue ArgumentError => e
-        @strava_error = e.message
-        @strava = nil
-      end
+      # The export chosen on the import page. Nil until one is dropped there.
+      def strava = EXPORTS.dig(session[:export], 'strava')
 
       # Strava activity id -> the trip it is part of.
       def imported
@@ -46,6 +56,17 @@ module Travel
       end
 
       def km(metres) = format('%.1f km', metres.to_f / 1000)
+
+      # A column heading that sorts the list by that column, keeping the
+      # filters. The first click puts the newest or largest first; a click on
+      # the column already sorted turns it around.
+      def sort_link(label, column)
+        current = @filters['sort'] == column
+        dir = current && @filters['dir'] == 'desc' ? 'asc' : 'desc'
+        query = @filters.merge('sort' => column, 'dir' => dir).reject { |_, v| v.empty? }
+        arrow = { 'asc' => ' ▲', 'desc' => ' ▼' }[@filters['dir']] if current
+        %(<a href="/import?#{h Rack::Utils.build_query(query)}">#{h label}#{arrow}</a>)
+      end
 
       # The track an activity becomes: GPS errors, privacy zones and the ends
       # removed, then simplified. Returns the line and what was removed, to
@@ -101,7 +122,9 @@ module Travel
     get '/import' do
       @filters = {
         'q' => params['q'].to_s, 'type' => params['type'].to_s, 'year' => params['year'].to_s,
-        'min_km' => params['min_km'].to_s, 'show' => params['show'].to_s
+        'min_km' => params['min_km'].to_s, 'show' => params['show'].to_s,
+        'sort' => SORTS.key?(params['sort']) ? params['sort'] : 'date',
+        'dir' => params['dir'] == 'asc' ? 'asc' : 'desc'
       }
       if strava
         @types = strava.activities.map(&:type).tally.sort_by { |_, count| -count }
@@ -116,20 +139,74 @@ module Travel
 
           @filters['q'].empty? || activity.name.downcase.include?(@filters['q'].downcase)
         end
+        value = SORTS[@filters['sort']]
+        known, unknown = @activities.partition(&value)
+        known.sort_by!(&value)
+        known.reverse! if @filters['dir'] == 'desc'
+        @activities = known + unknown
       end
       erb :import
     end
 
-    post '/import/settings' do
-      dir = File.expand_path(params['strava_export'].to_s.strip.gsub('\\ ', ' '))
-      begin
-        Strava.new(dir)
-      rescue ArgumentError => e
-        session[:notice] = e.message
-        redirect to('/import')
+    # An export comes in three steps, so that a folder of a thousand tracks
+    # can be sent a hundred files at a time: make a place for it, send its
+    # files, then open it. A zip is sent the same way, as one file.
+    post '/import/exports' do
+      id = SecureRandom.hex(8)
+      EXPORTS[id] = { 'dir' => Dir.mktmpdir('travel-strava-'), 'name' => params['name'].to_s }
+      content_type :json
+      { id: id }.to_json
+    end
+
+    # Each file comes with the path it had in the export, which says where it
+    # goes in the export's folder. A zip is unpacked where it lands.
+    post '/import/exports/:id/files' do
+      export = export!
+      Array(params['files']).zip(Array(params['paths'])).each do |file, path|
+        parts = path.to_s.split('/').reject { |part| part.empty? || part == '.' || part == '..' }
+        halt 400, 'A file came without its path.' if parts.empty? || !file.is_a?(Hash)
+
+        target = File.join(export['dir'], *parts)
+        FileUtils.mkdir_p(File.dirname(target))
+        FileUtils.cp(file[:tempfile].path, target)
+        next unless target.end_with?('.zip')
+
+        unzipped = system('unzip', '-qo', target, '-x', *UNZIP_LEAVING_OUT, '-d', export['dir'])
+        FileUtils.rm_f(target)
+        halt 422, "#{export['name']} could not be unzipped." unless unzipped
       end
-      File.write(SETTINGS, YAML.dump('strava_export' => dir))
-      session[:notice] = 'Export found.'
+      204
+    end
+
+    # Reads what was sent, and shows it. The export may sit at the top of its
+    # folder, as a zip unpacks, or one folder down, as a dropped folder does.
+    post '/import/exports/:id/open' do
+      export = export!
+      csv = Dir.glob(File.join(export['dir'], '{,*/}activities.csv')).first
+      begin
+        raise ArgumentError, 'it has no activities.csv' unless csv
+
+        export['strava'] = Strava.new(File.dirname(csv))
+        count = export['strava'].activities.size
+      rescue StandardError => e
+        forget(params['id'])
+        halt 422, "#{export['name']} is not a Strava export that can be read: #{e.message}."
+      end
+      session[:export] = params['id']
+      session[:notice] = "Opened #{export['name']}, with #{count} activities."
+      204
+    end
+
+    post '/import/exports/:id/use' do
+      export!
+      session[:export] = params['id']
+      redirect to('/import')
+    end
+
+    post '/import/exports/:id/delete' do
+      export = export!
+      forget(params['id'])
+      session[:notice] = "Closed #{export['name']}, and deleted its copy."
       redirect to('/import')
     end
 
@@ -139,7 +216,7 @@ module Travel
     # named, with why, and the rest are made; there is nothing half made to
     # clean up, since a trip is saved only when it is complete.
     post '/import/bulk' do
-      halt 404, 'Set the export folder first.' unless strava
+      halt 404, 'Drop an export on the import page first.' unless strava
       ends = (params['ends'] || TRIM_ENDS).to_i
       made = []
       skipped = Hash.new { |hash, why| hash[why] = [] }
@@ -174,8 +251,8 @@ module Travel
     end
 
     get '/import/:id' do
-      halt 404, 'Set the export folder first.' unless strava
-      @activity = strava.activity(params['id']) or halt 404
+      halt 404, 'Drop an export on the import page first.' unless strava
+      @activity = strava.activity(params['id']) or halt 404, "No activity #{h params['id']} in the export."
       @ends = (params['ends'] || TRIM_ENDS).to_i
       begin
         @track = prepared(@activity, @ends)
@@ -192,7 +269,7 @@ module Travel
 
     # A new trip from this activity.
     post '/import/:id' do
-      @activity = strava&.activity(params['id']) or halt 404
+      @activity = strava&.activity(params['id']) or halt 404, "No activity #{h params['id']} in the export."
       ends = params['ends'].to_i
       track = prepared(@activity, ends)
       record = params.fetch('record', {}).to_h.merge('regions' => Array(params.dig('record', 'regions')))
@@ -209,7 +286,7 @@ module Travel
     # Another time an existing trip was done: its date and id are added, and
     # its line replaces the trip's if asked.
     post '/import/:id/attach' do
-      @activity = strava&.activity(params['id']) or halt 404
+      @activity = strava&.activity(params['id']) or halt 404, "No activity #{h params['id']} in the export."
       trip = @store.find('trips', params['trip'].to_s) or halt 404, 'No such trip.'
       ends = params['ends'].to_i
       track = prepared(@activity, ends)
@@ -225,6 +302,18 @@ module Travel
       @store.update('trips', trip['id'], changes)
       session[:notice] = "Added #{date} to #{trip['name']}#{', and drew it with this line' if params['use_line'] == '1'}."
       redirect to("/import/#{u @activity.id}?ends=#{ends}")
+    end
+
+    private
+
+    def export!
+      EXPORTS[params['id']] or halt 404, 'That export is not open. Drop it again.'
+    end
+
+    def forget(id)
+      export = EXPORTS.delete(id) or return
+      FileUtils.rm_rf(export['dir'])
+      session.delete(:export) if session[:export] == id
     end
   end
 end
