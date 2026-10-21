@@ -1,0 +1,13 @@
+# books.mcknight.io — its own Jekyll site, built on its own, like travel/.
+#
+# The parent _config.yml excludes this directory. The data comes from a
+# Goodreads library export (scripts/import-goodreads.rb) and Wikidata
+# (scripts/find-authors.rb), and is committed, so a build is offline.
+
+title: Books
+description: Where the authors I read come from, on a globe.
+url: https://books.mcknight.io
+
+exclude:
+  - scripts
+  - lib

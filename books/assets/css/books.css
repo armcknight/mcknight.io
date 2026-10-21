@@ -1,0 +1,253 @@
+/* books.mcknight.io
+ *
+ * The palette and type are travel.mcknight.io's, so the two read as one family.
+ * The new colours are the scale a country is painted in by how many authors
+ * are from it, from --few to --many.
+ */
+
+:root {
+  --text-primary: #030303;
+  --text-secondary: #123458;
+  --text-muted: #666;
+  --accent: #123458;
+  --accent-light: #2978cc;
+  --border: #D4C9BE;
+  --background: #ffffff;
+  --background-alt: #f2f1ef;
+
+  --ocean: #eef2f6;
+  --land: #e4e0d9;          /* a country no author is from */
+  --land-stroke: #b3a897;
+  --few: #c9d9ec;           /* one author */
+  --many: #123458;          /* the most authors of any country */
+  --dot: #c2410c;           /* a birthplace */
+
+  --read: #123458;
+  --currently-reading: #2978cc;
+  --to-read: #b3a897;
+
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-serif: 'Charter', 'Georgia', 'Times New Roman', serif;
+  --font-mono: 'SF Mono', 'Monaco', 'Cascadia Code', 'Roboto Mono', monospace;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--text-primary);
+  font-family: var(--font-serif);
+  line-height: 1.6;
+}
+
+header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 1rem;
+  padding: 1.25rem 1.5rem 0.75rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+header h1 { font-family: var(--font-sans); font-size: 1.5rem; margin: 0; }
+
+header a {
+  color: var(--accent);
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  text-decoration: none;
+  border-bottom: 1px dotted var(--border);
+}
+
+.tally {
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  margin: 0 0 0 auto;
+}
+
+main { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem 2rem; }
+
+/* The globe on the left, the list on the right; one column when narrow. */
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 19rem;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+/* THE GLOBE. The figure, ocean, graticule, edge and tooltip are the shared
+ * core's (globe-core.css); these are the books site's layers. A country's
+ * fill is set by the script, from how many authors were born there. */
+.country {
+  fill: var(--land);
+  stroke: var(--land-stroke);
+  stroke-width: 0.6;
+}
+.country.has-authors { cursor: pointer; }
+.country.has-authors:hover { filter: brightness(1.15); }
+
+.birthplace {
+  fill: var(--dot);
+  stroke: #fff;
+  stroke-width: 0.7;
+  cursor: pointer;
+}
+.birthplace:hover { stroke-width: 1.4; }
+
+/* Focus: everything but the chosen country, or the chosen author's, fades
+ * back, as on the travel globe. */
+#globe.focus-active .country,
+#globe.focus-active .birthplace { opacity: 0.35; }
+#globe.focus-active .focused { opacity: 1; }
+#globe .country.focused { stroke: var(--many); stroke-width: 1.4; }
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.1rem;
+  align-items: center;
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  margin: 0.75rem 0 0;
+  padding: 0.5rem 0.75rem 0.65rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+.legend > legend {
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 0 0.3rem;
+}
+.legend .count { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); }
+.legend i { display: inline-block; width: 0.85rem; height: 0.85rem; border-radius: 3px; }
+
+/* The scale: a bar from one author to the most, with its two ends named; and
+ * the colour of a country with none. */
+.legend .scale, .legend .none { display: inline-flex; align-items: center; gap: 0.4rem; color: var(--text-muted); }
+.legend .scale i { width: 4rem; height: 0.6rem; background: linear-gradient(90deg, var(--few), var(--many)); }
+.legend .none i { background: var(--land); border: 1px solid var(--land-stroke); }
+
+/* THE SHELF SWITCH: one of three, as a row of joined buttons. The radio
+ * inputs stay in the page for the keyboard and for screen readers, but are
+ * drawn as the buttons' pressed state. */
+.shelf-switch {
+  display: inline-flex;
+  margin: 0 0 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  overflow: hidden;
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+}
+.shelf-switch label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.9rem;
+  cursor: pointer;
+  color: var(--text-secondary);
+}
+.shelf-switch label + label { border-left: 1px solid var(--border); }
+.shelf-switch input { position: absolute; opacity: 0; pointer-events: none; }
+.shelf-switch label:has(input:checked) { background: var(--many); color: #fff; }
+.shelf-switch label:has(input:focus-visible) { outline: 2px solid var(--accent-light); outline-offset: -2px; }
+.shelf-switch .count { font-family: var(--font-mono); font-size: 0.75rem; opacity: 0.75; }
+
+.hint { font-family: var(--font-sans); font-size: 0.8125rem; color: var(--text-muted); margin: 0.25rem 0 0; }
+
+/* THE LIST: countries, their authors, and the authors' books. */
+#outline {
+  max-height: 78vh;
+  overflow-y: auto;
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  border-left: 1px solid var(--border);
+  padding-left: 1rem;
+}
+
+#outline summary {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+  min-height: 1.6rem;
+  cursor: pointer;
+  list-style: none;
+}
+#outline summary::-webkit-details-marker { display: none; }
+/* Drawn with borders, as travel's is: the triangle glyphs are missing from
+ * some fonts. */
+#outline summary::before {
+  content: "";
+  flex: none;
+  width: 0;
+  height: 0;
+  margin-right: 0.3rem;
+  border-left: 5px solid var(--text-muted);
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  transition: transform 0.12s ease;
+}
+#outline details[open] > summary::before { transform: rotate(90deg); }
+#outline summary .count { margin-left: 0.35rem; font-family: var(--font-mono); font-size: 0.6875rem; color: var(--text-muted); }
+
+#outline ul { list-style: none; margin: 0; padding: 0 0 0 1.2rem; }
+#outline .authors > li { margin: 0.15rem 0 0.4rem; }
+#outline .about { display: block; padding-left: 0.3rem; color: var(--text-muted); font-size: 0.75rem; }
+#outline .then { font-style: italic; }
+#outline .books { padding-left: 0.9rem; }
+#outline .books li { color: var(--text-secondary); font-family: var(--font-serif); font-size: 0.8125rem; line-height: 1.35; margin: 0.1rem 0; }
+#outline .books li::before { content: ""; display: inline-block; width: 0.45rem; height: 0.45rem; border-radius: 2px; margin: 0 0.4rem 0.08rem -0.85rem; }
+#outline .books li.read::before { background: var(--read); }
+#outline .books li.currently-reading::before { background: var(--currently-reading); }
+#outline .books li.to-read::before { background: var(--to-read); }
+#outline .unplaced { margin-top: 0.8rem; border-top: 1px solid var(--border); padding-top: 0.5rem; }
+#outline .unplaced > summary { color: var(--text-muted); }
+#outline .why { color: var(--text-muted); font-size: 0.75rem; font-style: italic; }
+
+.entry {
+  background: none;
+  border: 0;
+  border-radius: 4px;
+  padding: 0.05rem 0.3rem;
+  font: inherit;
+  color: var(--text-primary);
+  text-align: left;
+  cursor: pointer;
+  line-height: 1.45;
+}
+.country-entry { font-weight: 600; }
+.entry:hover { background: var(--background-alt); }
+.entry:focus-visible { outline: 2px solid var(--accent-light); outline-offset: 1px; }
+.entry.focused { background: var(--many); color: #fff; }
+
+[hidden] { display: none !important; }
+
+footer {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  border-top: 1px solid var(--border);
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+footer a { color: var(--text-secondary); }
+
+@media (max-width: 860px) {
+  .layout { grid-template-columns: 1fr; }
+  #outline { max-height: none; border-left: 0; border-top: 1px solid var(--border); padding: 1rem 0 0; }
+}
+
+@media (max-width: 640px) {
+  header { padding: 1rem 1rem 0.5rem; }
+  main { padding: 0 1rem 1.5rem; }
+  .tally { margin-left: 0; width: 100%; }
+  .shelf-switch { display: flex; }
+  .shelf-switch label { flex: 1 1 0; justify-content: center; padding: 0.35rem 0.5rem; }
+}

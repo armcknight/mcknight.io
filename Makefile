@@ -2,15 +2,15 @@
 
 # SITES
 #
-# Most actions here apply to one of two sites, so the site is named as a word of
+# Most actions here apply to one of three sites, so the site is named as a word of
 # its own: `make build home`, `make serve travel`, `make deploy home travel`.
 #
-# make has no arguments, only goals, so `home` and `travel` are real targets
+# make has no arguments, only goals, so `home`, `travel` and `books` are real targets
 # that do nothing on their own. Each action reads the goal list to see which
-# sites were named. Naming both runs the action twice, once for each.
+# sites were named. Naming several runs the action once for each.
 #
 # Naming none means `home`, which is what `make build` always did.
-SITES := home travel
+SITES := home travel books
 SELECTED := $(filter $(SITES),$(MAKECMDGOALS))
 ifeq ($(SELECTED),)
 SELECTED := home
@@ -46,18 +46,25 @@ $(SITES):
 # is working on, which is why the suffixes must match the names in SITES.
 src_home      := .
 src_travel    := travel
+src_books     := books
 dest_home     := _site
 dest_travel   := travel/_site
+dest_books    := books/_site
 port_home     := 4000
 port_travel   := 4500
+port_books    := 4501
 bucket_home   := mcknight.io
 bucket_travel := travel.mcknight.io
+# books has no bucket yet, so `make deploy books` refuses to run.
 stamp_home    := DEPLOYED
 stamp_travel  := travel/DEPLOYED
+stamp_books   := books/DEPLOYED
 log_home      := jekyll_build
 log_travel    := travel_build
+log_books     := books_build
 label_home    := mcknight.io
 label_travel  := travel.mcknight.io
+label_books   := books.mcknight.io
 
 # CloudFront distributions.
 dist_home     := E3AJVW95W5JFMD
@@ -92,7 +99,7 @@ help: ## Show this help
 		| sort \
 		| awk 'BEGIN {FS = ":.*?## "} {printf "  \033[36m%-32s\033[0m %s\n", $$1, $$2}'
 	@echo
-	@echo "  Targets marked <site> take \033[36mhome\033[0m, \033[36mtravel\033[0m, or both:"
+	@echo "  Targets marked <site> take \033[36mhome\033[0m, \033[36mtravel\033[0m, \033[36mbooks\033[0m, or several:"
 	@echo "    make build travel       make serve home travel      make deploy home"
 	@echo "  Naming no site means home."
 	@echo
@@ -250,6 +257,58 @@ optimize-images: ## Strip EXIF from and compress any images git sees as changed
 		imageoptim $$new_images; \
 	fi
 
+# MARK: - books.mcknight.io data
+
+# Writes books/_data/books.yml from a Goodreads library export (My Books →
+# Import and export → Export library). The file is rewritten whole, since
+# Goodreads is the record; only titles, authors, ISBNs, years, shelves and
+# dates read are kept, never reviews or notes.
+#
+#   make books-import CSV=~/Desktop/goodreads_library_export.csv
+.PHONY: books-import
+books-import: ## Write books/_data/books.yml from a Goodreads export, CSV=path
+	@test -n "$(CSV)" || { echo 'usage: make books-import CSV=path/to/goodreads_library_export.csv'; exit 1; }
+	$(RUBY) ruby books/scripts/import-goodreads.rb "$(CSV)"
+
+# Finds where and when each author in books/_data/books.yml was born, from
+# Wikidata, into books/_data/authors.yml. Safe to re-run: only authors with no
+# place yet are looked up. See books/scripts/find-authors.rb for how a name is
+# matched to a person, and how to correct one by hand.
+.PHONY: books-authors
+books-authors: ## Look up each author's birthplace and year on Wikidata
+	$(RUBY) ruby books/scripts/find-authors.rb
+
+# Everything after the books change, in order: look up any new author, file
+# every author under a country, and record former states. Run it after
+# books-import, or after adding a book by hand to books/_data/books.yml (see
+# books/scripts/import-goodreads.rb for the form).
+.PHONY: books-update
+books-update: ## After new books: look up new authors, then rebuild countries and former states
+	$(MAKE) books-authors
+	$(MAKE) books-geo
+	$(MAKE) books-history
+
+# Writes books/_data/states.yml, the 195 countries the books page counts
+# against: the UN's 193 members and its two observer states, from Wikidata.
+# Committed; re-run only when that changes.
+.PHONY: books-states
+books-states: ## Write the list of 195 countries the books page counts against
+	$(RUBY) ruby books/scripts/find-states.rb
+
+# Builds books/assets/geo/countries.json from Natural Earth, and files each
+# placed author under the country their birthplace is in today. Run after
+# books-authors. The source is cached in books/.cache/, which git ignores.
+.PHONY: books-geo
+books-geo: ## Build the books globe's borders, and file authors under countries
+	$(RUBY) ruby books/scripts/build-geo.rb
+
+# Records each author's former state of birth (`then:` in books/_data/authors.yml)
+# and lists the authors today's borders do not fit: citizens of a state that no
+# longer exists, or born before their country began. Run after books-geo.
+.PHONY: books-history
+books-history: ## Record authors' former states, and list who today's borders do not fit
+	$(RUBY) ruby books/scripts/check-history.rb
+
 # MARK: - travel.mcknight.io data
 #
 # These two produce the committed files the globe reads. They belong to the
@@ -357,6 +416,7 @@ check-clean: ## Fail unless the working tree is clean (a deploy prerequisite)
 # conditions in it and would be unreadable folded onto one line per site.
 .PHONY: deploy
 deploy: _logs-dir check-clean ## <site> Upload a built site, then stamp and commit what is live
+	@$(foreach s,$(SELECTED),test -n "$(bucket_$(s))" || { echo "No bucket is recorded for $(label_$(s)). Set bucket_$(s) in the Makefile once it exists."; exit 1; };)
 	$(foreach s,$(SELECTED),scripts/deploy-site.sh "$(label_$(s))" "$(dest_$(s))" "$(bucket_$(s))" "$(stamp_$(s))";)
 
 # Invalidate CloudFront, so a fresh deploy is actually what gets served.

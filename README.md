@@ -402,6 +402,83 @@ reaches from French Guiana to Réunion and Alaska's crosses the date line, so
 framing either by its bounding box aimed the camera at open ocean. A country
 with no place recorded yet falls back to its geometry.
 
+## books.mcknight.io
+
+`books/` is a third Jekyll site, set up like `travel/`: a globe of where the
+authors on my Goodreads shelves were born, each country coloured by how many
+authors are from it, on a logarithmic scale so that three and fourteen read
+apart while one country holds half of them, with a dot for each birthplace and
+a list of countries, authors and books beside it. A switch at the top chooses
+the shelf shown — read, reading or want to read — and the colours, dots and
+list follow it. The header counts the countries with an author on the read
+shelf and on the reading shelf, out of 195: the UN's 193 members and its two
+observer states.
+
+```
+make build books     # build it into books/_site/
+make serve books     # read it at localhost:4501
+```
+
+It has no bucket or distribution yet, so `make deploy books` refuses to run.
+
+The data is made in five steps, each committed, so a build is offline:
+
+| Step | What it writes |
+|---|---|
+| `make books-import CSV=…` | `books/_data/books.yml`, from Goodreads' library export (My Books → Import and export). The Goodreads books are replaced whole each time; books added by hand are kept. Only titles, authors, ISBNs, years, shelves and dates read are kept, never reviews, ratings or notes |
+| `make books-authors` | `books/_data/authors.yml`: each author's Wikidata item, birth year and birthplace with its coordinates. Only new authors are looked up |
+| `make books-states` | `books/_data/states.yml`, the 195 countries counted against, from Wikidata. Re-run only when that list changes |
+| `make books-geo` | `books/assets/geo/countries.json` from Natural Earth, each author's `country:` today and the `state:` it is counted under — a territory under the state that governs it — and `books/_data/countries.yml` |
+| `make books-history` | Each author's `then:`, the former state they were born in, and a report of the authors today's borders do not fit |
+
+To add a book Goodreads does not have, append it to `books/_data/books.yml`
+with `manual: true`, then run `make books-update`, which looks up any new author
+and runs the last three steps:
+
+```yaml
+- title: The Dispossessed
+  author: Ursula K. Le Guin
+  shelf: read            # read, currently-reading or to-read
+  manual: true
+```
+
+A later import keeps it, until Goodreads has the same book (by title and
+author); then the hand-made copy is dropped, and named, so it is not counted
+twice.
+
+Only the main author of each book counts. Goodreads' "additional authors" mix
+co-authors with translators and does not say which is which, so they are kept
+in `books.yml` but not counted.
+
+A name is matched to a person on Wikidata by label or alias. When several
+people share it, the one Wikidata records as the author of one of the books
+wins, or else the best known, and that author gets a `check:` note in
+`authors.yml`, as does one placed only by citizenship. To correct one, set its
+`qid:`, delete its other fields but `name:`, and run `make books-authors` and
+`make books-geo` again. A `then:` that Wikidata gets wrong can be written by
+hand with `then_by_hand: true` beside it.
+
+The borders are today's, and so are the counts. An author born in a state that
+no longer exists, such as Kafka in Cisleithania, is counted in the country that
+holds their birthplace now, Czechia, and the list says what it was then.
+
+## Shared by the subdomains
+
+`shared/` holds what the travel and books sites both use: the globe's core
+(`assets/js/globe-core.js` — the projection, sizing, turning, magnifying,
+spinning, tooltip and camera — and `assets/css/globe-core.css`). Each site's
+own `globe.js` draws its layers on that core.
+
+`shared/_plugins/shared_assets.rb` copies everything under `shared/assets/` into
+a site's build, at the same path, so neither site keeps a copy in its sources.
+A site loads it from its own `_plugins/shared.rb`, which is one
+`require_relative` line; a `plugins_dir` setting would not do, because Jekyll
+resolves a custom one from the shell's working directory rather than from the
+site. A shared file must not share a path with a site's own file, which is why
+the shared ones are named `globe-core`.
+
+The main site excludes `shared/`, as it does `travel/` and `books/`.
+
 ## Hosting
 
 The two sites are separate from the DNS down: separate buckets, certificates and
@@ -458,6 +535,8 @@ in the `Makefile` with its own `src_`, `dest_`, `port_`, `bucket_`, `stamp_`,
 | `scripts/new-post.sh` | Creates a post from a title, front matter and date filled in |
 | `scripts/fetch-releases.rb` | Generates `_data/releases.yml` |
 | `travel/` | The travel.mcknight.io site: its own config, data, page and scripts |
+| `books/` | The books.mcknight.io site: its own config, data, page and scripts |
+| `shared/` | What the subdomains share: the globe's core, and the plugin that copies it into each build |
 | `resume/` | LaTeX sources for the resume and CV; `make resume` builds them |
 | `assets/pdf/` | The built PDFs the site links to — these are the tracked artifacts, not `resume/build/` |
 | `DEPLOYED` | What is live |

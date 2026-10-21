@@ -1,0 +1,195 @@
+---
+layout: null
+title: Books
+---
+{%- comment -%}
+  Where the authors of the books on my Goodreads shelves were born, on a globe.
+
+  The data is in _data/: books.yml from the Goodreads export
+  (make books-import), authors.yml from Wikidata (make books-authors), each
+  author filed under a country by make books-geo, and the former state they
+  were born in, where there is one, by make books-history.
+
+  The borders are today's. An author born in a state that no longer exists is
+  shown where that place is now, and the list says what it was then.
+{%- endcomment -%}
+{%- assign placed = site.data.authors | where_exp: "author", "author.country" -%}
+{%- assign unplaced = site.data.authors | where_exp: "author", "author.country == nil" | sort: "name" -%}
+{%- assign shelves = "read,currently-reading,to-read" | split: "," -%}
+
+{%- comment -%}
+  The tally at the top: how many of the 195 countries in states.yml have an
+  author on the read shelf, and how many on the reading shelf. An author
+  counts under the state their birthplace is in today (state: in authors.yml),
+  however the borders ran when they were born.
+{%- endcomment -%}
+{%- for shelf in shelves limit: 2 -%}
+  {%- assign shelf_authors = site.data.books | where: "shelf", shelf | map: "author" | uniq -%}
+  {%- assign shelf_states = "" -%}
+  {%- for author in placed -%}
+    {%- if author.state and shelf_authors contains author.name -%}
+      {%- assign shelf_states = shelf_states | append: author.state | append: "," -%}
+    {%- endif -%}
+  {%- endfor -%}
+  {%- assign shelf_state_count = shelf_states | split: "," | uniq | size -%}
+  {%- if shelf == "read" -%}{%- assign read_states = shelf_state_count -%}{%- else -%}{%- assign reading_states = shelf_state_count -%}{%- endif -%}
+{%- endfor -%}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Books — Andrew McKnight</title>
+  <meta name="description" content="Where the authors of the books I read were born, on a globe.">
+  <meta name="author" content="Andrew McKnight">
+  {%- comment -%}
+    The build time on our own files makes a browser fetch them again after
+    every build, as travel's page does.
+  {%- endcomment -%}
+  {%- assign build = site.time | date: '%s' %}
+  <link rel="stylesheet" href="/assets/css/globe-core.css?v={{ build }}">
+  <link rel="stylesheet" href="/assets/css/books.css?v={{ build }}">
+</head>
+<body>
+
+<header>
+  <h1>Books</h1>
+  <a href="https://mcknight.io">← mcknight.io</a>
+  <p class="tally">
+    Read: {{ read_states }} ·
+    Reading: {{ reading_states }} ·
+    of {{ site.data.states.size }} countries
+  </p>
+</header>
+
+<main>
+  {%- comment -%}
+    Which shelf the globe and the list show. Hidden until the script can
+    work it; without a script, the list shows every shelf.
+  {%- endcomment -%}
+  <div class="shelf-switch" id="shelf-switch" role="radiogroup" aria-label="Shelf" hidden>
+    {%- for shelf in shelves %}
+    {%- assign shelf_books = site.data.books | where: "shelf", shelf %}
+    <label><input type="radio" name="shelf" value="{{ shelf }}"{% if forloop.first %} checked{% endif %}>
+      {%- case shelf -%}{%- when "read" %} Read{%- when "currently-reading" %} Reading{%- else %} Want to read{%- endcase %}
+      <span class="count">{{ shelf_books.size }}</span></label>
+    {%- endfor %}
+  </div>
+
+ <div class="layout">
+  <div>
+    <figure id="globe-figure">
+      <svg id="globe" role="img" aria-label="A globe with each country coloured by how many of the authors I read were born there."></svg>
+      <div id="tooltip" role="status" aria-live="polite"></div>
+    </figure>
+
+    {%- comment -%}
+      What a colour means: the number of authors from a country, on the shelf
+      shown, from one to the most of any country; and a country with none.
+    {%- endcomment -%}
+    <fieldset class="legend">
+      <legend>Legend</legend>
+      <span class="scale"><span class="count">1</span><i></i><span class="count" id="scale-most"></span> authors</span>
+      <span class="none"><i></i> none</span>
+    </fieldset>
+    <p class="hint">
+      Each country is coloured by how many authors were born there, and each
+      dot is a birthplace. Drag to turn the globe, scroll to move closer, and
+      click a country or a dot to look closely at it and find it in the list.
+      Escape, or a click on the ocean, steps back.
+    </p>
+  </div>
+
+  {%- comment -%}
+    The same authors as a list, written by the server, so it reads with no
+    script at all. Countries start shut; choosing one on the globe opens it.
+    Each book carries its shelf as a class, so the script can hide the ones
+    on shelves that are off, and then the authors and countries left empty.
+  {%- endcomment -%}
+  <nav id="outline" aria-label="Authors by country of birth">
+    {%- for country in site.data.countries %}
+    {%- assign country_authors = placed | where: "country", country.iso | sort: "name" %}
+    <details class="country" data-iso="{{ country.iso }}">
+      <summary><button type="button" class="entry country-entry" data-iso="{{ country.iso }}">{{ country.name }}</button><span class="count">{{ country_authors.size }}</span></summary>
+      <ul class="authors">
+        {%- for author in country_authors %}
+        {%- assign author_books = site.data.books | where: "author", author.name %}
+        <li class="author" data-author="{{ author.name | escape }}">
+          <button type="button" class="entry author-entry" data-author="{{ author.name | escape }}">{{ author.name }}</button>
+          <span class="about">
+            {%- if author.born -%}
+              {%- if author.born < 0 -%}{{ author.born | abs }} BC{%- else -%}{{ author.born }}{%- endif -%}
+              {%- if author.birthplace %}, {% endif -%}
+            {%- endif -%}
+            {{ author.birthplace }}
+            {%- if author.then %} · <span class="then">then {{ author.then | join: ", " }}</span>{% endif -%}
+          </span>
+          <ul class="books">
+            {%- for book in author_books %}
+            <li class="{{ book.shelf }}" title="{{ book.shelf | replace: '-', ' ' }}">{{ book.title }}</li>
+            {%- endfor %}
+          </ul>
+        </li>
+        {%- endfor %}
+      </ul>
+    </details>
+    {%- endfor %}
+
+    {%- comment -%}
+      Authors with no place: not on Wikidata, or on it with no birthplace. They
+      are listed rather than dropped, so every book is somewhere on the page.
+    {%- endcomment -%}
+    {%- if unplaced.size > 0 %}
+    <details class="unplaced">
+      <summary>Not on the map<span class="count">{{ unplaced.size }}</span></summary>
+      <ul class="authors">
+        {%- for author in unplaced %}
+        {%- assign author_books = site.data.books | where: "author", author.name %}
+        <li class="author" data-author="{{ author.name | escape }}">
+          <span class="entry">{{ author.name }}</span>
+          {%- if author.problem %}<span class="about why">{{ author.problem }}</span>{% endif %}
+          <ul class="books">
+            {%- for book in author_books %}
+            <li class="{{ book.shelf }}" title="{{ book.shelf | replace: '-', ' ' }}">{{ book.title }}</li>
+            {%- endfor %}
+          </ul>
+        </li>
+        {%- endfor %}
+      </ul>
+    </details>
+    {%- endif %}
+  </nav>
+ </div>
+</main>
+
+<footer>
+  <p>
+    Books from my <a href="https://www.goodreads.com">Goodreads</a> shelves.
+    Boundaries from <a href="https://www.naturalearthdata.com">Natural Earth</a>, which is public domain.
+    Birthplace coordinates from <a href="https://www.wikidata.org">Wikidata</a>, CC0.
+    Drawn with <a href="https://d3js.org">D3</a>.
+  </p>
+</footer>
+
+{%- comment -%}
+  What the script needs from _data/, and only that: authors.yml also holds
+  the lookup's working notes (check:, qid:), which are for whoever keeps the
+  data, not for the page. The Goodreads export's reviews and notes are never
+  in the data at all.
+{%- endcomment -%}
+<script id="author-data" type="application/json">[
+{%- for author in placed -%}
+  {"name":{{ author.name | jsonify }},"born":{{ author.born | jsonify }},"birthplace":{{ author.birthplace | jsonify }},"lat":{{ author.lat | jsonify }},"lon":{{ author.lon | jsonify }},"country":{{ author.country | jsonify }},"then":{{ author.then | jsonify }}}{% unless forloop.last %},{% endunless %}
+{%- endfor -%}
+]</script>
+<script id="book-data" type="application/json">[
+{%- for book in site.data.books -%}
+  {"author":{{ book.author | jsonify }},"shelf":{{ book.shelf | jsonify }}}{% unless forloop.last %},{% endunless %}
+{%- endfor -%}
+]</script>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+<script src="/assets/js/globe-core.js?v={{ build }}"></script>
+<script src="/assets/js/globe.js?v={{ build }}"></script>
+</body>
+</html>

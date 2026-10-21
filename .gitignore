@@ -78,3 +78,7 @@ travel/_site
 
 # Natural Earth downloads, re-fetched on demand by travel/scripts/build-geo.rb.
 travel/.geo-cache
+
+# The books site's build, and its downloaded border snapshots and lookup cache.
+books/_site
+books/.cache

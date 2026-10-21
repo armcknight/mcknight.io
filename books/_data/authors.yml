@@ -1,0 +1,3249 @@
+---
+- name: Chimamanda Ngozi Adichie
+  qid: Q230141
+  born: 1977
+  birthplace: Enugu
+  lat: 6.4403
+  lon: 7.4942
+  country: NG
+  state: NG
+- name: Don DeLillo
+  qid: Q310048
+  born: 1936
+  birthplace: The Bronx
+  lat: 40.8467
+  lon: -73.8733
+  country: US
+  state: US
+- name: Dave Eggers
+  qid: Q589497
+  born: 1970
+  birthplace: Boston
+  lat: 42.3603
+  lon: -71.0578
+  country: US
+  state: US
+- name: Michael Scott-Baumann
+  qid: Q133639729
+  born: 1950
+  problem: no birthplace or citizenship on Wikidata
+- name: Howard Zinn
+  qid: Q119546
+  born: 1922
+  birthplace: Brooklyn
+  lat: 40.6508
+  lon: -73.9497
+  country: US
+  state: US
+- name: Anna Wiener
+  qid: Q82083049
+  born: 1987
+  birthplace: United States
+  lat: 39.8282
+  lon: -98.5795
+  check: no birthplace on Wikidata; placed in the country of citizenship
+  country: US
+  state: US
+- name: Dalai Lama XIV
+  check: named "Tenzin Gyatso" on Wikidata, not this; the search's first person
+  qid: Q17293
+  born: 1935
+  birthplace: Taktser
+  lat: 36.3781
+  lon: 101.8659
+  country: CN
+  then:
+  - Tibet
+  state: CN
+- name: Jack Kerouac
+  qid: Q160534
+  born: 1922
+  birthplace: Lowell
+  lat: 42.6394
+  lon: -71.3147
+  country: US
+  state: US
+- name: David Mitchell
+  qid: Q40479
+  born: 1969
+  birthplace: Ainsdale
+  lat: 53.6021
+  lon: -3.0405
+  country: GB
+  state: GB
+- name: F. Scott Fitzgerald
+  qid: Q93354
+  born: 1896
+  birthplace: Saint Paul
+  lat: 44.9442
+  lon: -93.0936
+  country: US
+  state: US
+- name: James Joyce
+  qid: Q6882
+  born: 1882
+  birthplace: Rathgar
+  lat: 53.3117
+  lon: -6.2743
+  country: IE
+  state: IE
+- name: Walter Isaacson
+  qid: Q681012
+  born: 1952
+  birthplace: New Orleans
+  lat: 29.9761
+  lon: -90.0783
+  country: US
+  state: US
+- name: Hunter S. Thompson
+  qid: Q219780
+  born: 1937
+  birthplace: Louisville
+  lat: 38.2561
+  lon: -85.7514
+  country: US
+  state: US
+- name: Karl Ove Knausgård
+  qid: Q609317
+  born: 1968
+  birthplace: Oslo
+  lat: 59.9133
+  lon: 10.7389
+  country: 'NO'
+  state: 'NO'
+- name: Benjamin Hoff
+  qid: Q608512
+  born: 1946
+  birthplace: Oregon
+  lat: 43.9358
+  lon: -120.575
+  country: US
+  state: US
+- name: Yuval Noah Harari
+  qid: Q2484404
+  born: 1976
+  birthplace: Kiryat Ata
+  lat: 32.8
+  lon: 35.1
+  country: IL
+  state: IL
+- name: Stephen Chbosky
+  qid: Q2070360
+  born: 1970
+  birthplace: Pittsburgh
+  lat: 40.4417
+  lon: -80
+  country: US
+  state: US
+- name: Hjalmar Rutzebeck
+  problem: no person by this name on Wikidata
+- name: Aravind Adiga
+  qid: Q296299
+  born: 1974
+  birthplace: Chennai
+  lat: 13.0825
+  lon: 80.275
+  country: IN
+  state: IN
+- name: Martin Luther King Jr.
+  qid: Q8027
+  born: 1929
+  birthplace: Atlanta
+  lat: 33.7544
+  lon: -84.3897
+  country: US
+  state: US
+- name: Werner Herzog
+  qid: Q44131
+  born: 1942
+  birthplace: Munich
+  lat: 48.1375
+  lon: 11.575
+  country: DE
+  state: DE
+- name: Victor Hugo
+  qid: Q535
+  born: 1802
+  birthplace: Besançon
+  lat: 47.2422
+  lon: 6.0214
+  country: FR
+  state: FR
+- name: George Carlin
+  qid: Q150651
+  born: 1937
+  birthplace: New York City
+  lat: 40.7128
+  lon: -74.0061
+  country: US
+  state: US
+- name: William Doyle
+  check: 10 people are called this; chose the best known, Q16234334
+  qid: Q16234334
+  born: 1991
+  birthplace: Bournemouth
+  lat: 50.72
+  lon: -1.88
+  country: GB
+  state: GB
+- name: Seamus Heaney
+  qid: Q93356
+  born: 1939
+  birthplace: Castledawson
+  lat: 54.778
+  lon: -6.556
+  country: GB
+  state: GB
+- name: Auður Ava Ólafsdóttir
+  qid: Q454068
+  born: 1958
+  birthplace: Reykjavík
+  lat: 64.1475
+  lon: -21.935
+  country: IS
+  state: IS
+- name: Ernest Gruening
+  qid: Q878956
+  born: 1887
+  birthplace: New York City
+  lat: 40.7128
+  lon: -74.0061
+  country: US
+  state: US
+- name: Haruki Murakami
+  qid: Q134798
+  born: 1949
+  birthplace: Fushimi-ku
+  lat: 34.9356
+  lon: 135.7614
+  country: JP
+  state: JP
+- name: T.S. Eliot
+  qid: Q37767
+  born: 1888
+  birthplace: St. Louis
+  lat: 38.6264
+  lon: -90.1994
+  country: US
+  state: US
+- name: Walter R. Borneman
+  qid: Q7965890
+  born: 1952
+  birthplace: United States
+  lat: 39.8282
+  lon: -98.5795
+  check: no birthplace on Wikidata; placed in the country of citizenship
+  country: US
+  state: US
+- name: Lauren Groff
+  qid: Q6500240
+  born: 1978
+  birthplace: Cooperstown
+  lat: 42.6972
+  lon: -74.9269
+  country: US
+  state: US
+- name: Mark Twain
+  qid: Q7245
+  born: 1835
+  birthplace: Florida
+  lat: 39.4917
+  lon: -91.7903
+  country: US
+  state: US
+- name: Cormac McCarthy
+  qid: Q272610
+  born: 1933
+  birthplace: Providence
+  lat: 41.824
+  lon: -71.4128
+  country: US
+  state: US
+- name: Isabel Wilkerson
+  qid: Q6077806
+  born: 1961
+  birthplace: Washington, D.C.
+  lat: 38.895
+  lon: -77.0367
+  country: US
+  state: US
+- name: Chuck Palahniuk
+  qid: Q268181
+  born: 1962
+  birthplace: Pasco
+  lat: 46.2386
+  lon: -119.1086
+  country: US
+  state: US
+- name: Brian Christian
+  qid: Q4963349
+  born: 1984
+  birthplace: Wilmington
+  lat: 39.7483
+  lon: -75.5514
+  country: US
+  state: US
+- name: Liu Cixin
+  qid: Q607588
+  born: 1963
+  birthplace: Beijing
+  lat: 39.904
+  lon: 116.4075
+  country: CN
+  state: CN
+- name: Philip Roth
+  qid: Q187019
+  born: 1933
+  birthplace: Newark
+  lat: 40.7356
+  lon: -74.1722
+  country: US
+  state: US
+- name: Donald A. Norman
+  qid: Q92804
+  born: 1935
+  birthplace: United States
+  lat: 39.8282
+  lon: -98.5795
+  country: US
+  state: US
+- name: Marcel Proust
+  qid: Q7199
+  born: 1871
+  birthplace: 16th arrondissement of Paris
+  lat: 48.8636
+  lon: 2.2765
+  country: FR
+  state: FR
+- name: Tom Kizzia
+  problem: no person by this name on Wikidata
+- name: Ezra Klein
+  qid: Q605
+  born: 1984
+  birthplace: Irvine
+  lat: 33.6842
+  lon: -117.7925
+  country: US
+  state: US
+- name: Nassim Nicholas Taleb
+  qid: Q333521
+  born: 1960
+  birthplace: Amioun
+  lat: 34.2994
+  lon: 35.8097
+  country: LB
+  state: LB
+- name: Charles Petzold
+  qid: Q93023
+  born: 1953
+  birthplace: New Brunswick
+  lat: 40.4867
+  lon: -74.4444
+  country: US
+  state: US
+- name: Matthew McConaughey
+  qid: Q188955
+  born: 1969
+  birthplace: Uvalde
+  lat: 29.2097
+  lon: -99.7861
+  country: US
+  state: US
+- name: Yevgeny Zamyatin
+  check: 3 people are called this; chose the best known, Q204868
+  qid: Q204868
+  born: 1884
+  birthplace: Lebedyan
+  lat: 53.0116
+  lon: 39.1281
+  country: RU
+  then:
+  - Russian Empire
+  state: RU
+- name: Jean-Paul Sartre
+  qid: Q9364
+  born: 1905
+  birthplace: Paris
+  lat: 48.8567
+  lon: 2.3522
+  country: FR
+  state: FR
+- name: Johann Wolfgang von Goethe
+  qid: Q5879
+  born: 1749
+  birthplace: Frankfurt
+  lat: 50.1106
+  lon: 8.6822
+  country: DE
+  state: DE
+- name: Maryanne Wolf
+  qid: Q6781132
+  born: 1947
+  birthplace: South Bend
+  lat: 41.6764
+  lon: -86.2503
+  country: US
+  state: US
+- name: Fyodor Dostoevsky
+  qid: Q991
+  born: 1821
+  birthplace: Mariinsky Hospital for the Poor
+  lat: 55.7836
+  lon: 37.6119
+  country: RU
+  then:
+  - Russian Empire
+  state: RU
+- name: David Graeber
+  qid: Q1174579
+  born: 1961
+  birthplace: New York City
+  lat: 40.7128
+  lon: -74.0061
+  country: US
+  state: US
+- name: Max Brooks
+  qid: Q28170
+  born: 1972
+  birthplace: Manhattan
+  lat: 40.7283
+  lon: -73.9942
+  country: US
+  state: US
+- name: David Foster Wallace
+  qid: Q313246
+  born: 1962
+  birthplace: Ithaca
+  lat: 42.4433
+  lon: -76.5
+  country: US
+  state: US
+- name: Kahlil Gibran
+  qid: Q47737
+  born: 1883
+  birthplace: Bsharri
+  lat: 34.2512
+  lon: 36.0123
+  country: LB
+  then:
+  - Ottoman Empire
+  state: LB
+- name: Scott Adams
+  qid: Q457923
+  born: 1957
+  birthplace: Windham
+  lat: 42.3072
+  lon: -74.2522
+  country: US
+  state: US
+- name: W.P. Kinsella
+  qid: Q7945871
+  born: 1935
+  birthplace: Edmonton
+  lat: 53.5333
+  lon: -113.5
+  country: CA
+  state: CA
+- name: Zora Neale Hurston
+  qid: Q220480
+  born: 1891
+  birthplace: Notasulga
+  lat: 32.5608
+  lon: -85.6676
+  country: US
+  state: US
+- name: Ishmael Beah
+  qid: Q1074614
+  born: 1980
+  birthplace: Mattru Jong
+  lat: 7.6
+  lon: -12.1667
+  country: SL
+  state: SL
+- name: Jon Krakauer
+  qid: Q368337
+  born: 1954
+  birthplace: Brookline
+  lat: 42.3317
+  lon: -71.1217
+  country: US
+  state: US
+- name: Daron Acemoğlu
+  qid: Q718581
+  born: 1967
+  birthplace: Istanbul
+  lat: 41.01
+  lon: 28.9603
+  country: TR
+  state: TR
+- name: John Perkins
+  check: 10 people are called this; chose the best known, Q465028
+  qid: Q465028
+  born: 1945
+  birthplace: Hanover
+  lat: 43.7
+  lon: -72.2833
+  country: US
+  state: US
+- name: Salman Rushdie
+  qid: Q44306
+  born: 1947
+  birthplace: Mumbai
+  lat: 19.0758
+  lon: 72.8775
+  country: IN
+  state: IN
+- name: Douglas Adams
+  qid: Q42
+  born: 1952
+  birthplace: Cambridge
+  lat: 52.2081
+  lon: 0.1225
+  country: GB
+  state: GB
+- name: John Steinbeck
+  qid: Q39212
+  born: 1902
+  birthplace: Salinas
+  lat: 36.6778
+  lon: -121.6556
+  country: US
+  state: US
+- name: John Kennedy Toole
+  qid: Q313739
+  born: 1937
+  birthplace: New Orleans
+  lat: 29.9761
+  lon: -90.0783
+  country: US
+  state: US
+- name: Anthony Bourdain
+  qid: Q426582
+  born: 1956
+  birthplace: New York City
+  lat: 40.7128
+  lon: -74.0061
+  country: US
+  state: US
+- name: William Finnegan
+  qid: Q8009057
+  born: 1952
+  birthplace: New York City
+  lat: 40.7128
+  lon: -74.0061
+  country: US
+  state: US
+- name: Robert M. Pirsig
+  qid: Q366575
+  born: 1928
+  birthplace: Minneapolis
+  lat: 44.9819
+  lon: -93.2692
+  country: US
+  state: US
+- name: Ernest Hemingway
+  qid: Q23434
+  born: 1899
+  birthplace: Oak Park
+  lat: 41.8883
+  lon: -87.7894
+  country: US
+  state: US
+- name: Albert Camus
+  qid: Q34670
+  born: 1913
+  birthplace: Dréan
+  lat: 36.6833
+  lon: 7.75
+  country: DZ
+  state: DZ
+- name: Han Kang
+  qid: Q5646626
+  born: 1970
+  birthplace: Gwangju
+  lat: 35.1667
+  lon: 126.9167
+  country: KR
+  state: KR
+- name: Paulo Coelho
+  qid: Q12881
+  born: 1947
+  birthplace: Rio de Janeiro
+  lat: -22.9111
+  lon: -43.2056
+  country: BR
+  state: BR
+- name: Herman Melville
+  qid: Q4985
+  born: 1819
+  birthplace: Manhattan
+  lat: 40.7283
+  lon: -73.9942
+  country: US
+  state: US
+- name: Hector Chevigny
+  qid: Q59530274
+  born: 1904
+  problem: no birthplace or citizenship on Wikidata
+- name: Dean Koontz
+  qid: Q272076
+  born: 1945
+  birthplace: Everett
+  lat: 40.0142
+  lon: -78.3733
+  country: US
+  state: US
+- name: Ben R. Rich
+  problem: no person by this name on Wikidata
+- name: Hermann Hesse
+  qid: Q25973
+  born: 1877
+  birthplace: Calw
+  lat: 48.7144
+  lon: 8.7375
+  country: DE
+  then:
+  - Russian Empire
+  state: DE
+- name: Mark Haddon
+  qid: Q356357
+  born: 1962
+  birthplace: Northampton
+  lat: 52.2333
+  lon: -0.9
+  country: GB
+  state: GB
+- name: Daniel J. Levitin
+  qid: Q1981608
+  born: 1957
+  birthplace: San Francisco
+  lat: 37.775
+  lon: -122.4194
+  country: US
+  state: US
+- name: Charles Bukowski
+  qid: Q76409
+  born: 1920
+  birthplace: Andernach
+  lat: 50.4397
+  lon: 7.4017
+  country: DE
+  state: DE
+- name: Khaled Hosseini
+  qid: Q193116
+  born: 1965
+  birthplace: Kabul
+  lat: 34.5328
+  lon: 69.1658
+  country: AF
+  state: AF
+- name: Sara Gruen
+  qid: Q2635762
+  born: 1969
+  birthplace: Vancouver
+  lat: 49.2608
+  lon: -123.1139
+  country: CA
+  state: CA
+- name: Keay Davidson
+  check: 2 people are called this; chose the best known, Q116560499; no birthplace on Wikidata; placed in the country of citizenship
+  qid: Q116560499
+  birthplace: United States
+  lat: 39.8282
+  lon: -98.5795
+  country: US
+  state: US
+- name: Carl Sagan
+  qid: Q410
+  born: 1934
+  birthplace: Brooklyn
+  lat: 40.6508
+  lon: -73.9497
+  country: US
+  state: US
+- name: Stephen W. Hawking
+  check: named "Stephen Hawking" on Wikidata, not this; the search's first person
+  qid: Q17714
+  born: 1942
+  birthplace: Oxford
+  lat: 51.7519
+  lon: -1.2578
+  country: GB
+  state: GB
+- name: J.K. Rowling
+  qid: Q34660
+  born: 1965
+  birthplace: Yate
+  lat: 51.5408
+  lon: -2.4186
+  country: GB
+  state: GB
+- name: J.R.R. Tolkien
+  qid: Q892
+  born: 1892
+  birthplace: Bloemfontein
+  lat: -29.1
+  lon: 26.2167
+  country: ZA
+  state: ZA
+- name: Dan Brown
+  qid: Q7345
+  born: 1964
+  birthplace: Exeter
+  lat: 42.9814
+  lon: -70.9478
+  country: US
+  state: US
+- name: Douglas Coupland
+  qid: Q322060
+  born: 1961
+  birthplace: Rheinmünster
+  lat: 48.7653
+  lon: 8.0494
+  country: DE
+  state: DE
+- name: Joseph Conrad
+  qid: Q82925
+  born: 1857
+  birthplace: Terekhove
+  lat: 49.8086
+  lon: 28.575
+  country: UA
+  then:
+  - Russian Empire
+  - United Kingdom of Great Britain and Ireland
+  state: UA
+- name: Ray Bradbury
+  qid: Q40640
+  born: 1920
+  birthplace: Waukegan
+  lat: 42.3636
+  lon: -87.8448
+  country: US
+  state: US
+- name: Kurt Vonnegut Jr.
+  qid: Q49074
+  born: 1922
+  birthplace: Indianapolis
+  lat: 39.7686
+  lon: -86.1581
+  country: US
+  state: US
+- name: Thomas More
+  check: 8 people are called this; chose the best known, Q42544
+  qid: Q42544
+  born: 1478
+  birthplace: London
+  lat: 51.5072
+  lon: -0.1275
+  country: GB
+  then:
+  - Kingdom of England
+  state: GB
+- name: Ayn Rand
+  qid: Q132524
+  born: 1905
+  birthplace: Saint Petersburg
+  lat: 59.95
+  lon: 30.3167
+  country: RU
+  then:
+  - Russian Empire
+  state: RU
+- name: Sun Tzu
+  qid: Q37151
+  born: -544
+  birthplace: Qi
+  lat: 36.865
+  lon: 118.34
+  country: CN
+  then:
+  - Qi
+  - Wu
+  state: CN
+- name: Miguel de Cervantes Saavedra
+  qid: Q5682
+  born: 1547
+  birthplace: Alcalá de Henares
+  lat: 40.4818
+  lon: -3.3643
+  country: ES
+  then:
+  - Crown of Castile
+  state: ES
+- name: C.S. Lewis
+  qid: Q9204
+  born: 1898
+  birthplace: Belfast
+  lat: 54.5967
+  lon: -5.93
+  country: GB
+  state: GB
+- name: William Golding
+  qid: Q44183
+  born: 1911
+  birthplace: Newquay
+  lat: 50.412
+  lon: -5.0757
+  country: GB
+  state: GB
+- name: Barbara Kingsolver
+  qid: Q1264643
+  born: 1955
+  birthplace: Annapolis
+  lat: 38.9786
+  lon: -76.4919
+  country: US
+  state: US
+- name: Yann Martel
+  qid: Q13914
+  born: 1963
+  birthplace: Salamanca
+  lat: 40.965
+  lon: -5.6642
+  country: ES
+  state: ES
+- name: Upton Sinclair
+  qid: Q216134
+  born: 1878
+  birthplace: Baltimore
+  lat: 39.2864
+  lon: -76.615
+  country: US
+  state: US
+- name: Franz Kafka
+  qid: Q905
+  born: 1883
+  birthplace: Prague
+  lat: 50.0875
+  lon: 14.4214
+  country: CZ
+  then:
+  - Cisleithania
+  state: CZ
+- name: Aldous Huxley
+  qid: Q81447
+  born: 1894
+  birthplace: Godalming
+  lat: 51.185
+  lon: -0.61
+  country: GB
+  state: GB
+- name: George Orwell
+  qid: Q3335
+  born: 1903
+  birthplace: Motihari
+  lat: 26.65
+  lon: 84.9167
+  country: IN
+  then:
+  - United Kingdom of Great Britain and Ireland
+  state: IN
+- name: Oliver Sacks
+  qid: Q258662
+  born: 1933
+  birthplace: United Kingdom
+  lat: 54.6
+  lon: -2
+  check: no birthplace on Wikidata; placed in the country of citizenship
+  country: GB
+  state: GB
+- name: J.D. Salinger
+  qid: Q79904
+  born: 1919
+  birthplace: New York City
+  lat: 40.7128
+  lon: -74.0061
+  country: US
+  state: US
+- name: Elie Wiesel
+  qid: Q18391
+  born: 1928
+  birthplace: Sighetu Marmației
+  lat: 47.93
+  lon: 23.89
+  country: RO
+  then:
+  - Kingdom of Romania
+  state: RO
+- name: Donald Ervin Knuth
+  qid: Q17457
+  born: 1938
+  birthplace: Milwaukee
+  lat: 43.05
+  lon: -87.95
+  country: US
+  state: US
+- name: Bandi
+  qid: Q13217635
+  born: 1664
+  birthplace: Qing dynasty
+  lat: 38
+  lon: 103
+  check: no birthplace on Wikidata; placed in the country of citizenship
+  country: CN
+  then:
+  - Qing dynasty
+  state: CN
+- name: Geoffrey Chaucer
+  qid: Q5683
+  born: 1343
+  birthplace: London
+  lat: 51.5072
+  lon: -0.1275
+  country: GB
+  then:
+  - Kingdom of England
+  state: GB
+- name: William S. Burroughs
+  qid: Q188176
+  born: 1914
+  birthplace: St. Louis
+  lat: 38.6264
+  lon: -90.1994
+  country: US
+  state: US
+- name: André Aciman
+  qid: Q506102
+  born: 1951
+  birthplace: Alexandria
+  lat: 31.1975
+  lon: 29.8925
+  country: EG
+  state: EG
+- name: Azar Nafisi
+  qid: Q258753
+  born: 1948
+  birthplace: Tehran
+  lat: 35.6889
+  lon: 51.3897
+  country: IR
+  state: IR
+- name: Simon Sebag Montefiore
+  qid: Q315262
+  born: 1965
+  birthplace: London
+  lat: 51.5072
+  lon: -0.1275
+  country: GB
+  state: GB
+- name: Leslie Marmon Silko
+  qid: Q273001
+  born: 1948
+  birthplace: Albuquerque
+  lat: 35.0844
+  lon: -106.6503
+  country: US
+  state: US
+- name: Charles M. Blow
+  qid: Q5080439
+  born: 1970
+  birthplace: United States
+  lat: 39.8282
+  lon: -98.5795
+  country: US
+  state: US
+- name: Joan Didion
+  qid: Q267691
+  born: 1934
+  birthplace: Sacramento
+  lat: 38.5753
+  lon: -121.4861
+  country: US
+  state: US
+- name: Yang Jisheng
+  qid: Q553393
+  born: 1940
+  birthplace: Xishui County
+  lat: 30.4592
+  lon: 115.2581
+  country: CN
+  state: CN
+- name: W.E.B. Du Bois
+  qid: Q158060
+  born: 1868
+  birthplace: Great Barrington
+  lat: 42.1958
+  lon: -73.3625
+  country: US
+  state: US
+- name: Vladimir Nabokov
+  qid: Q36591
+  born: 1899
+  birthplace: Saint Petersburg
+  lat: 59.95
+  lon: 30.3167
+  country: RU
+  then:
+  - Russian Empire
+  state: RU
+- name: Eric Berne
+  check: 2 people are called this; chose the best known, Q44836
+  qid: Q44836
+  born: 1910
+  birthplace: Montreal
+  lat: 45.5033
+  lon: -73.5868
+  country: CA
+  state: CA
+- name: Adnan Aziz
+  check: 2 people are called this; chose the best known, Q102248777
+  qid: Q102248777
+  problem: no birthplace or citizenship on Wikidata
+- name: Jon L. Bentley
+  qid: Q9012529
+  born: 1953
+  birthplace: Long Beach
+  lat: 33.7681
+  lon: -118.1956
+  country: US
+  state: US
+- name: Martin Kleppmann
+  qid: Q99748636
+  born: 2000
+  birthplace: United Kingdom
+  lat: 54.6
+  lon: -2
+  check: no birthplace on Wikidata; placed in the country of citizenship
+  country: GB
+  state: GB
+- name: Patrick Lencioni
+  qid: Q7147004
+  born: 1965
+  birthplace: California
+  lat: 37
+  lon: -120
+  country: US
+  state: US
+- name: Chip Heath
+  qid: Q16252439
+  born: 1963
+  problem: no birthplace or citizenship on Wikidata
+- name: Tony Hsieh
+  qid: Q3458948
+  born: 1973
+  birthplace: Urbana
+  lat: 40.1097
+  lon: -88.2042
+  country: US
+  state: US
+- name: Laszlo Bock
+  qid: Q19956290
+  born: 1972
+  problem: no birthplace or citizenship on Wikidata
+- name: John Doerr
+  qid: Q1380459
+  born: 1951
+  birthplace: St. Louis
+  lat: 38.6264
+  lon: -90.1994
+  country: US
+  state: US
+- name: Richard Branson
+  check: 2 people are called this; chose the best known, Q194419
+  qid: Q194419
+  born: 1950
+  birthplace: Blackheath
+  lat: 51.47
+  lon: 0.009
+  country: GB
+  state: GB
+- name: Geoffrey A. Moore
+  qid: Q3101094
+  born: 1946
+  birthplace: Portland
+  lat: 45.515
+  lon: -122.6792
+  country: US
+  state: US
+- name: Chris McChesney
+  qid: Q120610255
+  problem: no birthplace or citizenship on Wikidata
+- name: Clayton M. Christensen
+  check: named "Clayton Christensen" on Wikidata, not this; the search's first person
+  qid: Q5130292
+  born: 1952
+  birthplace: Salt Lake City
+  lat: 40.75
+  lon: -111.8833
+  country: US
+  state: US
+- name: Eric Ries
+  qid: Q1752858
+  born: 1979
+  birthplace: United States
+  lat: 39.8282
+  lon: -98.5795
+  check: no birthplace on Wikidata; placed in the country of citizenship
+  country: US
+  state: US
+- name: Ben Horowitz
+  qid: Q4885859
+  born: 1966
+  birthplace: London
+  lat: 51.5072
+  lon: -0.1275
+  country: GB
+  state: GB
+- name: Bernard Williams
+  check: 9 people are called this; chose the best known, Q345641
+  qid: Q345641
+  born: 1929
+  birthplace: Westcliff-on-Sea
+  lat: 51.5397
+  lon: 0.6908
+  country: GB
+  state: GB
+- name: Alex Trebek
+  qid: Q929985
+  born: 1940
+  birthplace: Greater Sudbury
+  lat: 46.49
+  lon: -81.01
+  country: CA
+  state: CA
+- name: Cory Doctorow
+  qid: Q110436
+  born: 1971
+  birthplace: Toronto
+  lat: 43.6703
+  lon: -79.3867
+  country: CA
+  state: CA
+- name: Robert Bartlett
+  qid: Q2156495
+  born: 1950
+  birthplace: London
+  lat: 51.5072
+  lon: -0.1275
+  country: GB
+  state: GB
+- name: Richard Brautigan
+  qid: Q357114
+  born: 1935
+  birthplace: Tacoma
+  lat: 47.2525
+  lon: -122.4475
+  country: US
+  state: US
+- name: Richard Wright
+  qid: Q319820
+  born: 1908
+  birthplace: Natchez
+  lat: 31.5604
+  lon: -91.4032
+  country: US
+  state: US
+- name: Machado de Assis
+  qid: Q311145
+  born: 1839
+  birthplace: Rio de Janeiro
+  lat: -22.9111
+  lon: -43.2056
+  country: BR
+  state: BR
+- name: Ovid
+  qid: Q7198
+  born: -43
+  birthplace: Sulmo
+  lat: 42.048
+  lon: 13.9262
+  country: IT
+  then:
+  - Ancient Rome
+  state: IT
+- name: Virgil
+  qid: Q1398
+  born: -70
+  birthplace: Borgo Virgilio
+  lat: 45.05
+  lon: 10.75
+  country: IT
+  then:
+  - Ancient Rome
+  state: IT
+- name: Unknown
+  qid: Q125504176
+  born: 1700
+  birthplace: France
+  lat: 47
+  lon: 2
+  check: no birthplace on Wikidata; placed in the country of citizenship
+  country: FR
+  state: FR
+- name: Steve Martin
+  qid: Q16473
+  born: 1945
+  birthplace: Waco
+  lat: 31.5492
+  lon: -97.1472
+  country: US
+  state: US
+- name: Tracy Kidder
+  qid: Q338109
+  born: 1945
+  birthplace: New York City
+  lat: 40.7128
+  lon: -74.0061
+  country: US
+  state: US
+- name: George Pólya
+  qid: Q296259
+  born: 1887
+  birthplace: Budapest
+  lat: 47.4983
+  lon: 19.0408
+  country: HU
+  state: HU
+- name: Gerald M. Weinberg
+  qid: Q93132
+  born: 1933
+  birthplace: Chicago
+  lat: 41.8819
+  lon: -87.6278
+  country: US
+  state: US
+- name: Scott Berkun
+  qid: Q7435985
+  born: 1901
+  birthplace: United States
+  lat: 39.8282
+  lon: -98.5795
+  check: no birthplace on Wikidata; placed in the country of citizenship
+  country: US
+  state: US
+- name: Lawrence Lessig
+  qid: Q217790
+  born: 1961
+  birthplace: Rapid City
+  lat: 44.0811
+  lon: -103.2287
+  country: US
+  state: US
+- name: Robert C. Martin
+  qid: Q93010
+  born: 1952
+  birthplace: United States
+  lat: 39.8282
+  lon: -98.5795
+  check: no birthplace on Wikidata; placed in the country of citizenship
+  country: US
+  state: US
+- name: Edsger W. Dijkstra
+  qid: Q8556
+  born: 1930
+  birthplace: Rotterdam
+  lat: 51.92
+  lon: 4.48
+  country: NL
+  state: NL
+- name: John M. Barry
+  qid: Q6245695
+  born: 1947
+  birthplace: Providence
+  lat: 41.824
+  lon: -71.4128
+  country: US
+  state: US
+- name: Brian W. Kernighan
+  qid: Q92608
+  born: 1942
+  birthplace: Toronto
+  lat: 43.6703
+  lon: -79.3867
+  country: CA
+  state: CA
+- name: Daniel Suarez
+  qid: Q1162833
+  born: 1964
+  birthplace: Somerville
+  lat: 40.5698
+  lon: -74.6077
+  country: US
+  state: US
+- name: Tavish Armstrong
+  check: named nil on Wikidata, not this; the search's first person
+  qid: Q139446223
+  problem: no birthplace or citizenship on Wikidata
+- name: Amy Brown
+  check: 10 people are called this; chose the best known, Q2844545
+  qid: Q2844545
+  born: 1783
+  birthplace: Maidstone
+  lat: 51.2717
+  lon: 0.5294
+  country: GB
+  state: GB
+- name: Jonathan Haidt
+  qid: Q845573
+  born: 1963
+  birthplace: New York City
+  lat: 40.7128
+  lon: -74.0061
+  country: US
+  state: US
+- name: Daniel T. O'Neill
+  check: 2 people are called this; chose the best known, Q5214133
+  qid: Q5214133
+  born: 1950
+  birthplace: San Francisco
+  lat: 37.775
+  lon: -122.4194
+  country: US
+  state: US
+- name: James Wickersham
+  qid: Q1681295
+  born: 1857
+  birthplace: Patoka
+  lat: 38.7533
+  lon: -89.0956
+  country: US
+  state: US
+- name: Robert M. Sapolsky
+  qid: Q3118802
+  born: 1957
+  birthplace: Brooklyn
+  lat: 40.6508
+  lon: -73.9497
+  country: US
+  state: US
+- name: Bob Kulhan
+  problem: no person by this name on Wikidata
+- name: James C. Scott
+  qid: Q3025403
+  born: 1936
+  birthplace: Mount Holly
+  lat: 39.9953
+  lon: -74.7865
+  country: US
+  state: US
+- name: Plato
+  qid: Q859
+  born: -427
+  birthplace: Athens
+  lat: 37.9842
+  lon: 23.7281
+  country: GR
+  state: GR
+- name: Alfred V. Aho
+  qid: Q62898
+  born: 1941
+  birthplace: Timmins
+  lat: 48.4717
+  lon: -81.3314
+  country: CA
+  state: CA
+- name: Bjarne Stroustrup
+  qid: Q92620
+  born: 1950
+  birthplace: Aarhus
+  lat: 56.1564
+  lon: 10.2097
+  country: DK
+  state: DK
+- name: M. Mitchell Waldrop
+  qid: Q60704496
+  problem: no birthplace or citizenship on Wikidata
+- name: John Markoff
+  qid: Q1700964
+  born: 1949
+  birthplace: Oakland
+  lat: 37.8
+  lon: -122.25
+  country: US
+  state: US
+- name: Edward Abbey
+  qid: Q937610
+  born: 1927
+  birthplace: Indiana
+  lat: 40.6211
+  lon: -79.155
+  country: US
+  state: US
+- name: Scott Aaronson
+  check: 2 people are called this; chose the best known, Q4054157
+  qid: Q4054157
+  born: 1981
+  birthplace: Philadelphia
+  lat: 39.9528
+  lon: -75.1636
+  country: US
+  state: US
+- name: Oded Goldreich
+  qid: Q253354
+  born: 1957
+  birthplace: Tel Aviv
+  lat: 32.08
+  lon: 34.78
+  country: IL
+  state: IL
+- name: Sanjeev Arora
+  check: 3 people are called this; chose the best known, Q92664
+  qid: Q92664
+  born: 1968
+  birthplace: Jodhpur
+  lat: 26.2944
+  lon: 73.0278
+  country: IN
+  state: IN
+- name: Christos H. Papadimitriou
+  qid: Q92639
+  born: 1949
+  birthplace: Athens
+  lat: 37.9842
+  lon: 23.7281
+  country: GR
+  state: GR
+- name: Michael R. Garey
+  check: named "Michael Garey" on Wikidata, not this; the search's first person
+  qid: Q6830528
+  born: 1945
+  birthplace: Manitowoc
+  lat: 44.099
+  lon: -87.681
+  country: US
+  state: US
+- name: John E. Hopcroft
+  qid: Q62874
+  born: 1939
+  birthplace: Seattle
+  lat: 47.605
+  lon: -122.33
+  country: US
+  state: US
+- name: Ronald Graham
+  qid: Q712620
+  born: 1935
+  birthplace: Taft
+  lat: 35.1425
+  lon: -119.4564
+  country: US
+  state: US
+- name: Alan M. Turing
+  qid: Q7251
+  born: 1912
+  birthplace: Maida Vale
+  lat: 51.5274
+  lon: -0.1899
+  country: GB
+  state: GB
+- name: Richard P. Feynman
+  qid: Q39246
+  born: 1918
+  birthplace: Queens
+  lat: 40.7136
+  lon: -73.8281
+  country: US
+  state: US
+- name: Jason McColm Smith
+  problem: no person by this name on Wikidata
+- name: Erich Gamma
+  qid: Q92838
+  born: 1961
+  birthplace: Zurich
+  lat: 47.3744
+  lon: 8.5411
+  country: CH
+  state: CH
+- name: Scott Meyers
+  check: 3 people are called this; chose the best known, Q93059
+  qid: Q93059
+  born: 1959
+  birthplace: United States
+  lat: 39.8282
+  lon: -98.5795
+  country: US
+  state: US
+- name: David D. Burns
+  qid: Q5232764
+  born: 1942
+  birthplace: United States
+  lat: 39.8282
+  lon: -98.5795
+  check: no birthplace on Wikidata; placed in the country of citizenship
+  country: US
+  state: US
+- name: Marian Petre
+  check: 2 people are called this; chose the best known, Q20054081
+  qid: Q20054081
+  born: 1959
+  problem: no birthplace or citizenship on Wikidata
+- name: Simon Sinek
+  qid: Q7519777
+  born: 1973
+  birthplace: Wimbledon
+  lat: 51.4235
+  lon: -0.2171
+  country: GB
+  state: GB
+- name: Andrew S. Grove
+  check: named "Andrew Grove" on Wikidata, not this; the search's first person
+  qid: Q432929
+  born: 1936
+  birthplace: Budapest
+  lat: 47.4983
+  lon: 19.0408
+  country: HU
+  state: HU
+- name: Joost Visser
+  check: 2 people are called this; chose the best known, Q112506974
+  qid: Q112506974
+  born: 1971
+  problem: no birthplace or citizenship on Wikidata
+- name: Karl Fogel
+  check: 2 people are called this; chose the best known, Q6371794; no birthplace on Wikidata; placed in the country of citizenship
+  qid: Q6371794
+  born: 1971
+  birthplace: Germany
+  lat: 51
+  lon: 10
+  country: DE
+  state: DE
+- name: Martin Fowler
+  check: 3 people are called this; chose the best known, Q74894
+  qid: Q74894
+  born: 1963
+  birthplace: Walsall
+  lat: 52.58
+  lon: -1.98
+  country: GB
+  state: GB
+- name: Noam Nisan
+  qid: Q7045525
+  born: 1961
+  birthplace: Israel
+  lat: 31
+  lon: 35
+  country: IL
+  state: IL
+- name: Michael C. Feathers
+  problem: no person by this name on Wikidata
+- name: Daniel Kahneman
+  qid: Q233950
+  born: 1934
+  birthplace: Tel Aviv
+  lat: 32.08
+  lon: 34.78
+  country: IL
+  state: IL
+- name: Cal Newport
+  qid: Q16733303
+  born: 1982
+  birthplace: United States
+  lat: 39.8282
+  lon: -98.5795
+  country: US
+  state: US
+- name: Atul Gawande
+  qid: Q2751383
+  born: 1965
+  birthplace: Brooklyn
+  lat: 40.6508
+  lon: -73.9497
+  country: US
+  state: US
+- name: Eric Evans
+  check: 10 people are called this; chose the best known, Q2392164
+  qid: Q2392164
+  born: 1921
+  birthplace: Droylsden
+  lat: 53.4828
+  lon: -2.1582
+  country: GB
+  then:
+  - United Kingdom of Great Britain and Ireland
+  state: GB
+- name: Tom DeMarco
+  qid: Q93115
+  born: 1940
+  birthplace: Hazleton
+  lat: 40.9589
+  lon: -75.9744
+  country: US
+  state: US
+- name: George Leonard
+  check: 8 people are called this; chose the best known, Q1507754
+  qid: Q1507754
+  born: 1729
+  birthplace: Norton
+  lat: 41.9667
+  lon: -71.1875
+  country: US
+  state: US
+- name: Eliyahu M. Goldratt
+  check: named "Eliyahu M. Goldrattmmnj" on Wikidata, not this; the search's first person
+  qid: Q368732
+  born: 1947
+  birthplace: Mandatory Palestine
+  lat: 31.7544
+  lon: 35.2367
+  country: PS
+  state: PS
+- name: K. Anders Ericsson
+  qid: Q6323089
+  born: 1947
+  birthplace: Sweden
+  lat: 61
+  lon: 15
+  check: no birthplace on Wikidata; placed in the country of citizenship
+  country: SE
+  state: SE
+- name: Steve McConnell
+  qid: Q93021
+  born: 1962
+  birthplace: United States
+  lat: 39.8282
+  lon: -98.5795
+  check: no birthplace on Wikidata; placed in the country of citizenship
+  country: US
+  state: US
+- name: Daniel H. Pink
+  qid: Q978171
+  born: 1964
+  birthplace: Bexley
+  lat: 39.9644
+  lon: -82.9328
+  country: US
+  state: US
+- name: Andy Oram
+  qid: Q124683937
+  problem: no birthplace or citizenship on Wikidata
+- name: David Allen
+  qid: Q178369
+  born: 1945
+  birthplace: United States
+  lat: 39.8282
+  lon: -98.5795
+  check: no birthplace on Wikidata; placed in the country of citizenship
+  country: US
+  state: US
+- name: Paul Horowitz
+  qid: Q3898086
+  born: 1942
+  birthplace: United States
+  lat: 39.8282
+  lon: -98.5795
+  check: no birthplace on Wikidata; placed in the country of citizenship
+  country: US
+  state: US
+- name: John Ousterhout
+  qid: Q92636
+  born: 1954
+  birthplace: Solano County
+  lat: 38.27
+  lon: -121.94
+  country: US
+  state: US
+- name: Gayle Laakmann McDowell
+  qid: Q77961153
+  born: 1982
+  birthplace: United States
+  lat: 39.8282
+  lon: -98.5795
+  check: no birthplace on Wikidata; placed in the country of citizenship
+  country: US
+  state: US
+- name: Michael E. Porter
+  qid: Q272146
+  born: 1947
+  birthplace: Ann Arbor
+  lat: 42.2814
+  lon: -83.7483
+  country: US
+  state: US
+- name: Amy Gallo
+  qid: Q88505046
+  problem: no birthplace or citizenship on Wikidata
+- name: Harvard Business Review
+  problem: no person by this name on Wikidata
+- name: Jeff Weiss
+  check: 4 people are called this; chose the best known, Q6175246
+  qid: Q6175246
+  born: 1940
+  birthplace: Allentown
+  lat: 40.6
+  lon: -75.4833
+  country: US
+  state: US
+- name: Harvard Business Publishing
+  problem: no person by this name on Wikidata
+- name: Karen Dillon
+  check: 3 people are called this; chose the best known, Q6369601; no birthplace on Wikidata; placed in the country of citizenship
+  qid: Q6369601
+  born: 1952
+  birthplace: United States
+  lat: 39.8282
+  lon: -98.5795
+  country: US
+  state: US
+- name: Marshall B. Rosenberg
+  qid: Q732048
+  born: 1934
+  birthplace: Canton
+  lat: 40.7986
+  lon: -81.375
+  country: US
+  state: US
+- name: Mark Manson
+  qid: Q27704915
+  born: 1984
+  birthplace: Austin
+  lat: 30.3
+  lon: -97.7333
+  country: US
+  state: US
+- name: David Kadavy
+  problem: no person by this name on Wikidata
+- name: Charles Duhigg
+  qid: Q5076992
+  born: 1974
+  birthplace: New Mexico
+  lat: 34
+  lon: -106
+  country: US
+  state: US
+- name: Chris Voss
+  check: 2 people are called this; chose the best known, Q5113367
+  qid: Q5113367
+  born: 1957
+  birthplace: Mount Pleasant
+  lat: 40.9669
+  lon: -91.5511
+  country: US
+  state: US
+- name: Carol S. Dweck
+  problem: no person by this name on Wikidata
+- name: Michael Lopp
+  qid: Q7292024
+  born: 1970
+  problem: no birthplace or citizenship on Wikidata
+- name: Frederick P. Brooks Jr.
+  qid: Q92609
+  born: 1931
+  birthplace: Durham
+  lat: 35.9942
+  lon: -78.8986
+  country: US
+  state: US
+- name: Robert B. Cialdini
+  qid: Q1198516
+  born: 1945
+  birthplace: Milwaukee
+  lat: 43.05
+  lon: -87.95
+  country: US
+  state: US
+- name: Dale Carnegie
+  qid: Q230762
+  born: 1888
+  birthplace: Maryville
+  lat: 40.3453
+  lon: -94.8711
+  country: US
+  state: US
+- name: Harold Abelson
+  qid: Q770584
+  born: 1947
+  birthplace: United States
+  lat: 39.8282
+  lon: -98.5795
+  check: no birthplace on Wikidata; placed in the country of citizenship
+  country: US
+  state: US
+- name: Andy Hunt
+  qid: Q262277
+  born: 1964
+  birthplace: Raleigh
+  lat: 35.78
+  lon: -78.64
+  country: US
+  state: US
+- name: Erich Fromm
+  qid: Q57085
+  born: 1900
+  birthplace: Frankfurt
+  lat: 50.1106
+  lon: 8.6822
+  country: DE
+  then:
+  - German Empire
+  state: DE
+- name: Eric Hulteen
+  problem: no person by this name on Wikidata
+- name: Art Davidson
+  qid: Q112376845
+  born: 1943
+  problem: no birthplace or citizenship on Wikidata
+- name: John Milton
+  qid: Q79759
+  born: 1608
+  birthplace: Cheapside
+  lat: 51.5141
+  lon: -0.0937
+  country: GB
+  then:
+  - Kingdom of England
+  state: GB
+- name: Walt Whitman
+  qid: Q81438
+  born: 1819
+  birthplace: West Hills
+  lat: 40.8242
+  lon: -73.4344
+  country: US
+  state: US
+- name: Emily Dickinson
+  qid: Q4441
+  born: 1830
+  birthplace: Amherst
+  lat: 42.3667
+  lon: -72.5167
+  country: US
+  state: US
+- name: W.B. Yeats
+  qid: Q40213
+  born: 1865
+  birthplace: Sandymount
+  lat: 53.3252
+  lon: -6.2069
+  country: IE
+  state: IE
+- name: Sylvia Plath
+  qid: Q133054
+  born: 1932
+  birthplace: Boston
+  lat: 42.3603
+  lon: -71.0578
+  country: US
+  state: US
+- name: Kenneth Pomeranz
+  qid: Q2367310
+  born: 1958
+  birthplace: United States
+  lat: 39.8282
+  lon: -98.5795
+  check: no birthplace on Wikidata; placed in the country of citizenship
+  country: US
+  state: US
+- name: Jawaharlal Nehru
+  qid: Q1047
+  born: 1889
+  birthplace: Prayagraj
+  lat: 25.45
+  lon: 81.85
+  country: IN
+  then:
+  - British Raj
+  state: IN
+- name: Norman Davies
+  check: 3 people are called this; chose the best known, Q376303
+  qid: Q376303
+  born: 1939
+  birthplace: Bolton
+  lat: 53.5783
+  lon: -2.43
+  country: GB
+  state: GB
+- name: Martin Heidegger
+  qid: Q48301
+  born: 1889
+  birthplace: Meßkirch
+  lat: 47.9928
+  lon: 9.1125
+  country: DE
+  state: DE
+- name: Michel Foucault
+  qid: Q44272
+  born: 1926
+  birthplace: Poitiers
+  lat: 46.5811
+  lon: 0.3353
+  country: FR
+  state: FR
+- name: Sogyal Rinpoche
+  qid: Q205242
+  born: 1947
+  birthplace: Kham
+  lat: 30.6017
+  lon: 96.8416
+  country: CN
+  then:
+  - Tibet
+  state: CN
+- name: Ahmet Altan
+  check: 2 people are called this; chose the best known, Q401758
+  qid: Q401758
+  born: 1950
+  birthplace: Ankara
+  lat: 39.9358
+  lon: 32.8387
+  country: TR
+  state: TR
+- name: Maryse Condé
+  qid: Q464371
+  born: 1934
+  birthplace: Pointe-à-Pitre
+  lat: 16.2411
+  lon: -61.5331
+  country: FR
+  state: FR
+- name: Saud Alsanousi
+  qid: Q7427043
+  born: 1981
+  birthplace: Kuwait
+  lat: 29.1667
+  lon: 47.6
+  country: KW
+  state: KW
+- name: Négar Djavadi
+  qid: Q27862137
+  born: 1969
+  birthplace: Iran
+  lat: 32
+  lon: 53
+  country: IR
+  state: IR
+- name: Doris Kearns Goodwin
+  qid: Q442008
+  born: 1943
+  birthplace: Brooklyn
+  lat: 40.6508
+  lon: -73.9497
+  country: US
+  state: US
+- name: Krista Tippett
+  qid: Q6437693
+  born: 1960
+  birthplace: United States
+  lat: 39.8282
+  lon: -98.5795
+  country: US
+  state: US
+- name: Robert A. Heinlein
+  qid: Q123078
+  born: 1907
+  birthplace: Butler
+  lat: 38.2586
+  lon: -94.335
+  country: US
+  state: US
+- name: Muriel Barbery
+  qid: Q235731
+  born: 1969
+  birthplace: Casablanca
+  lat: 33.5992
+  lon: -7.62
+  country: MA
+  state: MA
+- name: Hanya Yanagihara
+  qid: Q20902324
+  born: 1974
+  birthplace: Los Angeles
+  lat: 34.0522
+  lon: -118.2437
+  country: US
+  state: US
+- name: U Ko Lay
+  qid: Q132998477
+  problem: no birthplace or citizenship on Wikidata
+- name: Krishna-Dwaipayana Vyasa
+  problem: no person by this name on Wikidata
+- name: Homer
+  check: 2 people are called this; chose the best known, Q6691
+  qid: Q6691
+  born: -900
+  birthplace: Chios
+  lat: 38.4
+  lon: 26.0167
+  country: GR
+  state: GR
+- name: George Bernard Shaw
+  check: 3 people are called this; chose the best known, Q19185
+  qid: Q19185
+  born: 1856
+  birthplace: Dublin
+  lat: 53.3497
+  lon: -6.2603
+  country: IE
+  then:
+  - United Kingdom of Great Britain and Ireland
+  state: IE
+- name: Thomas Hylland Eriksen
+  qid: Q1366902
+  born: 1962
+  birthplace: Oslo
+  lat: 59.9133
+  lon: 10.7389
+  country: 'NO'
+  state: 'NO'
+- name: Viet Thanh Nguyen
+  qid: Q23887092
+  born: 1971
+  birthplace: Buôn Ma Thuột
+  lat: 12.6667
+  lon: 108.05
+  country: VN
+  state: VN
+- name: Junot Díaz
+  qid: Q402664
+  born: 1968
+  birthplace: Santo Domingo
+  lat: 18.4625
+  lon: -69.9361
+  country: DO
+  state: DO
+- name: Eckhart Tolle
+  qid: Q60137
+  born: 1948
+  birthplace: Lünen
+  lat: 51.6167
+  lon: 7.5167
+  country: DE
+  state: DE
+- name: Daniel Quinn
+  qid: Q546511
+  born: 1935
+  birthplace: Omaha
+  lat: 41.2586
+  lon: -95.9375
+  country: US
+  state: US
+- name: Jacques Derrida
+  qid: Q130631
+  born: 1930
+  birthplace: El Biar
+  lat: 36.7683
+  lon: 3.0306
+  country: DZ
+  state: DZ
+- name: Chris Harman
+  qid: Q730190
+  born: 1942
+  birthplace: United Kingdom
+  lat: 54.6
+  lon: -2
+  check: no birthplace on Wikidata; placed in the country of citizenship
+  country: GB
+  state: GB
+- name: Thich Nhat Hanh
+  qid: Q310913
+  born: 1926
+  birthplace: Huế
+  lat: 16.4561
+  lon: 107.5764
+  country: VN
+  state: VN
+- name: Milan Kundera
+  qid: Q93166
+  born: 1929
+  birthplace: Brno
+  lat: 49.1953
+  lon: 16.6083
+  country: CZ
+  then:
+  - Czechoslovakia
+  state: CZ
+- name: Paul Kalanithi
+  qid: Q22087287
+  born: 1977
+  birthplace: Bronxville
+  lat: 40.94
+  lon: -73.8261
+  country: US
+  state: US
+- name: Neal Stephenson
+  qid: Q312853
+  born: 1959
+  birthplace: Fort Meade
+  lat: 39.105
+  lon: -76.7414
+  country: US
+  state: US
+- name: Garry Kasparov
+  qid: Q28614
+  born: 1963
+  birthplace: Baku
+  lat: 40.3667
+  lon: 49.8352
+  country: AZ
+  then:
+  - Soviet Union
+  state: AZ
+- name: Milton Lodge
+  qid: Q125693025
+  born: 1936
+  birthplace: United States
+  lat: 39.8282
+  lon: -98.5795
+  check: no birthplace on Wikidata; placed in the country of citizenship
+  country: US
+  state: US
+- name: Andrew Hodges
+  qid: Q450154
+  born: 1949
+  birthplace: London
+  lat: 51.5072
+  lon: -0.1275
+  country: GB
+  state: GB
+- name: Irvine Welsh
+  qid: Q178403
+  born: 1958
+  birthplace: Leith
+  lat: 55.9801
+  lon: -3.1701
+  country: GB
+  state: GB
+- name: Isaac Asimov
+  qid: Q34981
+  born: 1920
+  birthplace: Petrovichi
+  lat: 53.9764
+  lon: 32.1628
+  country: RU
+  then:
+  - Russian Socialist Federative Soviet Republic
+  state: RU
+- name: Anton Chekhov
+  qid: Q5685
+  born: 1860
+  birthplace: Taganrog
+  lat: 47.2333
+  lon: 38.9
+  country: RU
+  then:
+  - Russian Empire
+  state: RU
+- name: Mark Z. Danielewski
+  qid: Q963727
+  born: 1965
+  birthplace: New York City
+  lat: 40.7128
+  lon: -74.0061
+  country: US
+  state: US
+- name: Ernest Cline
+  qid: Q3732112
+  born: 1972
+  birthplace: Ashland
+  lat: 40.8669
+  lon: -82.3153
+  country: US
+  state: US
+- name: Peter Seibel
+  qid: Q57777391
+  problem: no birthplace or citizenship on Wikidata
+- name: Thomas Pynchon
+  qid: Q35155
+  born: 1937
+  birthplace: Glen Cove
+  lat: 40.8672
+  lon: -73.6278
+  country: US
+  state: US
+- name: Douglas R. Hofstadter
+  qid: Q319308
+  born: 1945
+  birthplace: New York City
+  lat: 40.7128
+  lon: -74.0061
+  country: US
+  state: US
+- name: William Blake
+  qid: Q41513
+  born: 1757
+  birthplace: London
+  lat: 51.5072
+  lon: -0.1275
+  country: GB
+  then:
+  - Kingdom of Great Britain
+  state: GB
+- name: Robert Frost
+  check: 7 people are called this; chose the best known, Q168728
+  qid: Q168728
+  born: 1874
+  birthplace: San Francisco
+  lat: 37.775
+  lon: -122.4194
+  country: US
+  state: US
+- name: Pete Hamill
+  qid: Q7172000
+  born: 1935
+  birthplace: Brooklyn
+  lat: 40.6508
+  lon: -73.9497
+  country: US
+  state: US
+- name: Philip K. Dick
+  qid: Q171091
+  born: 1928
+  birthplace: Chicago
+  lat: 41.8819
+  lon: -87.6278
+  country: US
+  state: US
+- name: Donna Tartt
+  qid: Q255339
+  born: 1963
+  birthplace: Greenwood
+  lat: 33.5186
+  lon: -90.1839
+  country: US
+  state: US
+- name: Allen Ginsberg
+  qid: Q6711
+  born: 1926
+  birthplace: Paterson
+  lat: 40.9167
+  lon: -74.1722
+  country: US
+  state: US
+- name: José Saramago
+  qid: Q37060
+  born: 1922
+  birthplace: Azinhaga
+  lat: 39.3499
+  lon: -8.5328
+  country: PT
+  state: PT
+- name: Anonymous
+  check: 2 people are called this; chose the best known, Q86167
+  qid: Q86167
+  born: 1764
+  birthplace: Göttingen
+  lat: 51.5339
+  lon: 9.9356
+  country: DE
+  state: DE
+- name: Henry David Thoreau
+  qid: Q131149
+  born: 1817
+  birthplace: Wheeler-Minot Farmhouse
+  lat: 42.4694
+  lon: -71.3114
+  country: US
+  state: US
+- name: William Faulkner
+  qid: Q38392
+  born: 1897
+  birthplace: New Albany
+  lat: 34.4922
+  lon: -89.0094
+  country: US
+  state: US
+- name: Dante Alighieri
+  qid: Q1067
+  born: 1265
+  birthplace: Florence
+  lat: 43.7714
+  lon: 11.2542
+  country: IT
+  then:
+  - Republic of Florence
+  state: IT
+- name: Giovanni Boccaccio
+  qid: Q1402
+  born: 1313
+  birthplace: Certaldo
+  lat: 43.5478
+  lon: 11.0411
+  country: IT
+  then:
+  - Republic of Florence
+  state: IT
+- name: Leo Tolstoy
+  qid: Q7243
+  born: 1828
+  birthplace: Yasnaya Polyana
+  lat: 54.0751
+  lon: 37.5264
+  country: RU
+  then:
+  - Russian Empire
+  state: RU
+- name: Joseph Heller
+  qid: Q208101
+  born: 1923
+  birthplace: New York City
+  lat: 40.7128
+  lon: -74.0061
+  country: US
+  state: US
+- name: Harper Lee
+  qid: Q182658
+  born: 1926
+  birthplace: Monroeville
+  lat: 31.5181
+  lon: -87.3275
+  country: US
+  state: US
+- name: Tom Wolfe
+  qid: Q216195
+  born: 1930
+  birthplace: Richmond
+  lat: 37.5408
+  lon: -77.4367
+  country: US
+  state: US
+- name: Edmund Morris
+  check: 7 people are called this; chose the best known, Q3048117
+  qid: Q3048117
+  born: 1940
+  birthplace: Nairobi
+  lat: -1.2864
+  lon: 36.8172
+  country: KE
+  state: KE
+- name: Kim Zetter
+  qid: Q6409696
+  born: 1901
+  birthplace: United States
+  lat: 39.8282
+  lon: -98.5795
+  check: no birthplace on Wikidata; placed in the country of citizenship
+  country: US
+  state: US
+- name: Solvej Balle
+  qid: Q12336386
+  born: 1962
+  birthplace: Bovrup
+  lat: 54.9958
+  lon: 9.5836
+  country: DK
+  state: DK
+- name: Yanis Varoufakis
+  qid: Q40688
+  born: 1961
+  birthplace: Athens
+  lat: 37.9842
+  lon: 23.7281
+  country: GR
+  state: GR
+- name: Kim Stanley Robinson
+  qid: Q130779
+  born: 1952
+  birthplace: Waukegan
+  lat: 42.3636
+  lon: -87.8448
+  country: US
+  state: US
+- name: Roger Penrose
+  qid: Q193803
+  born: 1931
+  birthplace: Colchester
+  lat: 51.8886
+  lon: 0.9036
+  country: GB
+  state: GB
+- name: David Williams
+  check: 10 people are called this; chose the best known, Q1177203
+  qid: Q1177203
+  born: 1938
+  birthplace: Gorseinon
+  lat: 51.66
+  lon: -4.03
+  country: GB
+  state: GB
+- name: Walter M. Miller Jr.
+  qid: Q357839
+  born: 1923
+  birthplace: New Smyrna Beach
+  lat: 29.0306
+  lon: -80.9253
+  country: US
+  state: US
+- name: Thomas L. Friedman
+  qid: Q310950
+  born: 1953
+  birthplace: St. Louis Park
+  lat: 44.9486
+  lon: -93.3649
+  country: US
+  state: US
+- name: Arthur C. Brooks
+  qid: Q4798155
+  born: 1964
+  birthplace: Spokane
+  lat: 47.6572
+  lon: -117.4235
+  country: US
+  state: US
+- name: Rick Rubin
+  qid: Q587361
+  born: 1963
+  birthplace: Lido Beach
+  lat: 40.5881
+  lon: -73.6247
+  country: US
+  state: US
+- name: Henry Oliver
+  check: 8 people are called this; chose the best known, Q4333765
+  qid: Q4333765
+  born: 1865
+  birthplace: Kelso
+  lat: 55.5985
+  lon: -2.4336
+  country: GB
+  state: GB
+- name: Jenny Odell
+  qid: Q68924784
+  born: 1986
+  birthplace: San Francisco
+  lat: 37.775
+  lon: -122.4194
+  country: US
+  state: US
+- name: J.G. Ballard
+  qid: Q140201
+  born: 1930
+  birthplace: Shanghai
+  lat: 31.2325
+  lon: 121.4692
+  country: CN
+  state: CN
+- name: Ron Currie Jr.
+  qid: Q7363670
+  born: 1975
+  birthplace: Waterville
+  lat: 44.5519
+  lon: -69.6458
+  country: US
+  state: US
+- name: Andrea diSessa
+  qid: Q1031722
+  born: 1947
+  problem: no birthplace or citizenship on Wikidata
+- name: Jean Baudrillard
+  qid: Q182847
+  born: 1929
+  birthplace: Reims
+  lat: 49.2653
+  lon: 4.0286
+  country: FR
+  state: FR
+- name: Vilém Flusser
+  qid: Q215623
+  born: 1920
+  birthplace: Prague
+  lat: 50.0875
+  lon: 14.4214
+  country: CZ
+  state: CZ
+- name: Marshall McLuhan
+  qid: Q193871
+  born: 1911
+  birthplace: Edmonton
+  lat: 53.5333
+  lon: -113.5
+  country: CA
+  state: CA
+- name: Ivan Illich
+  qid: Q84186
+  born: 1926
+  birthplace: Vienna
+  lat: 48.2083
+  lon: 16.3725
+  country: AT
+  state: AT
+- name: Walter J. Ong
+  qid: Q722347
+  born: 1912
+  birthplace: Kansas City
+  lat: 39.05
+  lon: -94.5833
+  country: US
+  state: US
+- name: Neil Postman
+  qid: Q436131
+  born: 1931
+  birthplace: New York City
+  lat: 40.7128
+  lon: -74.0061
+  country: US
+  state: US
+- name: Mike W. Martin
+  qid: Q112435916
+  born: 1946
+  problem: no birthplace or citizenship on Wikidata
+- name: Henry James
+  check: 8 people are called this; chose the best known, Q170509
+  qid: Q170509
+  born: 1843
+  birthplace: New York City
+  lat: 40.7128
+  lon: -74.0061
+  country: US
+  state: US
+- name: J.F. Bosher
+  problem: no person by this name on Wikidata
+- name: King Arthur Baking Company
+  problem: no person by this name on Wikidata
+- name: Allan C. Weisbecker
+  check: named "Allan Weisbecker" on Wikidata, not this; the search's first person
+  qid: Q2647949
+  born: 1948
+  birthplace: Montauk
+  lat: 41.0383
+  lon: -71.9506
+  country: US
+  state: US
+- name: Irène Némirovsky
+  qid: Q168441
+  born: 1903
+  birthplace: Kyiv
+  lat: 50.45
+  lon: 30.5236
+  country: UA
+  then:
+  - Russian Empire
+  state: UA
+- name: Leigh Newman
+  qid: Q18705970
+  born: 1971
+  birthplace: Anchorage
+  lat: 61.2167
+  lon: -149.8936
+  country: US
+  state: US
+- name: Eowyn Ivey
+  qid: Q16910118
+  born: 1973
+  birthplace: Denver
+  lat: 39.7392
+  lon: -104.9847
+  country: US
+  state: US
+- name: Drew Gilpin Faust
+  qid: Q49128
+  born: 1947
+  birthplace: New York City
+  lat: 40.7128
+  lon: -74.0061
+  country: US
+  state: US
+- name: John Drury Clark
+  qid: Q899453
+  born: 1907
+  birthplace: Fairbanks
+  lat: 64.8436
+  lon: -147.7231
+  country: US
+  state: US
+- name: Lewis Carroll
+  check: 2 people are called this; chose the best known, Q38082
+  qid: Q38082
+  born: 1832
+  birthplace: Daresbury
+  lat: 53.3402
+  lon: -2.6332
+  country: GB
+  then:
+  - United Kingdom of Great Britain and Ireland
+  state: GB
+- name: Georgi Gospodinov
+  qid: Q1509177
+  born: 1968
+  birthplace: Yambol
+  lat: 42.4824
+  lon: 26.5038
+  country: BG
+  state: BG
+- name: Karl Marx
+  qid: Q9061
+  born: 1818
+  birthplace: Trier
+  lat: 49.7557
+  lon: 6.6394
+  country: DE
+  then:
+  - Kingdom of Prussia
+  - United Kingdom of Great Britain and Ireland
+  state: DE
+- name: Friedrich Engels
+  qid: Q34787
+  born: 1820
+  birthplace: Barmen
+  lat: 51.2667
+  lon: 7.2
+  country: DE
+  then:
+  - Kingdom of Prussia
+  state: DE
+- name: Viktor E. Frankl
+  qid: Q154723
+  born: 1905
+  birthplace: Vienna
+  lat: 48.2083
+  lon: 16.3725
+  country: AT
+  state: AT
+- name: Marty Cagan
+  qid: Q112517789
+  born: 1959
+  problem: no birthplace or citizenship on Wikidata
+- name: Robert Jackall
+  qid: Q112424597
+  born: 1939
+  problem: no birthplace or citizenship on Wikidata
+- name: Nick Montfort
+  qid: Q7027563
+  born: 1972
+  birthplace: United States
+  lat: 39.8282
+  lon: -98.5795
+  check: no birthplace on Wikidata; placed in the country of citizenship
+  country: US
+  state: US
+- name: Nathan Altice
+  qid: Q111326172
+  problem: no birthplace or citizenship on Wikidata
+- name: Torie Bosch
+  problem: no person by this name on Wikidata
+- name: Stanisław Lem
+  qid: Q6530
+  born: 1921
+  birthplace: Lviv
+  lat: 49.842
+  lon: 24.0316
+  country: UA
+  state: UA
+- name: Mor Harchol-Balter
+  qid: Q57585670
+  born: 1966
+  birthplace: Jerusalem
+  lat: 31.7767
+  lon: 35.2342
+  country: PS
+  state: PS
+- name: Joost A.M. Meerloo
+  problem: no person by this name on Wikidata
+- name: Ted Chiang
+  qid: Q503095
+  born: 1967
+  birthplace: Port Jefferson
+  lat: 40.9461
+  lon: -73.0622
+  country: US
+  state: US
+- name: Vaclav Smil
+  qid: Q528111
+  born: 1943
+  birthplace: Plzeň
+  lat: 49.7414
+  lon: 13.3825
+  country: CZ
+  then:
+  - Czechoslovakia
+  state: CZ
+- name: Michael Pollan
+  qid: Q1138996
+  born: 1955
+  birthplace: Long Island
+  lat: 40.7889
+  lon: -73.2335
+  country: US
+  state: US
+- name: Paolo Bacigalupi
+  qid: Q26116
+  born: 1972
+  birthplace: Paonia
+  lat: 38.8675
+  lon: -107.592
+  country: US
+  state: US
+- name: Elias Lönnrot
+  qid: Q153159
+  born: 1802
+  birthplace: 'Sammatti (Finland : Kunta)'
+  lat: 60.3208
+  lon: 23.8208
+  country: FI
+  state: FI
+- name: Thomas Bernhard
+  qid: Q44336
+  born: 1931
+  birthplace: Heerlen
+  lat: 50.8833
+  lon: 5.9833
+  country: NL
+  state: NL
+- name: Thomas Nagel
+  check: 8 people are called this; chose the best known, Q350239
+  qid: Q350239
+  born: 1937
+  birthplace: Belgrade
+  lat: 44.8178
+  lon: 20.4569
+  country: RS
+  state: RS
+- name: Umberto Eco
+  qid: Q12807
+  born: 1932
+  birthplace: Alessandria
+  lat: 44.9133
+  lon: 8.62
+  country: IT
+  then:
+  - Kingdom of Italy
+  state: IT
+- name: Arthur Miller
+  qid: Q80596
+  born: 1915
+  birthplace: Harlem
+  lat: 40.809
+  lon: -73.9484
+  country: US
+  state: US
+- name: George Eliot
+  qid: Q131333
+  born: 1819
+  birthplace: Nuneaton
+  lat: 52.523
+  lon: -1.4683
+  country: GB
+  then:
+  - United Kingdom of Great Britain and Ireland
+  state: GB
+- name: Michel de Montaigne
+  qid: Q41568
+  born: 1533
+  birthplace: Saint-Michel-de-Montaigne
+  lat: 44.8742
+  lon: 0.03
+  country: FR
+  then:
+  - Kingdom of France
+  state: FR
+- name: Remzi H. Arpaci-Dusseau
+  problem: no person by this name on Wikidata
+- name: Phillip A. LaPlante
+  qid: Q102195884
+  problem: no birthplace or citizenship on Wikidata
+- name: George Soros
+  qid: Q12908
+  born: 1930
+  birthplace: Budapest
+  lat: 47.4983
+  lon: 19.0408
+  country: HU
+  state: HU
+- name: Warren Buffett
+  qid: Q47213
+  born: 1930
+  birthplace: Omaha
+  lat: 41.2586
+  lon: -95.9375
+  country: US
+  state: US
+- name: Taylor Larimore
+  qid: Q112540955
+  born: 1924
+  birthplace: Boston
+  lat: 42.3603
+  lon: -71.0578
+  country: US
+  state: US
+- name: Philip A. Fisher
+  qid: Q1376151
+  born: 1907
+  birthplace: San Francisco
+  lat: 37.775
+  lon: -122.4194
+  country: US
+  state: US
+- name: Burton G. Malkiel
+  qid: Q1072872
+  born: 1932
+  birthplace: Boston
+  lat: 42.3603
+  lon: -71.0578
+  country: US
+  state: US
+- name: Adam H. Grimes
+  problem: no person by this name on Wikidata
+- name: François Rabelais
+  qid: Q131018
+  born: 1494
+  birthplace: Seuilly
+  lat: 47.1342
+  lon: 0.1717
+  country: FR
+  then:
+  - Kingdom of France
+  state: FR
+- name: Steve Wozniak
+  qid: Q483382
+  born: 1950
+  birthplace: San Jose
+  lat: 37.3042
+  lon: -121.8728
+  country: US
+  state: US
+- name: Kevin D. Mitnick
+  qid: Q7449
+  born: 1963
+  birthplace: Van Nuys
+  lat: 34.1833
+  lon: -118.4333
+  country: US
+  state: US
+- name: Guy Deutscher
+  check: 2 people are called this; chose the best known, Q979363
+  qid: Q979363
+  born: 1969
+  birthplace: Tel Aviv
+  lat: 32.08
+  lon: 34.78
+  country: IL
+  state: IL
+- name: Harold McGee
+  qid: Q745396
+  born: 1951
+  birthplace: United States
+  lat: 39.8282
+  lon: -98.5795
+  check: no birthplace on Wikidata; placed in the country of citizenship
+  country: US
+  state: US
+- name: Pamela Rose Haze
+  problem: no person by this name on Wikidata
+- name: David Hume
+  qid: Q37160
+  born: 1711
+  birthplace: Edinburgh
+  lat: 55.9533
+  lon: -3.1892
+  country: GB
+  then:
+  - Kingdom of Great Britain
+  state: GB
+- name: Peter Singer
+  qid: Q211539
+  born: 1946
+  birthplace: Melbourne
+  lat: -37.8142
+  lon: 144.9631
+  country: AU
+  state: AU
+- name: James P. Carse
+  qid: Q16202843
+  born: 1932
+  birthplace: United States
+  lat: 39.8282
+  lon: -98.5795
+  check: no birthplace on Wikidata; placed in the country of citizenship
+  country: US
+  state: US
+- name: Kim Adrian
+  check: named nil on Wikidata, not this; the search's first person
+  qid: Q139455501
+  problem: no birthplace or citizenship on Wikidata
+- name: Ayanna Lloyd Banwo
+  qid: Q117066099
+  born: 1980
+  birthplace: Trinidad and Tobago
+  lat: 10.6667
+  lon: -61.5167
+  country: TT
+  state: TT
+- name: Ruta Sepetys
+  qid: Q4993839
+  born: 1967
+  birthplace: Detroit
+  lat: 42.3317
+  lon: -83.0475
+  country: US
+  state: US
+- name: Alexander Shulgin
+  qid: Q506336
+  born: 1925
+  birthplace: Berkeley
+  lat: 37.8703
+  lon: -122.2681
+  country: US
+  state: US
+- name: Daniel E. Lieberman
+  qid: Q16195648
+  born: 1964
+  birthplace: Cambridge
+  lat: 42.375
+  lon: -71.1061
+  country: US
+  state: US
+- name: Mark J. Plotkin
+  problem: no person by this name on Wikidata
+- name: Seth M. Holmes PhD MD
+  problem: no person by this name on Wikidata
+- name: William Von Hippel
+  qid: Q58639497
+  born: 1963
+  birthplace: Iowa City
+  lat: 41.6558
+  lon: -91.525
+  country: US
+  state: US
+- name: Vybarr Cregan-Reid
+  qid: Q69589411
+  born: 1969
+  problem: no birthplace or citizenship on Wikidata
+- name: Claude Lévi-Strauss
+  qid: Q128126
+  born: 1908
+  birthplace: Brussels
+  lat: 50.8467
+  lon: 4.3517
+  country: BE
+  state: BE
+- name: David Reich
+  qid: Q5238967
+  born: 1974
+  birthplace: Washington, D.C.
+  lat: 38.895
+  lon: -77.0367
+  country: US
+  state: US
+- name: Eric Foner
+  qid: Q3056269
+  born: 1943
+  birthplace: New York City
+  lat: 40.7128
+  lon: -74.0061
+  country: US
+  state: US
+- name: James M. McPherson
+  qid: Q709723
+  born: 1936
+  birthplace: Valley City
+  lat: 46.9247
+  lon: -98.0056
+  country: US
+  state: US
+- name: Thomas Piketty
+  qid: Q984448
+  born: 1971
+  birthplace: Clichy
+  lat: 48.9036
+  lon: 2.3056
+  country: FR
+  state: FR
+- name: Sanam Maher
+  qid: Q103901918
+  birthplace: Pakistan
+  lat: 30
+  lon: 71
+  check: no birthplace on Wikidata; placed in the country of citizenship
+  country: PK
+  state: PK
+- name: Jonas Salzgeber
+  qid: Q108694560
+  born: 1992
+  birthplace: Switzerland
+  lat: 46.7986
+  lon: 8.232
+  country: CH
+  state: CH
+- name: Mahatma Gandhi
+  qid: Q1001
+  born: 1869
+  birthplace: Porbandar
+  lat: 21.6425
+  lon: 69.6047
+  country: IN
+  then:
+  - British Raj
+  state: IN
+- name: Gabriel García Márquez
+  qid: Q5878
+  born: 1927
+  birthplace: Aracataca
+  lat: 10.5911
+  lon: -74.185
+  country: CO
+  state: CO
+- name: David Byrne
+  qid: Q336640
+  born: 1952
+  birthplace: Dumbarton
+  lat: 55.9486
+  lon: -4.5472
+  country: GB
+  state: GB
+- name: Jimmy Soni
+  qid: Q16885798
+  birthplace: Toulouse
+  lat: 43.6044
+  lon: 1.4433
+  country: FR
+  state: FR
+- name: James Gleick
+  qid: Q113105
+  born: 1954
+  birthplace: New York City
+  lat: 40.7128
+  lon: -74.0061
+  country: US
+  state: US
+- name: Sebastian Haffner
+  qid: Q57535
+  born: 1907
+  birthplace: Moabit
+  lat: 52.5333
+  lon: 13.3333
+  country: DE
+  then:
+  - German Empire
+  state: DE
+- name: Fredrik Logevall
+  qid: Q5499491
+  born: 1963
+  birthplace: Stockholm
+  lat: 59.3294
+  lon: 18.0686
+  country: SE
+  state: SE
+- name: Aristotle
+  qid: Q868
+  born: -384
+  birthplace: Stageira
+  lat: 40.5908
+  lon: 23.7942
+  country: GR
+  state: GR
+- name: Scott Alexander
+  qid: Q98400007
+  birthplace: United States
+  lat: 39.8282
+  lon: -98.5795
+  check: no birthplace on Wikidata; placed in the country of citizenship
+  country: US
+  state: US
+- name: Brendan Gregg
+  check: 2 people are called this; chose the best known, Q4960904
+  qid: Q4960904
+  birthplace: Newcastle
+  lat: -32.9167
+  lon: 151.75
+  country: AU
+  state: AU
+- name: Harry R. Lewis
+  qid: Q12485350
+  born: 1947
+  birthplace: Boston
+  lat: 42.3603
+  lon: -71.0578
+  country: US
+  state: US
+- name: George Boole
+  qid: Q134661
+  born: 1815
+  birthplace: Lincoln
+  lat: 53.25
+  lon: -0.55
+  country: GB
+  then:
+  - United Kingdom of Great Britain and Ireland
+  state: GB
+- name: Eugène Delacroix
+  qid: Q33477
+  born: 1798
+  birthplace: Saint-Maurice
+  lat: 48.8183
+  lon: 2.4347
+  country: FR
+  state: FR
+- name: Benedict Anderson
+  qid: Q212993
+  born: 1936
+  birthplace: Kunming
+  lat: 25.0433
+  lon: 102.7061
+  country: CN
+  state: CN
+- name: David Vandermeulen
+  qid: Q3018924
+  born: 1968
+  birthplace: Brussels
+  lat: 50.8467
+  lon: 4.3517
+  country: BE
+  state: BE
+- name: William Kornhauser
+  qid: Q59532532
+  born: 1925
+  birthplace: Chicago
+  lat: 41.8819
+  lon: -87.6278
+  country: US
+  state: US
+- name: Peter S. Canellos
+  problem: no person by this name on Wikidata
+- name: Henry George
+  qid: Q355245
+  born: 1839
+  birthplace: Philadelphia
+  lat: 39.9528
+  lon: -75.1636
+  country: US
+  state: US
+- name: Bobby Fischer
+  qid: Q41314
+  born: 1943
+  birthplace: Chicago
+  lat: 41.8819
+  lon: -87.6278
+  country: US
+  state: US
+- name: Randall Hyde
+  qid: Q7291560
+  born: 1956
+  birthplace: United States
+  lat: 39.8282
+  lon: -98.5795
+  check: no birthplace on Wikidata; placed in the country of citizenship
+  country: US
+  state: US
+- name: Jonathan Levin
+  check: 6 people are called this; chose the best known, Q515334
+  qid: Q515334
+  born: 1972
+  birthplace: New Haven
+  lat: 41.3083
+  lon: -72.925
+  country: US
+  state: US
+- name: Steven S. Muchnick
+  qid: Q7615072
+  born: 1945
+  birthplace: United States
+  lat: 39.8282
+  lon: -98.5795
+  check: no birthplace on Wikidata; placed in the country of citizenship
+  country: US
+  state: US
+- name: Amit Singh
+  check: 10 people are called this; chose the best known, Q4746883
+  qid: Q4746883
+  born: 1981
+  birthplace: Bidar
+  lat: 17.9
+  lon: 77.55
+  country: IN
+  state: IN
+- name: W. Richard Stevens
+  qid: Q949125
+  born: 1951
+  birthplace: Zambia
+  lat: -14
+  lon: 28
+  country: ZM
+  state: ZM
+- name: James Baldwin
+  qid: Q273210
+  born: 1924
+  birthplace: Harlem
+  lat: 40.809
+  lon: -73.9484
+  country: US
+  state: US
+- name: Keith D. Cooper
+  qid: Q28112942
+  problem: no birthplace or citizenship on Wikidata
+- name: Niklaus Wirth
+  qid: Q92604
+  born: 1934
+  birthplace: Winterthur
+  lat: 47.4992
+  lon: 8.7267
+  country: CH
+  state: CH
+- name: Gail Jones
+  check: 3 people are called this; chose the best known, Q3094367
+  qid: Q3094367
+  born: 1955
+  birthplace: Harvey
+  lat: -33.08
+  lon: 115.89
+  country: AU
+  state: AU
+- name: Joseph A. Schumpeter
+  qid: Q78477
+  born: 1883
+  birthplace: Třešť
+  lat: 49.291
+  lon: 15.4821
+  country: CZ
+  then:
+  - Cisleithania
+  state: CZ
+- name: J. Kuester
+  problem: no person by this name on Wikidata
+- name: Kenneth J. Arrow
+  qid: Q192592
+  born: 1921
+  birthplace: New York City
+  lat: 40.7128
+  lon: -74.0061
+  country: US
+  state: US
+- name: Danilo Kiš
+  qid: Q310562
+  born: 1935
+  birthplace: Subotica
+  lat: 46.1002
+  lon: 19.6653
+  country: RS
+  then:
+  - Socialist Federal Republic of Yugoslavia
+  - Kingdom of Yugoslavia
+  state: RS
+- name: Bartosz Milewski
+  problem: no person by this name on Wikidata
+- name: Mary Tiles
+  qid: Q6780835
+  born: 1946
+  birthplace: United Kingdom
+  lat: 54.6
+  lon: -2
+  check: no birthplace on Wikidata; placed in the country of citizenship
+  country: GB
+  state: GB
+- name: Walter Benjamin
+  qid: Q61078
+  born: 1892
+  birthplace: Berlin
+  lat: 52.5167
+  lon: 13.3833
+  country: DE
+  then:
+  - Kingdom of Prussia
+  - German Reich
+  state: DE
+- name: qntm
+  qid: Q106988964
+  born: 1983
+  birthplace: United Kingdom
+  lat: 54.6
+  lon: -2
+  check: no birthplace on Wikidata; placed in the country of citizenship
+  country: GB
+  state: GB
+- name: David Treuer
+  qid: Q3018893
+  born: 1970
+  birthplace: Washington, D.C.
+  lat: 38.895
+  lon: -77.0367
+  country: US
+  state: US
+- name: Dee Brown
+  qid: Q903331
+  born: 1908
+  birthplace: Roy
+  lat: 32.2239
+  lon: -93.1519
+  country: US
+  state: US
+- name: Matty Weingast
+  problem: no person by this name on Wikidata
