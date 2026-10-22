@@ -42,6 +42,22 @@ title: Books
   <title>Books — Andrew McKnight</title>
   <meta name="description" content="Where the authors of the books I read were born, on a globe.">
   <meta name="author" content="Andrew McKnight">
+
+  {%- comment -%}
+    What a link preview shows, as on the travel site: the globe, square, as
+    the summary card wants it.
+  {%- endcomment %}
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="{{ site.url }}/">
+  <meta property="og:title" content="Books — Andrew McKnight">
+  <meta property="og:description" content="Where the authors of the books I read were born, on a globe.">
+  <meta property="og:image" content="{{ site.url }}/assets/img/og.png">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="600">
+  <meta property="og:image:height" content="600">
+  <meta property="og:image:alt" content="A globe seen from above the North Pole, with each country shaded by how many of the authors I read were born there, and a dot for each birthplace.">
+  <meta property="twitter:card" content="summary">
+  <meta name="twitter:image" content="{{ site.url }}/assets/img/og.png">
   {%- comment -%}
     The build time on our own files makes a browser fetch them again after
     every build, as travel's page does.

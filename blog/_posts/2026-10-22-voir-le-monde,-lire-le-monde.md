@@ -5,6 +5,7 @@ author: Andrew McKnight
 layout: post
 tags: personal software politics philosophy web
 abstract: "A pair of visualizations for my experience of the world."
+thumbnail: voir-le-monde-lire-le-monde.png
 ---
 
 I love to travel, and to read (and my, do those two activities go well together). I recently needed some quick dopamine hits while slogging through some tough spots on personal projects, so I built a pair of visualizations I've long envisioned for where I've been, and what I've read. If you'd like to get straight to them, they're at [https://travel.mcknight.io](https://travel.mcknight.io) and [https://books.mcknight.io](https://books.mcknight.io).

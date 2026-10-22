@@ -15,7 +15,18 @@ title: Travel
   <meta property="og:url" content="{{ site.url }}/">
   <meta property="og:title" content="Travel — Andrew McKnight">
   <meta property="og:description" content="Every country, state, province and city I have been to, on an interactive globe.">
+  {%- comment -%}
+    The picture a link preview shows: the globe, square, as the summary card
+    wants it. 600px, from a screenshot converted to sRGB before its profile
+    was stripped, so the colours survive.
+  {%- endcomment %}
+  <meta property="og:image" content="{{ site.url }}/assets/img/og.png">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="600">
+  <meta property="og:image:height" content="600">
+  <meta property="og:image:alt" content="A globe seen from above the North Pole, with the countries and states visited shaded and the places marked.">
   <meta property="twitter:card" content="summary">
+  <meta name="twitter:image" content="{{ site.url }}/assets/img/og.png">
 
   {%- comment -%}
     The build time on the end of each of our own files makes a browser fetch
