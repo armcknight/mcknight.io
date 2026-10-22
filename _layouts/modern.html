@@ -28,7 +28,12 @@
   {% endif %}
 
   <!-- Stylesheets -->
-  <link rel="stylesheet" href="{{ '/assets/css/modern.css' | relative_url }}">
+  {%- comment -%}
+    The build time on the end makes a browser fetch the stylesheet again after
+    every build and deploy, rather than keep a copy that no longer matches the
+    pages, as the travel and books sites do.
+  {%- endcomment %}
+  <link rel="stylesheet" href="{{ '/assets/css/modern.css' | relative_url }}?v={{ site.time | date: '%s' }}">
   
   <!-- Feeds -->
   {% if page.feedURL %}
@@ -81,7 +86,7 @@
   </header>
 
   <main class="container">
-    <div class="content">
+    <div class="content{% if page.content_class %} {{ page.content_class }}{% endif %}">
       {{ content }}
     </div>
   </main>

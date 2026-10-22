@@ -199,6 +199,20 @@ blockquote p {
   margin: 0 auto;
 }
 
+// A page that needs more room than a column of text — the projects page, for
+// three cards abreast — sets `content_class: content-wide` and gets the
+// container's full width. Its page header keeps the reading width, centred,
+// so the title still lines up with the site header above it.
+.content.content-wide {
+  max-width: none;
+}
+
+.content-wide > .page-header {
+  max-width: var(--content-width);
+  margin-left: auto;
+  margin-right: auto;
+}
+
 // Header
 .site-header {
   border-bottom: 1px solid var(--border);

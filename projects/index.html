@@ -1,6 +1,7 @@
 ---
 layout: modern
 title: "Projects"
+content_class: content-wide
 ---
 
 <div class="page-header">
@@ -14,33 +15,35 @@ title: "Projects"
     <h2>Apps</h2>
     <div class="projects-grid">
       {% for project in site.data.projects.apps %}
+        {% comment %}
+          Every app card starts the same way: its picture — an icon, or for
+          an app without one a screenshot — with its links beside it, the App
+          Store badge or a button; then its name, release and description.
+        {% endcomment %}
         <div class="project-card">
           <div class="app-header">
-            {% if project.image %}
+            {% if project.screenshot %}
+              {% assign screenshot_url = '/assets/images/projects/' | append: project.screenshot | relative_url %}
+              <a href="{{ screenshot_url }}" target="_blank" rel="noopener" class="app-screenshot-link" data-lightbox>
+                <img src="{{ screenshot_url }}" alt="{{ project.name }} screenshot" class="app-screenshot" loading="lazy">
+              </a>
+            {% elsif project.image %}
               <img src="{{ '/assets/images/projects/' | append: project.image | relative_url }}" alt="{% if project.image-alt %}{{ project.image-alt }}{% else %}{{ project.name }} app icon{% endif %}" class="app-icon">
             {% endif %}
-            {% if project.app-store-url %}
-              <a href="{{ project.app-store-url }}" target="_blank" rel="noopener" class="project-link app-store-link">
-                <img src="{{ '/assets/images/app-store-badge.svg' | relative_url }}" alt="Download on the App Store" class="app-store-badge">
-              </a>
-            {% endif %}
+            <div class="app-links">
+              {% if project.app-store-url %}
+                <a href="{{ project.app-store-url }}" target="_blank" rel="noopener" class="project-link app-store-link">
+                  <img src="{{ '/assets/images/app-store-badge.svg' | relative_url }}" alt="Download on the App Store" class="app-store-badge">
+                </a>
+              {% endif %}
+              {% if project.website %}
+                {% include project-link.html url=project.website label=project.website-name %}
+              {% endif %}
+            </div>
           </div>
           <h3 class="project-title">{{ project.name }}</h3>
           {% include project-release.html project=project %}
           <p class="project-description">{{ project.description }}</p>
-
-          {% if project.screenshot %}
-            {% assign screenshot_url = '/assets/images/projects/' | append: project.screenshot | relative_url %}
-            <a href="{{ screenshot_url }}" target="_blank" rel="noopener" class="app-screenshot-link" data-lightbox>
-              <img src="{{ screenshot_url }}" alt="{{ project.name }} screenshot" class="app-screenshot" loading="lazy">
-            </a>
-          {% endif %}
-
-          <div class="project-links">
-            {% if project.website %}
-              {% include project-link.html url=project.website label=project.website-name %}
-            {% endif %}
-          </div>
         </div>
       {% endfor %}
     </div>
@@ -48,22 +51,22 @@ title: "Projects"
 
   <section class="project-category">
     <h2>Developer Tools</h2>
-    <div class="projects-grid">
-      {% for project in site.data.projects.devtools %}
-        <div class="project-card">
-          <div class="project-header">
-            <h3 class="project-title">{{ project.name }}</h3>
-          </div>
-
-          {% include project-release.html project=project %}
-
-          <p class="project-description">{{ project.description }}</p>
-
-          <div class="project-links">
-            {% include project-link.html url=project.website label=project.website-name %}
-          </div>
-        </div>
-      {% endfor %}
+    {% comment %}
+      All in one box, as a list: each tool a bullet, its name a link to its
+      repository and its release on one line, and its description under them.
+    {% endcomment %}
+    <div class="project-card devtools">
+      <ul class="devtool-list">
+        {% for project in site.data.projects.devtools %}
+          <li class="devtool">
+            <div class="devtool-line">
+              <h3 class="project-title"><a href="{{ project.website }}" target="_blank" rel="noopener">{{ project.name }}</a></h3>
+              {% include project-release.html project=project %}
+            </div>
+            <p class="project-description">{{ project.description }}</p>
+          </li>
+        {% endfor %}
+      </ul>
     </div>
   </section>
 

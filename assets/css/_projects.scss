@@ -9,11 +9,65 @@
   margin-bottom: var(--space-2);
 }
 
-// Project grids
+// Project grids. As many columns as fit at 300px or wider: three across the
+// projects page's full width (content-wide), fewer as the window narrows.
 .projects-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: var(--space-6);
+}
+
+// Developer tools: one box holding a list, a bullet for each tool, its name —
+// a link to its repository — and release on one line, and its description
+// under them. The bullet is
+// drawn on the line rather than as the list's marker, which sits badly beside
+// a flex row.
+.devtool-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.devtool + .devtool {
+  margin-top: var(--space-5);
+}
+
+.devtool-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: var(--space-3);
+  row-gap: var(--space-1);
+}
+
+.devtool-line::before {
+  content: "•";
+  color: var(--text-secondary);
+  margin-right: calc(var(--space-1) * -1);
+}
+
+.devtool .project-title {
+  font-size: var(--text-lg);
+}
+
+.devtool .project-release {
+  margin: 0;
+}
+
+.devtool .project-title a {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px dotted var(--border);
+}
+
+.devtool .project-title a:hover {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+// Under the name, not under the bullet.
+.devtool .project-description {
+  margin: var(--space-1) 0 0 var(--space-4);
 }
 
 // Full-width layout for coding challenges
@@ -46,19 +100,28 @@
   margin-bottom: var(--space-4);
 }
 
+// Beside the picture: the App Store badge, or a GitHub or Visit button.
+.app-links {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+// A screenshot in the header takes the room the links leave.
+.app-header .app-screenshot-link {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin-bottom: 0;
+}
+
 .app-icon {
   width: 96px;
   height: 96px;
   border-radius: 18px;
   display: block;
   flex-shrink: 0;
-}
-
-.project-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: var(--space-3);
 }
 
 .project-title {
@@ -77,12 +140,6 @@
   font-size: var(--text-sm);
   color: var(--text-secondary);
   margin: var(--space-2) 0 var(--space-3);
-}
-
-// The devtools card wraps its title in .project-header, which already puts
-// space below the name, so pull the release line back up by that much.
-.project-header + .project-release {
-  margin-top: calc(var(--space-2) - var(--space-3));
 }
 
 .project-release a {
@@ -318,11 +375,6 @@ body.lightbox-open {
     padding: var(--space-4);
   }
   
-  .project-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--space-2);
-  }
   
   .app-store-link {
     padding: 0;

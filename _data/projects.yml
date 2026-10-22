@@ -1,6 +1,6 @@
 devtools:
   - name: "Pippin"
-    description: "Utilities to quickly prototype iOS apps and simplify working with Cocoa/UIKit API in Swift."
+    description: "Framework abstracting as much boilerplate as possible out of app codebases."
     website: "https://github.com/TwoRingSoft/Pippin"
     website-name: "GitHub"
 
@@ -10,51 +10,51 @@ devtools:
     website-name: "GitHub"
 
   - name: "tools"
-    description: "A collection of utilities for the software development lifecycle."
+    description: "SDLC automation for anything with semver and a changelog."
     website: "https://github.com/armcknight/tools"
     website-name: "GitHub"
     release-repo: "armcknight/homebrew-tools"
     release-tag-prefix: "tools-"
 
   - name: "Forgery"
-    description: "A tool to wrangle collections of git repositories."
+    description: "Wrangle collections of Git repositories."
     website: "https://github.com/armcknight/forgery"
     website-name: "GitHub"
     release-repo: "armcknight/homebrew-tools"
     release-tag-prefix: "forgery-"
 
   - name: "superlinear"
-    description: "A program that turns Linear issues into verifiable draft PRs."
+    description: "Use LLMs to turn Linear issues into GitHub PRs and refine the backlog and project spec after every merge."
     website: "https://github.com/armcknight/superlinear"
     website-name: "GitHub"
     release-repo: "armcknight/homebrew-tools"
     release-tag-prefix: "superlinear-"
 
   - name: "templatr"
-    description: "Application type templates for use by superlinear to bootstrap new projects."
+    description: "Templates to bootstrap new project codebases, Linear workspaces and GitHub repos."
     website: "https://github.com/armcknight/templatr"
     website-name: "GitHub"
 
   - name: "workflows"
-    description: "Reusable GitHub Actions workflows.."
+    description: "Reusable GitHub Actions workflows."
     website: "https://github.com/armcknight/workflows"
     website-name: "GitHub"
 
   - name: "workr"
-    description: "Automation to multiplex a Claude Code session with Emacs and a bare shell in a Git worktree for a Linear task, optionally on a remote container."
+    description: "Turn a Linear task's branch name into a tmux session with a Claude Code session, Emacs and a bare shell, in a Git worktree, locally or in the cloud."
     website: "https://github.com/armcknight/workr"
     website-name: "GitHub"
     release-repo: "armcknight/homebrew-tools"
     release-tag-prefix: "work-"
 
   - name: "hammerspoons"
-    description: "MacOS helpers delivering small development QoL improvements."
+    description: "Development QoL improvements for macOS."
     website: "https://github.com/armcknight/hammerspoons"
     website-name: "GitHub"
 
   - name: "claude-armcknight"
-    description: "My own Claude Code plugin marketplace for the slash commands I use in development."
-    website: "https://github.com/armcknight/claude-armcknight"
+    description: "Claude Code plugin marketplace for the slash commands I use in development."
+    website: "https://github.com/armcknight/armcknight-claude"
     website-name: "GitHub"
 
 apps:
@@ -64,18 +64,18 @@ apps:
 #    image: "Dough.png"
 
   - name: "claude-squad"
-    description: "A macOS app to monitor multiple parallel Claude sessions."
+    description: "Monitor all your Claude sessions running on macOS."
     website: "https://github.com/armcknight/claude-squad"
     website-name: "GitHub"
     screenshot: "claude-squad.png"
 
   - name: "Trgnmtry"
-    description: "A simple Swift app that draws all of the trigonometric functions on a unit circle, following your finger wherever it may go.."
+    description: "Visualize the trigonometric functions on a unit circle, following your finger wherever it may go."
     app-store-url: "https://apps.apple.com/us/app/trgnmtry/id1146667288"
     image: "trgnmtry.png"
 
   - name: "Delaunay Triangulator"
-    description: "An app that triangulates the points you create by tapping on the screen, while maintaining the Delaunay property."
+    description: "Tap to create points and watch as they're triangulated according to the Delaunay property."
     app-store-url: "https://apps.apple.com/us/app/delaunay-triangulator/id657596160"
     image: "delaunay.png"
 
@@ -85,14 +85,14 @@ apps:
 #    website-name: "GitHub"
 
   - name: "travel.mcknight.io"
-    description: "An interactive globe showing places I've spent time: continents, countries, states and provinces, cities, points of interest and some high marks."
+    description: "Places I've spent time, visualized on an interactive globe."
     website: "https://travel.mcknight.io"
     website-name: "Visit"
     image: "travel-globe.png"
     image-alt: "A globe seen from above the North Pole, with the countries and states visited shaded and the places marked"
 
   - name: "books.mcknight.io"
-    description: "An interactive globe showing where the authors of the books I've read were born, on my way to reading an author from every country."
+    description: "Another globe showing where the authors of the books I've read were born. My goal is to read one from every country."
     website: "https://books.mcknight.io"
     website-name: "Visit"
     image: "books-globe.png"
