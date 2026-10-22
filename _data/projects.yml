@@ -84,6 +84,11 @@ apps:
     website: "https://travel.mcknight.io"
     website-name: "Visit"
 
+  - name: "books.mcknight.io"
+    description: "An interactive globe showing where the authors of the books I've read were born, on my way to reading an author from every country."
+    website: "https://books.mcknight.io"
+    website-name: "Visit"
+
 coding-challenges:
   - name: Project Euler
     solutions: "https://github.com/armcknight/ProjectEuler"

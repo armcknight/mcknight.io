@@ -3,7 +3,7 @@ title: Claude Workflow pt. 2
 date: 2026-08-10
 author: Andrew McKnight
 layout: post
-tags: ai, tech, software
+tags: ai tech software
 abstract: Updates on how I automate my Claude usage.
 ---
 

@@ -3,20 +3,20 @@ title: My AGI Benchmark
 date: 2025-11-11
 author: Andrew McKnight
 layout: post
-tags: philosophy, ai, tech
+tags: philosophy ai tech
 abstract: What I'm talking about when I talk about AGI.
 ---
 I saw a posting about a benchmark for LLMs based on sudoku puzzles: https://pub.sakana.ai/sudoku-gpt5/
 
 I'm not impressed by it solving a sudoku, since that's just solving a system of constraints. If you told the LLM the rules of the game, it should be able to write a piece of code that could solve any sudoku.
 
-I'm not sure how I'd benchmark the "reasoning capabilities" of an LLM, because to me this quickly leads to the question of what is intelligence, and I don't know if we have a great way to answer that for humans. IQ tests? "Reasoning" is just a borrowed word we're applying in a new way to what an LLM is doing. Even "inference" is being extended in a similar way.
+I'm not sure how I'd benchmark the "reasoning capabilities" of an LLM, because to me this quickly leads to the question of what is intelligence, and I don't know if we even have a great way to answer that for humans. IQ tests? Works of art that are still popular over long periods of time? "Reasoning" is just a borrowed word we're applying in a new way to what an LLM is doing. Even "inference" is being extended in a similar way.
 
 My best guess would be comprehension and interpretation. Come up with a new piece of input (text, imagery, music, etc) it hadn't seen before in its training corpus, and then ask a series of increasingly deeper questions about it, but that would also be very hard to score without any subjective bias, like tastes or preferences. And then have it iterate to produce something new, and see how you feel about it. Iterate on this process. Look at what comes out the other end, like one of my favorite party games: "telephone pictionary" aka Telestrations.
 
 Can an LLM invent a shared secret language like you can between friends? Inside jokes, nicknames? The stuff of our social nature, not just our intellectual nature?
 
-I've been saying for a while that AGI won't really match human levels until it can "appreciate" art, but then again, how do we even evaluate other humans' appreciate of art? We're simply tribal in our appreciation: we get along with other people that like what we like and dislike what we dislike, laugh at what we laugh at and turn our nose up at what we turn our nose up at.
+I've been saying for a while that AGI won't really match human levels until it can "appreciate" art, but then again, how do we even evaluate other humans' appreciation of art? We're simply tribal: we get along with other people that like what we like and dislike what we dislike, laugh at what we laugh at and turn our nose up at what we turn our nose up at.
 
 In my mind, thinking can be boiled down to analytical and emotional. Analytical thinking, our intellectual nature, is already solved; anything that can be transformed into mathematical constraints can be worked by a computer.
 
@@ -50,6 +50,6 @@ And for that matter, LLMs can't "feel" what I "feel" when I look at a Van Gogh p
 
 At that point, if we reach it, we will know we aren't special, but rather are simply an arrangement of particles that can express theretofore unexplainable emergent phenomena such as emotion.
 
-Voila, AGI! Our own intelligence, general instead of special, an artifice of true intelligence, of which there's no such thing the dichotomy between the two having been rendered [mu](https://en.wikipedia.org/wiki/Mu_(negative)). You know, like a cow's opinion.
+Et voilà, AGI! Our own intelligence, general instead of special, an artifice of true intelligence, of which there's no such thing, the dichotomy between the two having been rendered [mu](https://en.wikipedia.org/wiki/Mu_(negative)). You know, like a cow's opinion.
 
 {% include blog-post-image.html source="a-cows-opinion.png" alt="Beef? Good! Jam? Good!" %}
