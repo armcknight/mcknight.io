@@ -412,7 +412,8 @@ a list of countries, authors and books beside it. A switch at the top chooses
 the shelf shown — read, reading or want to read — and the colours, dots and
 list follow it. The header counts the countries with an author on the read
 shelf and on the reading shelf, out of 195: the UN's 193 members and its two
-observer states.
+observer states. The introduction above the globe is written in Markdown in
+`books/_includes/intro.md`, and is left out while that file is empty.
 
 ```
 make build books     # build it into books/_site/
@@ -457,6 +458,12 @@ wins, or else the best known, and that author gets a `check:` note in
 `make books-geo` again. A `then:` that Wikidata gets wrong can be written by
 hand with `then_by_hand: true` beside it.
 
+A birth date Wikidata knows only to the decade, century or millennium carries
+`born_precision:`, and the page says "born 20th century" rather than a year it
+does not know. A name that means no known author — Unknown, Anonymous — is
+never looked up; it is listed under "Not on the map" as having no single
+author.
+
 The borders are today's, and so are the counts. An author born in a state that
 no longer exists, such as Kafka in Cisleithania, is counted in the country that
 holds their birthplace now, Czechia, and the list says what it was then.
@@ -465,8 +472,10 @@ holds their birthplace now, Czechia, and the list says what it was then.
 
 `shared/` holds what the travel and books sites both use: the globe's core
 (`assets/js/globe-core.js` — the projection, sizing, turning, magnifying,
-spinning, tooltip and camera — and `assets/css/globe-core.css`). Each site's
-own `globe.js` draws its layers on that core.
+spinning, tooltip and camera — and `assets/css/globe-core.css`), and the fold
+of the list beside the globe (`assets/js/outline-fold.js`), which starts
+folded on a wide screen and unfolds when something is chosen on the globe.
+Each site's own `globe.js` draws its layers on that core.
 
 `shared/_plugins/shared_assets.rb` copies everything under `shared/assets/` into
 a site's build, at the same path, so neither site keeps a copy in its sources.

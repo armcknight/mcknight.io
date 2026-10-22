@@ -22,10 +22,6 @@
   --many: #123458;          /* the most authors of any country */
   --dot: #c2410c;           /* a birthplace */
 
-  --read: #123458;
-  --currently-reading: #2978cc;
-  --to-read: #b3a897;
-
   --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-serif: 'Charter', 'Georgia', 'Times New Roman', serif;
   --font-mono: 'SF Mono', 'Monaco', 'Cascadia Code', 'Roboto Mono', monospace;
@@ -62,13 +58,49 @@ header a {
 }
 
 .tally {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
   color: var(--text-muted);
   font-family: var(--font-mono);
   font-size: 0.8125rem;
+  line-height: 1.35;
   margin: 0 0 0 auto;
+  align-self: center;
+}
+
+/* The two counts as a little table, so their numbers line up. */
+.tally-counts {
+  display: grid;
+  grid-template-columns: auto auto;
+  column-gap: 0.6em;
+}
+.tally-counts .count { text-align: right; color: var(--text-secondary); }
+
+/* As tall as the two lines it gathers. Its stroke keeps one width however the
+ * box stretches it. */
+.tally .brace {
+  width: 0.55em;
+  height: 2.5em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.2;
+  vector-effect: non-scaling-stroke;
 }
 
 main { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem 2rem; }
+
+/* The introduction above the globe, in _includes/intro.md: a short measure
+ * in the body face, so it reads as prose rather than as part of the controls. */
+.intro {
+  max-width: 42rem;
+  margin: 0.25rem 0 1.25rem;
+  color: var(--text-secondary);
+  font-size: 0.9375rem;
+}
+.intro p { margin: 0 0 0.75rem; }
+.intro p:last-child { margin-bottom: 0; }
+.intro a { color: var(--accent); }
 
 /* The globe on the left, the list on the right; one column when narrow. */
 .layout {
@@ -202,10 +234,8 @@ main { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem 2rem; }
 #outline .then { font-style: italic; }
 #outline .books { padding-left: 0.9rem; }
 #outline .books li { color: var(--text-secondary); font-family: var(--font-serif); font-size: 0.8125rem; line-height: 1.35; margin: 0.1rem 0; }
-#outline .books li::before { content: ""; display: inline-block; width: 0.45rem; height: 0.45rem; border-radius: 2px; margin: 0 0.4rem 0.08rem -0.85rem; }
-#outline .books li.read::before { background: var(--read); }
-#outline .books li.currently-reading::before { background: var(--currently-reading); }
-#outline .books li.to-read::before { background: var(--to-read); }
+/* A hyphen hung in the margin, so a title that wraps lines up under itself. */
+#outline .books li::before { content: "-"; display: inline-block; width: 0.85rem; margin-left: -0.85rem; color: var(--text-muted); }
 #outline .unplaced { margin-top: 0.8rem; border-top: 1px solid var(--border); padding-top: 0.5rem; }
 #outline .unplaced > summary { color: var(--text-muted); }
 #outline .why { color: var(--text-muted); font-size: 0.75rem; font-style: italic; }

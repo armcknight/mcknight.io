@@ -55,14 +55,38 @@ title: Books
 <header>
   <h1>Books</h1>
   <a href="https://mcknight.io">← mcknight.io</a>
-  <p class="tally">
-    Read: {{ read_states }} ·
-    Reading: {{ reading_states }} ·
-    of {{ site.data.states.size }} countries
-  </p>
+  {%- comment -%}
+    The two counts, one above the other, gathered by a brace into the total
+    they are out of, like the cases of a piecewise function. The brace is
+    drawn, not typed: a "}" is one line tall in most fonts, and stretched it
+    thickens. It is hidden from screen readers, which read the words in order.
+  {%- endcomment -%}
+  <div class="tally">
+    <span class="tally-counts">
+      <span>Read</span><span class="count">{{ read_states }}</span>
+      <span>Reading</span><span class="count">{{ reading_states }}</span>
+    </span>
+    <svg class="brace" viewBox="0 0 12 40" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+      <path d="M1 1 C6 1 6 3 6 8 L6 15 C6 19 7 20 11 20 C7 20 6 21 6 25 L6 32 C6 37 6 39 1 39"/>
+    </svg>
+    <span class="tally-total">of {{ site.data.states.size }} countries</span>
+  </div>
 </header>
 
 <main>
+  {%- comment -%}
+    The introduction, written in _includes/intro.md as Markdown. It is left out
+    while that file holds nothing but its explanatory comment, which, being a
+    Liquid comment, never reaches the page.
+  {%- endcomment -%}
+  {%- capture intro %}{% include intro.md %}{% endcapture -%}
+  {%- assign intro_text = intro | strip -%}
+  {%- if intro_text != "" %}
+  <section class="intro">
+    {{ intro | markdownify }}
+  </section>
+  {%- endif %}
+
   {%- comment -%}
     Which shelf the globe and the list show. Hidden until the script can
     work it; without a script, the list shows every shelf.
@@ -104,9 +128,13 @@ title: Books
     The same authors as a list, written by the server, so it reads with no
     script at all. Countries start shut; choosing one on the globe opens it.
     Each book carries its shelf as a class, so the script can hide the ones
-    on shelves that are off, and then the authors and countries left empty.
+    on other shelves than the one shown, and then the authors and countries
+    left empty. On a wide screen the whole list starts folded away to the
+    right, with a button to bring it back (outline-fold.js, shared with
+    travel).
   {%- endcomment -%}
   <nav id="outline" aria-label="Authors by country of birth">
+    <button type="button" class="outline-toggle" aria-expanded="true" aria-controls="outline" hidden>Hide list</button>
     {%- for country in site.data.countries %}
     {%- assign country_authors = placed | where: "country", country.iso | sort: "name" %}
     <details class="country" data-iso="{{ country.iso }}">
@@ -118,7 +146,33 @@ title: Books
           <button type="button" class="entry author-entry" data-author="{{ author.name | escape }}">{{ author.name }}</button>
           <span class="about">
             {%- if author.born -%}
-              {%- if author.born < 0 -%}{{ author.born | abs }} BC{%- else -%}{{ author.born }}{%- endif -%}
+              {%- comment -%}
+                As exactly as Wikidata knows it: a year, or for a date known
+                only roughly (born_precision), its decade, century or
+                millennium. A century runs from its year 1 to 100, as
+                Wikidata counts: +1901 and +2000 are both the 20th century.
+              {%- endcomment -%}
+              {%- assign year = author.born | abs -%}
+              {%- if author.born < 0 %}{% assign era = " BC" %}{% else %}{% assign era = "" %}{% endif -%}
+              {%- case author.born_precision -%}
+                {%- when "century" %}{% assign period = year | plus: 99 | divided_by: 100 %}{% assign unit = "century" -%}
+                {%- when "millennium" %}{% assign period = year | plus: 999 | divided_by: 1000 %}{% assign unit = "millennium" -%}
+                {%- else %}{% assign period = nil -%}
+              {%- endcase -%}
+              {%- if period -%}
+                {%- assign last_two = period | modulo: 100 -%}
+                {%- assign last = period | modulo: 10 -%}
+                {%- if last_two >= 11 and last_two <= 13 %}{% assign suffix = "th" -%}
+                {%- elsif last == 1 %}{% assign suffix = "st" -%}
+                {%- elsif last == 2 %}{% assign suffix = "nd" -%}
+                {%- elsif last == 3 %}{% assign suffix = "rd" -%}
+                {%- else %}{% assign suffix = "th" %}{% endif -%}
+                born {{ period }}{{ suffix }} {{ unit }}{{ era }}
+              {%- elsif author.born_precision == "decade" -%}
+                born {{ year | divided_by: 10 | times: 10 }}s{{ era }}
+              {%- else -%}
+                born {{ year }}{{ era }}
+              {%- endif -%}
               {%- if author.birthplace %}, {% endif -%}
             {%- endif -%}
             {{ author.birthplace }}
@@ -159,6 +213,11 @@ title: Books
     </details>
     {%- endif %}
   </nav>
+  {%- comment -%}
+    The list's fold, shared with the travel site. Loaded here, without defer,
+    so it runs as soon as the list exists; see the file.
+  {%- endcomment -%}
+  <script src="/assets/js/outline-fold.js?v={{ build }}"></script>
  </div>
 </main>
 
@@ -179,7 +238,7 @@ title: Books
 {%- endcomment -%}
 <script id="author-data" type="application/json">[
 {%- for author in placed -%}
-  {"name":{{ author.name | jsonify }},"born":{{ author.born | jsonify }},"birthplace":{{ author.birthplace | jsonify }},"lat":{{ author.lat | jsonify }},"lon":{{ author.lon | jsonify }},"country":{{ author.country | jsonify }},"then":{{ author.then | jsonify }}}{% unless forloop.last %},{% endunless %}
+  {"name":{{ author.name | jsonify }},"born":{{ author.born | jsonify }},"born_precision":{{ author.born_precision | jsonify }},"birthplace":{{ author.birthplace | jsonify }},"lat":{{ author.lat | jsonify }},"lon":{{ author.lon | jsonify }},"country":{{ author.country | jsonify }},"then":{{ author.then | jsonify }}}{% unless forloop.last %},{% endunless %}
 {%- endfor -%}
 ]</script>
 <script id="book-data" type="application/json">[

@@ -219,10 +219,8 @@
     });
     if (!focused) return;
 
-    // Choosing something shows it in the list, so a folded list unfolds. The
-    // toggle does the unfolding, so its label and the globe's size follow.
-    var toggle = outline.querySelector('.outline-toggle');
-    if (toggle && toggle.getAttribute('aria-expanded') === 'false') toggle.click();
+    // Choosing something shows it in the list, so a folded list unfolds.
+    if (window.OutlineFold) OutlineFold.open();
 
     var selector;
     if (focused.kind === 'place') {

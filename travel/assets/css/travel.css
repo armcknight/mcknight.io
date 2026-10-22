@@ -97,48 +97,6 @@ main {
   padding-left: 1rem;
 }
 
-/* The list folds away to the right. Folded, its column is only as wide as the
- * button that brings it back, and the globe takes the rest. The button stays at
- * the top while the list scrolls under it. */
-.layout.outline-shut { grid-template-columns: minmax(0, 1fr) auto; }
-.layout.outline-shut #outline { overflow: visible; padding-left: 0.5rem; }
-.layout.outline-shut #outline > :not(.outline-toggle) { display: none; }
-
-.outline-toggle {
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  margin: 0 0 0.4rem auto;
-  padding: 0.15rem 0.4rem;
-  background: var(--background);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  font: inherit;
-  font-size: 0.6875rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  cursor: pointer;
-}
-.outline-toggle[hidden] { display: none; }
-.outline-toggle:hover { color: var(--text-primary); }
-.outline-toggle:focus-visible { outline: 2px solid var(--accent-light); outline-offset: 1px; }
-
-/* A triangle drawn with borders, as on the rows: it points the way the list
- * will go. */
-.outline-toggle::after {
-  content: "";
-  width: 0;
-  height: 0;
-  border-left: 5px solid currentColor;
-  border-top: 4px solid transparent;
-  border-bottom: 4px solid transparent;
-}
-.outline-toggle[aria-expanded="false"]::after { transform: rotate(180deg); }
-
 /* Each level that has children is a <details>. The marker is replaced by a
  * triangle that turns, and the row is laid out as a flex line so the name sits
  * beside it rather than wrapping under it. */
@@ -580,10 +538,7 @@ footer {
 footer a { color: var(--text-secondary); }
 
 @media (max-width: 860px) {
-  /* Under the globe there is nothing to fold away to, so the list stays. */
-  .layout, .layout.outline-shut { grid-template-columns: 1fr; }
-  .layout.outline-shut #outline > :not(.outline-toggle) { display: revert; }
-  .outline-toggle { display: none; }
+  .layout { grid-template-columns: 1fr; }
   #outline {
     max-height: none;
     border-left: 0;

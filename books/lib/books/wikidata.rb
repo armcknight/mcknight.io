@@ -82,6 +82,16 @@ module Books
       values(entity, BIRTH_DATE).filter_map { |value| year(value['time']) }.first
     end
 
+    # How exactly a date is known, by Wikidata's precision numbers. A date
+    # known only to the century is stored as a year in it — Kim Zetter's
+    # "20th century" is +1901 — so the year alone would claim more than is
+    # known. Nil when it is known to the year or better.
+    ROUGH = { 6 => 'millennium', 7 => 'century', 8 => 'decade' }.freeze
+
+    def birth_precision(entity)
+      ROUGH[values(entity, BIRTH_DATE).first&.dig('precision')]
+    end
+
     def coordinates(entity)
       value = values(entity, COORDINATES).first
       value && [value['latitude'].round(4), value['longitude'].round(4)]

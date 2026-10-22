@@ -166,8 +166,9 @@ title: Travel
     and the countries in them, and the reader goes deeper from there.
 
     The button at the top folds the whole list away to the right, to give
-    the globe the room, and the list starts folded (see the script after
-    it). The button is hidden until that script can work it.
+    the globe the room, and the list starts folded (outline-fold.js, loaded
+    after it and shared with the books site). The button is hidden until
+    that script can work it.
 
     data-id on a place matches the id of its entry in the place-data array
     below. A point of interest in two regions is listed under both, and both
@@ -283,30 +284,10 @@ title: Travel
     {%- endfor -%}
   </nav>
   {%- comment -%}
-    The list starts folded away, so the globe has the room. This runs here,
-    as soon as the list exists, rather than in globe.js, which waits for the
-    map data: there the list would show and then jump away. With no script
-    the list is simply open. Folding fires a resize, which the globe already
-    answers by measuring itself again.
+    The list's fold, shared with the books site. Loaded here, without defer,
+    so it runs as soon as the list exists; see the file.
   {%- endcomment -%}
-  <script>
-    (function () {
-      var outline = document.getElementById('outline');
-      var layout = outline.closest('.layout');
-      var toggle = outline.querySelector('.outline-toggle');
-      function fold(shut) {
-        layout.classList.toggle('outline-shut', shut);
-        toggle.setAttribute('aria-expanded', String(!shut));
-        toggle.textContent = shut ? 'Show list' : 'Hide list';
-        window.dispatchEvent(new Event('resize'));
-      }
-      toggle.hidden = false;
-      toggle.addEventListener('click', function () {
-        fold(!layout.classList.contains('outline-shut'));
-      });
-      fold(true);
-    })();
-  </script>
+  <script src="/assets/js/outline-fold.js?v={{ build }}"></script>
  </div>
 </main>
 

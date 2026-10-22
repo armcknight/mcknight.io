@@ -1007,6 +1007,7 @@
   check: no birthplace on Wikidata; placed in the country of citizenship
   country: GB
   state: GB
+  born_precision: century
 - name: Patrick Lencioni
   qid: Q7147004
   born: 1965
@@ -1163,14 +1164,8 @@
   - Ancient Rome
   state: IT
 - name: Unknown
-  qid: Q125504176
-  born: 1700
-  birthplace: France
-  lat: 47
-  lon: 2
-  check: no birthplace on Wikidata; placed in the country of citizenship
-  country: FR
-  state: FR
+  skip: true
+  problem: no single author
 - name: Steve Martin
   qid: Q16473
   born: 1945
@@ -1212,6 +1207,7 @@
   check: no birthplace on Wikidata; placed in the country of citizenship
   country: US
   state: US
+  born_precision: century
 - name: Lawrence Lessig
   qid: Q217790
   born: 1961
@@ -1957,6 +1953,7 @@
   lon: 26.0167
   country: GR
   state: GR
+  born_precision: century
 - name: George Bernard Shaw
   check: 3 people are called this; chose the best known, Q19185
   qid: Q19185
@@ -2305,6 +2302,7 @@
   check: no birthplace on Wikidata; placed in the country of citizenship
   country: US
   state: US
+  born_precision: century
 - name: Solvej Balle
   qid: Q12336386
   born: 1962

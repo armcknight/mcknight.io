@@ -7,6 +7,8 @@
 #   - name: Marcus Aurelius
 #     qid: Q1430           the Wikidata item, to check or correct by hand
 #     born: 121            the year; negative before the common era
+#     born_precision: century   only when Wikidata knows the date less exactly
+#                          than the year: century, decade or millennium
 #     birthplace: Rome
 #     lat: 41.8933
 #     lon: 12.4831
@@ -17,7 +19,10 @@
 # place is left alone, so only new authors cost a lookup. To correct one, set
 # its qid by hand and delete its other fields but the name; the next run
 # fills them in from that item. An author marked `skip: true` is never looked
-# up, for a name that is not a person.
+# up, for a name that is not a person. Names that mean no known author —
+# Unknown, Anonymous — are marked so on sight: looked up, "Unknown" found an
+# eighteenth-century French item of that name and filed The Epic of Gilgamesh
+# under France.
 #
 # A name is matched to people only, by their label or an alias, ignoring
 # punctuation and case, so "J.R.R. Tolkien" finds "J. R. R. Tolkien"; with no
@@ -90,6 +95,8 @@ def describe(author, person)
   author['qid'] = person['id']
   born = W.birth_year(person)
   author['born'] = born if born
+  rough = W.birth_precision(person)
+  author['born_precision'] = rough if rough
 
   place_id = W.values(person, W::BIRTHPLACE).first
   if place_id
@@ -123,6 +130,8 @@ order = %w[read currently-reading to-read]
 titles = Hash.new { |hash, name| hash[name] = [] }
 books.sort_by { |book| order.index(book['shelf']) || order.size }.each { |book| titles[book['author']] << book['title'] }
 
+NO_AUTHOR = %w[unknown anonymous anon various].freeze
+
 found = 0
 uncertain = []
 missing = []
@@ -134,6 +143,12 @@ titles.each_with_index do |(name, their_titles), i|
     author = { 'name' => name }
     authors << author
     known[name] = author
+  end
+
+  if NO_AUTHOR.include?(key(name))
+    author.replace('name' => name, 'skip' => true, 'problem' => 'no single author')
+    save(authors)
+    next
   end
 
   print "[#{i + 1}/#{titles.size}] #{name} … "
