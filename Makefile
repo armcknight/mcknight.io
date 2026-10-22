@@ -55,7 +55,7 @@ port_travel   := 4500
 port_books    := 4501
 bucket_home   := mcknight.io
 bucket_travel := travel.mcknight.io
-# books has no bucket yet, so `make deploy books` refuses to run.
+bucket_books  := books.mcknight.io
 stamp_home    := DEPLOYED
 stamp_travel  := travel/DEPLOYED
 stamp_books   := books/DEPLOYED
@@ -69,6 +69,7 @@ label_books   := books.mcknight.io
 # CloudFront distributions.
 dist_home     := E3AJVW95W5JFMD
 dist_travel   := E2LVEB8WVCV9QY
+dist_books    := E3EZKV7YFBDKD1
 
 # Every Ruby command goes through this, never through a bare `rbenv exec`.
 #
@@ -377,10 +378,11 @@ travel-check: ## Check every travel place sits inside the region it is filed und
 # Refuses to deploy from a dirty tree, so the hash in a DEPLOYED stamp always
 # describes exactly what is live. The stamps themselves are excluded: every
 # deploy rewrites one, so counting them would block the next deploy over the
-# artifact the last one produced.
+# artifact the last one produced. `*/DEPLOYED` covers every subdomain's stamp,
+# so a new site needs no entry here.
 .PHONY: check-clean
 check-clean: ## Fail unless the working tree is clean (a deploy prerequisite)
-	@changes=$$(git status --porcelain -- . ':!DEPLOYED' ':!travel/DEPLOYED'); \
+	@changes=$$(git status --porcelain -- . ':!DEPLOYED' ':!*/DEPLOYED'); \
 	if [ -n "$$changes" ]; then \
 		echo "Refusing to deploy: the working tree has uncommitted changes."; \
 		echo "$$changes"; \

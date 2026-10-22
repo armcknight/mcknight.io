@@ -417,9 +417,8 @@ observer states.
 ```
 make build books     # build it into books/_site/
 make serve books     # read it at localhost:4501
+make deploy books    # upload it to its own bucket
 ```
-
-It has no bucket or distribution yet, so `make deploy books` refuses to run.
 
 The data is made in five steps, each committed, so a build is offline:
 
@@ -481,19 +480,19 @@ The main site excludes `shared/`, as it does `travel/` and `books/`.
 
 ## Hosting
 
-The two sites are separate from the DNS down: separate buckets, certificates and
-distributions, sharing only the hosted zone. Nothing the subdomain does can
-reach the main site.
+The sites are separate from the DNS down: separate buckets, certificates and
+distributions, sharing only the hosted zone. Nothing a subdomain does can reach
+the main site, or another subdomain.
 
-| | mcknight.io | travel.mcknight.io |
-|---|---|---|
-| S3 bucket | `mcknight.io` | `travel.mcknight.io` |
-| CloudFront | `E3AJVW95W5JFMD` | `E2LVEB8WVCV9QY` |
-| Distribution domain | | `d2dwk99e4mo7s.cloudfront.net` |
-| ACM certificate (us-east-1) | `72f5b93c…` | `abe6c8e7…` |
-| Route 53 zone | `Z09242013GGZP8WGFDQP3` (both) | |
+| | mcknight.io | travel.mcknight.io | books.mcknight.io |
+|---|---|---|---|
+| S3 bucket | `mcknight.io` | `travel.mcknight.io` | `books.mcknight.io` |
+| CloudFront | `E3AJVW95W5JFMD` | `E2LVEB8WVCV9QY` | `E3EZKV7YFBDKD1` |
+| Distribution domain | | `d2dwk99e4mo7s.cloudfront.net` | `d7avdl8bdvx1b.cloudfront.net` |
+| ACM certificate (us-east-1) | `72f5b93c…` | `abe6c8e7…` | `35915606…` |
+| Route 53 zone | `Z09242013GGZP8WGFDQP3` (all) | | |
 
-Both are configured the same way, and the Makefile holds each distribution id so
+All are configured the same way, and the Makefile holds each distribution id so
 `make bust-cache travel` knows which one to invalidate:
 
 - The bucket is a **website endpoint**, not a REST endpoint, with `index.html`
@@ -514,12 +513,38 @@ lists only that name, which is why the subdomain needed its own.
 
 ### Adding another subdomain
 
-The same five steps, in order: create the bucket and give it a website config
-and a public-read policy; request a DNS-validated certificate in us-east-1; put
-the validation CNAME in the zone and wait for ISSUED; create a distribution
-aliased to the name; add A and AAAA alias records. Then add the site to `SITES`
-in the `Makefile` with its own `src_`, `dest_`, `port_`, `bucket_`, `stamp_`,
-`log_`, `label_` and `dist_` entries.
+```
+scripts/setup-subdomain.sh books.mcknight.io
+```
+
+does the five steps, in order, with the settings above: create the bucket and
+give it a website config and a public-read policy; request a DNS-validated
+certificate in us-east-1; put the validation CNAME in the zone and wait for
+ISSUED; create a distribution aliased to the name; add A and AAAA alias
+records. Every AWS command, read-only lookups included, is printed exactly as
+it will run — with `--profile` and `--region` as flags, so it can be pasted and
+run by hand — and runs only after a "y"; any other answer stops the script.
+What each returns is printed after it. `PROFILE=` picks the AWS profile,
+`armcknight` by default.
+
+It can be run again: each step reuses what already exists, so a run that
+stopped while the certificate was validating carries on from there.
+
+It ends by printing the `bucket_` and `dist_` lines for the `Makefile` and the
+values for the table above.
+
+```
+scripts/audit-subdomain.sh travel.mcknight.io
+```
+
+checks every one of those settings against what the setup makes — bucket,
+certificate and its validation record, distribution, A and AAAA records, the
+`Makefile` entries — and that the site answers over HTTPS and redirects HTTP to
+it. It is read-only, prints each command it runs, marks each setting `ok` or
+`WRONG` with what it found and what it expected, and exits non-zero if
+anything is wrong. Its expected values are the setup script's; a change to one
+belongs in both. The site also needs its place in `SITES` with its
+own `src_`, `dest_`, `port_`, `stamp_`, `log_` and `label_` entries.
 
 ## Layout## Layout
 
