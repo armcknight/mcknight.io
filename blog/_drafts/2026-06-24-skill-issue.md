@@ -17,3 +17,7 @@ I prefer determinism, as well as the Unix philosophy of things doing their jobs 
 Sure, tokens are cheap. For now. But also, I find the AI first approach much slower in terms of wall clock time. There's no need to introduce an extra network round trip to statistically generate a result that could be deterministically computed locally, right now.
 
 I prefer Claude working as a tool, not the foreman. I'm still the foreman, even if I have built several layers of abstraction that almost completely automate vibecoding by now. I can still dip into any level of that abstraction to work manually if need be.
+
+---
+
+I still believe in trying to sequester as much as possible into deterministic artifacts (scripts/programs) and just have agents orchestrate their use, vs just giving everything over to the agents
