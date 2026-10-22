@@ -25,6 +25,11 @@
   //   rotate   where the globe opens, as a d3 rotation
   //   reserve  pixels kept free under the globe for what follows it, such as
   //            a legend; 150 by default
+  //   fit      'below', the default: the globe fits in the window under what
+  //            is above it, so the whole page fits without scrolling. Or
+  //            'screen': it fits the window's height alone, for a page with
+  //            more above the globe than a window holds beside it — a long
+  //            introduction — which is scrolled away to see the globe whole.
   //   draw     the site's layers, redrawn after every change of view
   //
   // The site adds its layers with `layer()`, which puts each between the
@@ -34,6 +39,7 @@
     var figure = options.figure;
     var tooltip = options.tooltip;
     var reserve = options.reserve === undefined ? 150 : options.reserve;
+    var fit = options.fit || 'below';
     var draw = options.draw || function () {};
 
     var projection = d3.geoOrthographic().clipAngle(90).precision(0.4).rotate(options.rotate || [0, 0]);
@@ -74,12 +80,14 @@
       // while a page settles — silently undid the reader's zoom and any focus.
       var magnification = size ? projection.scale() / baseScale() : 1;
 
-      // The narrower of the column and the height left under the header, once the
-      // legend and the hint have their room, so the whole sphere always fits
-      // without the page scrolling.
+      // The narrower of the column and the height there is, once the legend
+      // and the hint have their room: the height left under what is above
+      // the globe, so the whole page fits without scrolling, or, fitting the
+      // screen, the window's whole height.
+      var above = fit === 'screen' ? 0 : figure.getBoundingClientRect().top;
       var available = Math.min(
         figure.clientWidth,
-        window.innerHeight - figure.getBoundingClientRect().top - reserve
+        window.innerHeight - above - reserve
       );
       size = Math.max(280, Math.min(available, 760));
       svg.attr('width', size).attr('height', size).attr('viewBox', '0 0 ' + size + ' ' + size);

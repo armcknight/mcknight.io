@@ -93,8 +93,10 @@
   // THE GLOBE
 
   // Opening over the Atlantic, between the United States and Europe, where
-  // most of the authors are from.
-  var core = GlobeCore.create({ svg: svg, figure: figure, tooltip: tooltip, rotate: [40, -35], draw: draw });
+  // most of the authors are from. Sized to the screen, not to the room left
+  // under the introduction, which would leave it a small ball: the
+  // introduction is read first, then scrolled away to see the globe whole.
+  var core = GlobeCore.create({ svg: svg, figure: figure, tooltip: tooltip, rotate: [40, -35], fit: 'screen', draw: draw });
 
   var layers = {
     countries: core.layer(),
