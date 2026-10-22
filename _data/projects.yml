@@ -83,11 +83,15 @@ apps:
     description: "An interactive globe showing places I've spent time: continents, countries, states and provinces, cities, points of interest and some high marks."
     website: "https://travel.mcknight.io"
     website-name: "Visit"
+    image: "travel-globe.png"
+    image-alt: "A globe seen from above the North Pole, with the countries and states visited shaded and the places marked"
 
   - name: "books.mcknight.io"
     description: "An interactive globe showing where the authors of the books I've read were born, on my way to reading an author from every country."
     website: "https://books.mcknight.io"
     website-name: "Visit"
+    image: "books-globe.png"
+    image-alt: "A globe seen from above the North Pole, with each country shaded by how many of the authors I read were born there"
 
 coding-challenges:
   - name: Project Euler

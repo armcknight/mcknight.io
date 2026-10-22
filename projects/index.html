@@ -17,7 +17,7 @@ title: "Projects"
         <div class="project-card">
           <div class="app-header">
             {% if project.image %}
-              <img src="{{ '/assets/images/projects/' | append: project.image | relative_url }}" alt="{{ project.name }} app icon" class="app-icon">
+              <img src="{{ '/assets/images/projects/' | append: project.image | relative_url }}" alt="{% if project.image-alt %}{{ project.image-alt }}{% else %}{{ project.name }} app icon{% endif %}" class="app-icon">
             {% endif %}
             {% if project.app-store-url %}
               <a href="{{ project.app-store-url }}" target="_blank" rel="noopener" class="project-link app-store-link">
