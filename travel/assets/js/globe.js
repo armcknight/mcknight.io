@@ -85,7 +85,15 @@
   // globe core's (shared/assets/js/globe-core.js); this script draws the
   // layers on it. Opening on the Americas, where most of the data is, rather
   // than on the Atlantic at 0,0 where there is nothing to see.
-  var core = GlobeCore.create({ svg: svg, figure: figure, tooltip: tooltip, rotate: [75, -25], draw: draw });
+  //
+  // With an introduction above the globe, it is sized to the screen rather
+  // than to the room left under the introduction, which would leave it a small
+  // ball; the introduction is read first and scrolled away. Without one, the
+  // whole page fits without scrolling.
+  var core = GlobeCore.create({
+    svg: svg, figure: figure, tooltip: tooltip, rotate: [75, -25], draw: draw,
+    fit: document.querySelector('.intro') ? 'screen' : 'below'
+  });
   var projection = core.projection;
   var path = core.path;
   var schedule = core.schedule;

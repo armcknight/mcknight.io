@@ -77,6 +77,18 @@ title: Travel
 </header>
 
 <main>
+  {%- comment -%}
+    The introduction, written in _includes/intro.md as Markdown, as on the
+    books site. It is left out while that file holds nothing but its
+    explanatory comment, which, being a Liquid comment, never reaches the page.
+  {%- endcomment -%}
+  {%- capture intro %}{% include intro.md %}{% endcapture -%}
+  {%- assign intro_text = intro | strip -%}
+  {%- if intro_text != "" %}
+  <section class="intro">
+    {{ intro | markdownify }}
+  </section>
+  {%- endif %}
  <div class="layout">
   <div>
   <figure id="globe-figure">

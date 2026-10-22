@@ -79,6 +79,19 @@ main {
   padding: 0 1.5rem 2rem;
 }
 
+/* The introduction above the globe, in _includes/intro.md: a short measure
+ * in the body face, so it reads as prose rather than as part of the controls.
+ * The same as the books site's. */
+.intro {
+  max-width: 42rem;
+  margin: 0.25rem 0 1.25rem;
+  color: var(--text-secondary);
+  font-size: 0.9375rem;
+}
+.intro p { margin: 0 0 0.75rem; }
+.intro p:last-child { margin-bottom: 0; }
+.intro a { color: var(--accent); }
+
 /* Globe on the left, the same places as a list on the right. The list becomes
  * a block under the globe when there is not room for two columns. */
 .layout {

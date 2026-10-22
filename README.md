@@ -139,6 +139,11 @@ make deploy travel   # upload it to its own bucket
 Browsers resolve any `*.localhost` name to 127.0.0.1 with no `/etc/hosts` entry,
 so `http://travel.localhost:4500` works too and reads more like production.
 
+The introduction above the globe is written in Markdown in
+`travel/_includes/intro.md`, as on the books site, and is left out while that
+file is empty. With one, the globe is sized to the screen rather than to the
+room left under it.
+
 ### The page
 
 An interactive globe. Drag to turn it, scroll or pinch to move closer, double
