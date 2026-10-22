@@ -30,6 +30,11 @@ devtools:
     release-repo: "armcknight/homebrew-tools"
     release-tag-prefix: "superlinear-"
 
+  - name: "templatr"
+    description: "Application type templates for use by superlinear to bootstrap new projects."
+    website: "https://github.com/armcknight/templatr"
+    website-name: "GitHub"
+
   - name: "workflows"
     description: "Reusable GitHub Actions workflows.."
     website: "https://github.com/armcknight/workflows"
