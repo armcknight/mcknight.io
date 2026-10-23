@@ -17,6 +17,57 @@
   gap: var(--space-6);
 }
 
+// How the developer tools are sorted: one of three, as a row of joined
+// buttons, the radio inputs kept for the keyboard and screen readers but drawn
+// as the buttons' pressed state.
+.sort-switch {
+  display: inline-flex;
+  align-items: stretch;
+  margin-bottom: var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+  font-family: var(--font-family-sans);
+  font-size: var(--text-sm);
+}
+
+.sort-switch[hidden] {
+  display: none;
+}
+
+.sort-switch-label {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-3);
+  color: var(--text-secondary);
+  background-color: var(--background-alt);
+}
+
+.sort-switch label {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-3);
+  border-left: 1px solid var(--border);
+  color: var(--accent);
+  cursor: pointer;
+}
+
+.sort-switch input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.sort-switch label:has(input:checked) {
+  background-color: var(--accent);
+  color: white;
+}
+
+.sort-switch label:has(input:focus-visible) {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
 // Developer tools: one box holding a list, a bullet for each tool, its name —
 // a link to its repository — and release on one line, and its description
 // under them. The bullet is

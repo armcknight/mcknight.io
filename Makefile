@@ -154,6 +154,12 @@ init: ## Install Homebrew, the Brewfile, the pinned Ruby, and the gems
 	$(RUBY) gem update bundler
 	$(RUBY) bundle update
 
+# Internal. Checks the main site's data before building it: every developer
+# tool in _data/projects.yml has an impact of its own, which the projects page
+# sorts by. Runs only when home is among the sites being built.
+_check-home-data:
+	@$(if $(filter home,$(SELECTED)),$(RUBY) ruby scripts/check-projects.rb,true)
+
 # Internal. `build` and `deploy` tee their output into logs/, which git ignores,
 # and neither would survive the directory being absent.
 _logs-dir:
@@ -176,7 +182,7 @@ _logs-dir:
 # This only builds. Nothing reaches the internet until `deploy`, and `deploy`
 # uploads whatever is in the output directory without building it.
 .PHONY: build
-build: _logs-dir optimize-images ## <site> Build a site into its output directory
+build: _logs-dir optimize-images _check-home-data ## <site> Build a site into its output directory
 	$(foreach s,$(SELECTED),echo "building $(label_$(s))"; set -o pipefail; $(RUBY) bundle exec jekyll build --source $(src_$(s)) --destination $(dest_$(s)) 2>&1 | tee logs/$(log_$(s)).log;)
 
 # Serves a built site and opens it.

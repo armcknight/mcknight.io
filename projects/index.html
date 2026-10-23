@@ -52,13 +52,28 @@ content_class: content-wide
   <section class="project-category">
     <h2>Developer Tools</h2>
     {% comment %}
+      How the list is sorted: by impact, closest to an end user first, which
+      is also the order the server writes, so the page reads the same with no
+      script; by name; or by release, newest first. Hidden until the script
+      below can work it.
+    {% endcomment %}
+    <div class="sort-switch" id="devtool-sort" role="radiogroup" aria-label="Sort the developer tools by" hidden>
+      <span class="sort-switch-label">Sort by</span>
+      <label><input type="radio" name="devtool-sort" value="impact" checked> Impact</label>
+      <label><input type="radio" name="devtool-sort" value="name"> Name</label>
+      <label><input type="radio" name="devtool-sort" value="release"> Release</label>
+    </div>
+    {% comment %}
       All in one box, as a list: each tool a bullet, its name a link to its
       repository and its release on one line, and its description under them.
+      Each item carries what it sorts on.
     {% endcomment %}
     <div class="project-card devtools">
-      <ul class="devtool-list">
-        {% for project in site.data.projects.devtools %}
-          <li class="devtool">
+      <ul class="devtool-list" id="devtool-list">
+        {% assign devtools = site.data.projects.devtools | sort: "impact" %}
+        {% for project in devtools %}
+          {% assign release = site.data.releases[project.name] %}
+          <li class="devtool" data-name="{{ project.name | downcase | escape }}" data-impact="{{ project.impact }}" data-released="{{ release.date }}">
             <div class="devtool-line">
               <h3 class="project-title"><a href="{{ project.website }}" target="_blank" rel="noopener">{{ project.name }}</a></h3>
               {% include project-release.html project=project %}
@@ -171,4 +186,30 @@ content_class: content-wide
       if (event.key === 'Escape' && !lightbox.hidden) close();
     });
   });
+
+  // The developer tools, sorted by the switch above them. The server writes
+  // them by impact; this only moves the items it already wrote.
+  (function() {
+    const list = document.getElementById('devtool-list');
+    const sorter = document.getElementById('devtool-sort');
+    if (!list || !sorter) return;
+
+    const orders = {
+      impact: (a, b) => Number(a.dataset.impact) - Number(b.dataset.impact),
+      name: (a, b) => a.dataset.name.localeCompare(b.dataset.name),
+      // Newest first; a tool with no release goes last.
+      release: (a, b) => {
+        if (!a.dataset.released) return b.dataset.released ? 1 : 0;
+        if (!b.dataset.released) return -1;
+        return b.dataset.released.localeCompare(a.dataset.released);
+      }
+    };
+
+    sorter.hidden = false;
+    sorter.addEventListener('change', function(event) {
+      const order = orders[event.target.value];
+      if (!order) return;
+      Array.from(list.children).sort(order).forEach((item) => list.appendChild(item));
+    });
+  })();
 </script>

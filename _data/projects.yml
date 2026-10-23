@@ -1,18 +1,24 @@
 devtools:
 # ci-branch: the branch whose checks a live badge shows beside the tool, from
 # shields.io. A tool without one shows no badge.
+# impact: how close the tool sits to an end user, 1 the closest. Every tool
+# needs one, and no two the same: `make build home` checks, with
+# scripts/check-projects.rb. The page lists them in this order by default.
   - name: "Pippin"
+    impact: 1
     description: "Framework abstracting as much boilerplate as possible out of app codebases."
     website: "https://github.com/TwoRingSoft/Pippin"
     website-name: "GitHub"
 
   - name: "swift-armcknight"
+    impact: 2
     description: "My kitchen sink of Swift utilities and extensions."
     website: "https://github.com/armcknight/swift-armcknight"
     website-name: "GitHub"
     ci-branch: "main"
 
   - name: "tools"
+    impact: 7
     description: "SDLC automation for anything with semver and a changelog."
     website: "https://github.com/armcknight/tools"
     website-name: "GitHub"
@@ -21,6 +27,7 @@ devtools:
     release-tag-prefix: "tools-"
 
   - name: "Forgery"
+    impact: 9
     description: "Wrangle collections of Git repositories."
     website: "https://github.com/armcknight/forgery"
     website-name: "GitHub"
@@ -29,6 +36,7 @@ devtools:
     release-tag-prefix: "forgery-"
 
   - name: "superlinear"
+    impact: 3
     description: "Use LLMs to turn Linear issues into GitHub PRs and refine the backlog and project spec after every merge."
     website: "https://github.com/armcknight/superlinear"
     website-name: "GitHub"
@@ -37,18 +45,21 @@ devtools:
     release-tag-prefix: "superlinear-"
 
   - name: "templatr"
+    impact: 8
     description: "Templates to bootstrap new project codebases, Linear workspaces and GitHub repos."
     website: "https://github.com/armcknight/templatr"
     website-name: "GitHub"
     ci-branch: "main"
 
   - name: "workflows"
+    impact: 6
     description: "Reusable GitHub Actions workflows."
     website: "https://github.com/armcknight/workflows"
     website-name: "GitHub"
     ci-branch: "main"
 
   - name: "workr"
+    impact: 5
     description: "Turn a Linear task's branch name into a tmux session with a Claude Code session, Emacs and a bare shell, in a Git worktree, locally or in the cloud."
     website: "https://github.com/armcknight/workr"
     website-name: "GitHub"
@@ -57,12 +68,14 @@ devtools:
     release-tag-prefix: "work-"
 
   - name: "hammerspoons"
+    impact: 10
     description: "Development QoL improvements for macOS."
     website: "https://github.com/armcknight/hammerspoons"
     website-name: "GitHub"
     ci-branch: "main"
 
   - name: "claude-armcknight"
+    impact: 4
     description: "Claude Code plugin marketplace for the slash commands I use in development."
     website: "https://github.com/armcknight/armcknight-claude"
     website-name: "GitHub"
