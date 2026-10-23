@@ -62,6 +62,17 @@ content_class: content-wide
             <div class="devtool-line">
               <h3 class="project-title"><a href="{{ project.website }}" target="_blank" rel="noopener">{{ project.name }}</a></h3>
               {% include project-release.html project=project %}
+              {% comment %}
+                The checks on the tool's branch, live: an image shields.io
+                makes from GitHub on each view, so it needs no rebuild. It
+                links to the runs, so a failure is one click from its log.
+              {% endcomment %}
+              {% if project.ci-branch %}
+                {% assign repo = project.website | remove: 'https://github.com/' %}
+                <a href="{{ project.website }}/actions?query=branch%3A{{ project.ci-branch }}" target="_blank" rel="noopener" class="ci-badge-link">
+                  <img src="https://img.shields.io/github/check-runs/{{ repo }}/{{ project.ci-branch }}?label=CI" alt="Checks on {{ project.ci-branch }}" class="ci-badge" height="20" loading="lazy">
+                </a>
+              {% endif %}
             </div>
             <p class="project-description">{{ project.description }}</p>
           </li>

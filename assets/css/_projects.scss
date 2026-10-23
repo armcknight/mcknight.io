@@ -65,6 +65,17 @@
   border-bottom-color: var(--accent);
 }
 
+// The live badge of the tool's checks, at the height shields.io draws it.
+.ci-badge-link {
+  display: inline-flex;
+  line-height: 0;
+}
+
+.ci-badge {
+  height: 20px;
+  width: auto;
+}
+
 // Under the name, not under the bullet.
 .devtool .project-description {
   margin: var(--space-1) 0 0 var(--space-4);
@@ -366,6 +377,39 @@ body.lightbox-open {
 
 // Responsive design for projects
 @media (max-width: 650px) {
+  // A tool on a phone: its name with the checks badge beside it, then its
+  // version and date under the name. A wrapping row put the badge wherever it
+  // happened to fit. Placed by area, so a tool without a badge just leaves
+  // that cell empty.
+  .devtool-line {
+    display: grid;
+    grid-template-columns: auto auto 1fr;
+    grid-template-areas:
+      "bullet name badge"
+      ".      release release";
+    align-items: center;
+    column-gap: var(--space-2);
+    row-gap: var(--space-1);
+  }
+
+  .devtool-line::before {
+    grid-area: bullet;
+    margin-right: 0;
+  }
+
+  .devtool-line .project-title {
+    grid-area: name;
+  }
+
+  .devtool-line .ci-badge-link {
+    grid-area: badge;
+    justify-self: start;
+  }
+
+  .devtool-line .project-release {
+    grid-area: release;
+  }
+
   .projects-grid {
     grid-template-columns: 1fr;
     gap: var(--space-4);

@@ -1,4 +1,6 @@
 devtools:
+# ci-branch: the branch whose checks a live badge shows beside the tool, from
+# shields.io. A tool without one shows no badge.
   - name: "Pippin"
     description: "Framework abstracting as much boilerplate as possible out of app codebases."
     website: "https://github.com/TwoRingSoft/Pippin"
@@ -8,11 +10,13 @@ devtools:
     description: "My kitchen sink of Swift utilities and extensions."
     website: "https://github.com/armcknight/swift-armcknight"
     website-name: "GitHub"
+    ci-branch: "main"
 
   - name: "tools"
     description: "SDLC automation for anything with semver and a changelog."
     website: "https://github.com/armcknight/tools"
     website-name: "GitHub"
+    ci-branch: "main"
     release-repo: "armcknight/homebrew-tools"
     release-tag-prefix: "tools-"
 
@@ -20,6 +24,7 @@ devtools:
     description: "Wrangle collections of Git repositories."
     website: "https://github.com/armcknight/forgery"
     website-name: "GitHub"
+    ci-branch: "main"
     release-repo: "armcknight/homebrew-tools"
     release-tag-prefix: "forgery-"
 
@@ -27,6 +32,7 @@ devtools:
     description: "Use LLMs to turn Linear issues into GitHub PRs and refine the backlog and project spec after every merge."
     website: "https://github.com/armcknight/superlinear"
     website-name: "GitHub"
+    ci-branch: "main"
     release-repo: "armcknight/homebrew-tools"
     release-tag-prefix: "superlinear-"
 
@@ -34,16 +40,19 @@ devtools:
     description: "Templates to bootstrap new project codebases, Linear workspaces and GitHub repos."
     website: "https://github.com/armcknight/templatr"
     website-name: "GitHub"
+    ci-branch: "main"
 
   - name: "workflows"
     description: "Reusable GitHub Actions workflows."
     website: "https://github.com/armcknight/workflows"
     website-name: "GitHub"
+    ci-branch: "main"
 
   - name: "workr"
     description: "Turn a Linear task's branch name into a tmux session with a Claude Code session, Emacs and a bare shell, in a Git worktree, locally or in the cloud."
     website: "https://github.com/armcknight/workr"
     website-name: "GitHub"
+    ci-branch: "main"
     release-repo: "armcknight/homebrew-tools"
     release-tag-prefix: "work-"
 
@@ -51,11 +60,13 @@ devtools:
     description: "Development QoL improvements for macOS."
     website: "https://github.com/armcknight/hammerspoons"
     website-name: "GitHub"
+    ci-branch: "main"
 
   - name: "claude-armcknight"
     description: "Claude Code plugin marketplace for the slash commands I use in development."
     website: "https://github.com/armcknight/armcknight-claude"
     website-name: "GitHub"
+    ci-branch: "main"
 
 apps:
 #  - name: "Dat Bread Dough"
