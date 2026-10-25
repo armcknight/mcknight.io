@@ -1,2 +1,38 @@
-User-agent: * 
+# Who may read this site, and what for.
+#
+# Everyone may: search engines, link previews (Slack, LinkedIn, Facebook, X),
+# and the search and answer bots of AI services, which fetch a page to show
+# or quote it — OAI-SearchBot, ChatGPT-User, Claude-SearchBot, Claude-User,
+# PerplexityBot. What is asked is that nothing here be used to train AI
+# models, so the crawlers and tokens that are for training are refused.
+#
+# The names are each vendor's own, checked against their documentation in
+# October 2026; they change, so look again now and then:
+#   GPTBot              OpenAI      developers.openai.com/api/docs/bots
+#   ClaudeBot           Anthropic   support.claude.com/en/articles/8896518
+#   Google-Extended     Google      developers.google.com/search/docs/crawling-indexing/google-common-crawlers
+#                                   (a token, not a crawler: Googlebot's pages may not train Gemini;
+#                                   Search is unaffected)
+#   Applebot-Extended   Apple       support.apple.com/en-us/119829 (likewise for Applebot)
+#   meta-externalagent  Meta        developers.facebook.com/docs/sharing/webmasters/web-crawlers
+#   CCBot               Common Crawl, whose archive many models train on   commoncrawl.org/ccbot
+#   Bytespider          ByteDance   (no vendor page; on every published list)
+#
+# A request, not a lock: a crawler that ignores this file is not stopped by
+# it. The Content-Signal line says the same in the newer form Cloudflare
+# proposed in 2025: index for search, do not train.
+
+User-agent: GPTBot
+User-agent: ClaudeBot
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+User-agent: meta-externalagent
+User-agent: CCBot
+User-agent: Bytespider
 Disallow: /
+
+User-agent: *
+Content-Signal: search=yes, ai-train=no
+Allow: /
+
+Sitemap: https://mcknight.io/sitemap.xml

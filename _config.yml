@@ -1,6 +1,9 @@
 title: Andrew McKnight
 description: Lover of programming, art, learning, outdoors, food, culture and travel.
 url: https://mcknight.io
+# sitemap.xml, from every page and post, which robots.txt names.
+plugins:
+  - jekyll-sitemap
 exclude:
   - Makefile
   - README.md

@@ -578,6 +578,7 @@ own `src_`, `dest_`, `port_`, `stamp_`, `log_` and `label_` entries.
 | `shared/` | What the subdomains share: the globe's core, and the plugin that copies it into each build |
 | `resume/` | LaTeX sources for the resume and CV; `make resume` builds them |
 | `assets/pdf/` | The built PDFs the site links to — these are the tracked artifacts, not `resume/build/` |
+| `robots.txt` | Who may crawl the site: everyone, for search, link previews and AI answers, but not the crawlers that train AI models. `travel/` and `books/` have the same file. It names `sitemap.xml`, which `jekyll-sitemap` writes |
 | `DEPLOYED` | What is live |
 | `_site/`, `logs/` | Build output and transcripts. Untracked |
 
