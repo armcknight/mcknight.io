@@ -7,7 +7,7 @@ tags: software engineering ai tech
 abstract: "Code review is about as bad a process as tech interviewing and peer performance review. But it's the best choice of the three to be revolutionized by AI."
 ---
 
-_Note: I wrote this draft yesterday, before Anthropic submitted their official S-1 filing which many of you have no doubt seen by now. HN discussion at https://news.ycombinator.com/item?id=50242939. It does color some of this post, but I haven't fully integrated it into my thinking yet; I present this as I thought of it as of yesterday._
+_Note: I wrote this draft yesterday, before Anthropic submitted their official S-1 filing which many of you have no doubt seen by now. HN discussion at [https://news.ycombinator.com/item?id=50242939](https://news.ycombinator.com/item?id=50242939). It does color some of this post, but I haven't fully integrated it into my thinking yet; I present this as I thought of it as of yesterday._
 
 ---
 
