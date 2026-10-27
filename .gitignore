@@ -83,3 +83,4 @@ travel/.geo-cache
 books/_site
 books/.cache
 /.cache/
+/worktrees/
