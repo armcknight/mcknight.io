@@ -1,0 +1,24 @@
+{%- comment -%}
+  A small bar chart of counts, oldest first: 104 by 16 pixels whatever the
+  number of bars, each a little narrower than its share of the width, scaled
+  to the largest count. A zero is a hairline in the border colour, so a
+  quiet stretch still reads as part of the line. Decorative: the number
+  beside it says what it shows.
+
+  Expects `counts`, a list of whole numbers.
+{%- endcomment -%}
+{%- assign counts = include.counts -%}
+{%- assign pitch = 104.0 | divided_by: counts.size -%}
+{%- assign bar = pitch | times: 0.75 | round: 2 -%}
+{%- assign busiest = counts | sort | last -%}
+<svg class="sparkline" viewBox="0 0 104 16" width="104" height="16" aria-hidden="true" focusable="false">
+  {%- for count in counts -%}
+    {%- assign x = forloop.index0 | times: pitch | round: 2 -%}
+    {%- if count == 0 -%}
+      <rect class="none" x="{{ x }}" y="15" width="{{ bar }}" height="1"/>
+    {%- else -%}
+      {%- assign height = count | times: 15.0 | divided_by: busiest | plus: 1 | round: 1 -%}
+      <rect x="{{ x }}" y="{{ 16 | minus: height }}" width="{{ bar }}" height="{{ height }}"/>
+    {%- endif -%}
+  {%- endfor -%}
+</svg>

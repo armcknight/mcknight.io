@@ -1,0 +1,138 @@
+# Keeps the projects page of mcknight.io current: refreshes _data/releases.yml
+# and _data/activity.yml with `make releases`, and if either changed, builds the
+# main site, deploys it, clears /projects/ from CloudFront and pushes. Only
+# releases.yml is committed. activity.yml counts commits over windows that end
+# today, so it changes nearly every day; it is ignored by git and kept from run
+# to run in the Actions cache instead, which is what a run compares against.
+#
+# Three things start it:
+#
+#   schedule             every night in four large population centers (US
+#                        East, Central Europe, New Delhi and Tokyo), so a
+#                        release nobody announced still shows up by morning
+#                        there.
+#   repository_dispatch  `release-published`, sent by the shared CI and release
+#                        workflows in armcknight/workflows when a devtool
+#                        releases or merges, so the page changes at once. By hand:
+#                          gh api repos/armcknight/mcknight.io/dispatches -f event_type=release-published
+#   workflow_dispatch    from the Actions tab. `dry-run` is on by default there:
+#                        it fetches and prints the diff, and stops.
+#
+# Only a run started by hand can be a dry run. The other two always deploy
+# when the data changed, and do nothing more when it did not.
+#
+# Secrets:
+#
+#   RELEASES_TOKEN       a token that can read releases of every repo in
+#                        _data/projects.yml. Some are private, and GITHUB_TOKEN
+#                        reads only this one.
+#   AWS_DEPLOY_ROLE_ARN  an IAM role this repo may assume through GitHub's OIDC
+#                        provider, allowed to sync the mcknight.io bucket and
+#                        invalidate its CloudFront distribution.
+name: nightly-refresh
+
+on:
+  schedule:
+    # The small hours in each of four large population centers, so each wakes
+    # up to a current page. Times are UTC, and cron does not know daylight
+    # saving time, so the local time moves one hour in the summer where the
+    # zone has it. Off the hour, because the top of the hour is when GitHub's
+    # scheduler is busiest and most late.
+    #
+    # Central Europe: 02:17 CET, 03:17 CEST.
+    - cron: '17 1 * * *'
+    # US East: 03:17 EST, 04:17 EDT.
+    - cron: '17 8 * * *'
+    # Tokyo: 03:17 JST.
+    - cron: '17 18 * * *'
+    # New Delhi: 03:17 IST (UTC+5:30, so the minute is :47 UTC).
+    - cron: '47 21 * * *'
+  repository_dispatch:
+    types: [release-published]
+  workflow_dispatch:
+    inputs:
+      dry-run:
+        description: Fetch and show what changed, but commit and deploy nothing
+        type: boolean
+        default: true
+
+# One refresh at a time, and at most one waiting. GitHub cancels a run that is
+# waiting in the group when a newer one joins, but never the one that is
+# running, so a burst of ten merges makes one or two deploys, not ten, and no
+# deploy is stopped halfway through an upload.
+concurrency:
+  group: nightly-refresh
+  cancel-in-progress: false
+
+permissions:
+  # To push the refreshed data and the DEPLOYED stamp.
+  contents: write
+  # To assume the deploy role through OIDC.
+  id-token: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      # The Makefile runs Ruby through rbenv, which the runner does not have;
+      # setup-ruby has already put the right Ruby on the PATH. And the recipes
+      # use `set -o pipefail`, which the dash that is /bin/sh on Ubuntu lacks.
+      MAKEFLAGS: RUBY= SHELL=/bin/bash
+      DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry-run }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          # Full history, so a rebase onto a main that moved during the run
+          # has a merge base to work from.
+          fetch-depth: 0
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      # Each commit's lines added and deleted, which never change, so only new
+      # commits cost an API call; and the activity.yml the site last deployed
+      # with, to compare against. Restored here but saved only at the end, by a
+      # run that deployed or had nothing to deploy: a dry run or a failed deploy
+      # must not leave its data as the one the next run compares against.
+      - uses: actions/cache/restore@v4
+        with:
+          path: |
+            .cache
+            _data/activity.yml
+          key: refresh-data-${{ github.run_id }}
+          restore-keys: refresh-data-
+
+      - name: Fetch releases and activity, and see what changed
+        id: diff
+        env:
+          GH_TOKEN: ${{ secrets.RELEASES_TOKEN }}
+        run: scripts/nightly-refresh/refresh-data.sh
+
+      - name: Commit and push the release data
+        if: steps.diff.outputs.releases == 'true' && env.DRY_RUN != 'true'
+        run: scripts/nightly-refresh/commit-releases.sh
+
+      - name: Build
+        if: steps.diff.outputs.changed == 'true' && env.DRY_RUN != 'true'
+        run: make build home
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        if: steps.diff.outputs.changed == 'true' && env.DRY_RUN != 'true'
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: us-east-1
+
+      - name: Deploy, and push the DEPLOYED stamp
+        if: steps.diff.outputs.changed == 'true' && env.DRY_RUN != 'true'
+        run: scripts/nightly-refresh/deploy.sh
+
+      - uses: actions/cache/save@v4
+        if: env.DRY_RUN != 'true'
+        with:
+          path: |
+            .cache
+            _data/activity.yml
+          key: refresh-data-${{ github.run_id }}

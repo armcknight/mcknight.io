@@ -54,29 +54,73 @@ content_class: content-wide
     {% comment %}
       How the list is sorted: by impact, closest to an end user first, which
       is also the order the server writes, so the page reads the same with no
-      script; by name; or by release, newest first. Hidden until the script
-      below can work it.
+      script; by name; by release, newest first; or by activity, the most
+      lines added and deleted first, over the period the commits switch shows.
+      Hidden until the script below can work it.
     {% endcomment %}
     <div class="sort-switch" id="devtool-sort" role="radiogroup" aria-label="Sort the developer tools by" hidden>
       <span class="sort-switch-label">Sort by</span>
-      <label><input type="radio" name="devtool-sort" value="impact" checked> Impact</label>
+      <label><input type="radio" name="devtool-sort" value="impact" checked> User Impact</label>
       <label><input type="radio" name="devtool-sort" value="name"> Name</label>
       <label><input type="radio" name="devtool-sort" value="release"> Release</label>
+      <label><input type="radio" name="devtool-sort" value="activity"> Activity</label>
     </div>
     {% comment %}
-      All in one box, as a list: each tool a bullet, its name a link to its
-      repository and its release on one line, and its description under them.
+      Which period every tool's commit chart covers. The list's
+      data-activity says, and the stylesheet shows that chart; the year
+      without a script, when this switch stays hidden.
+    {% endcomment %}
+    <div class="sort-switch" id="activity-period" role="radiogroup" aria-label="Show commits over the past" hidden>
+      <span class="sort-switch-label">Commits</span>
+      <label><input type="radio" name="activity-period" value="year" checked> Year</label>
+      <label><input type="radio" name="activity-period" value="month"> Month</label>
+      <label><input type="radio" name="activity-period" value="week"> Week</label>
+    </div>
+    {% comment %}
+      All in one box, as a list: each tool a bullet, with its name (a link to
+      its repository), its last year of commits, its checks and its latest
+      release on one line, and its description under them.
       Each item carries what it sorts on.
     {% endcomment %}
     <div class="project-card devtools">
-      <ul class="devtool-list" id="devtool-list">
+      <ul class="devtool-list" id="devtool-list" data-activity="year">
         {% assign devtools = site.data.projects.devtools | sort: "impact" %}
+        {% assign periods = "year,month,week" | split: "," %}
         {% for project in devtools %}
           {% assign release = site.data.releases[project.name] %}
-          <li class="devtool" data-name="{{ project.name | downcase | escape }}" data-impact="{{ project.impact }}" data-released="{{ release.date }}">
+          {% assign activity = site.data.activity[project.name] %}
+          <li class="devtool" data-name="{{ project.name | downcase | escape }}" data-impact="{{ project.impact }}" data-released="{{ release.date }}"
+              {%- for period in periods %} data-lines-{{ period }}="{{ activity[period].added | plus: activity[period].deleted }}"{% endfor %}>
             <div class="devtool-line">
               <h3 class="project-title"><a href="{{ project.website }}" target="_blank" rel="noopener">{{ project.name }}</a></h3>
-              {% include project-release.html project=project %}
+              {% comment %}
+                Commits, by year (a bar a week), month or week (a bar a day),
+                and the lines added and deleted in that time, from
+                _data/activity.yml (make releases); all three periods are
+                drawn and the switch above the list shows one, the year without
+                a script. Each chart is scaled to its own busiest bar, so the
+                bars show the rhythm and the numbers beside them how much.
+              {% endcomment %}
+              {% if activity %}
+                {% assign last_week = activity.days | slice: 23, 7 %}
+                {% for period in periods %}
+                  {% comment %}
+                    Not "counts": the sparkline include assigns that, and an
+                    include shares the page's variables.
+                  {% endcomment %}
+                  {% assign totals = activity[period] %}
+                  {% case period %}
+                    {% when "year" %}{% assign bars = activity.weeks %}{% assign span = "the past year, week by week" %}
+                    {% when "month" %}{% assign bars = activity.days %}{% assign span = "the past 30 days, day by day" %}
+                    {% else %}{% assign bars = last_week %}{% assign span = "the past 7 days, day by day" %}
+                  {% endcase %}
+                  <span class="activity activity-{{ period }}" title="{{ totals.commits }} commits in {{ span }}; {{ totals.added }} lines added and {{ totals.deleted }} deleted">
+                    {% include sparkline.html counts=bars %}
+                    <span class="activity-total">{{ totals.commits }} commits</span>
+                    <span class="activity-lines"><span class="added">+{% include line-count.html n=totals.added %}</span>/<span class="deleted">-{% include line-count.html n=totals.deleted %}</span></span>
+                  </span>
+                {% endfor %}
+              {% endif %}
               {% comment %}
                 The checks on the tool's branch, live: an image shields.io
                 makes from GitHub on each view, so it needs no rebuild. It
@@ -88,6 +132,7 @@ content_class: content-wide
                   <img src="https://img.shields.io/github/check-runs/{{ repo }}/{{ project.ci-branch }}?label=CI" alt="Checks on {{ project.ci-branch }}" class="ci-badge" height="20" loading="lazy">
                 </a>
               {% endif %}
+              {% include project-release.html project=project %}
             </div>
             <p class="project-description">{{ project.description }}</p>
           </li>
@@ -202,14 +247,36 @@ content_class: content-wide
         if (!a.dataset.released) return b.dataset.released ? 1 : 0;
         if (!b.dataset.released) return -1;
         return b.dataset.released.localeCompare(a.dataset.released);
+      },
+      // Most lines added and deleted first, over the period shown.
+      activity: (a, b) => {
+        const lines = (item) => Number(item.dataset['lines' + list.dataset.activity[0].toUpperCase() + list.dataset.activity.slice(1)] || 0);
+        return lines(b) - lines(a);
       }
     };
 
+    function sort() {
+      const chosen = sorter.querySelector('input:checked');
+      const order = chosen && orders[chosen.value];
+      if (order) Array.from(list.children).sort(order).forEach((item) => list.appendChild(item));
+    }
+
     sorter.hidden = false;
-    sorter.addEventListener('change', function(event) {
-      const order = orders[event.target.value];
-      if (!order) return;
-      Array.from(list.children).sort(order).forEach((item) => list.appendChild(item));
+    sorter.addEventListener('change', sort);
+    // Sorted by activity, a change of period changes the order.
+    list.addEventListener('activitychange', sort);
+  })();
+
+  // The period every tool's commit chart covers.
+  (function() {
+    const list = document.getElementById('devtool-list');
+    const periods = document.getElementById('activity-period');
+    if (!list || !periods) return;
+
+    periods.hidden = false;
+    periods.addEventListener('change', function(event) {
+      list.dataset.activity = event.target.value;
+      list.dispatchEvent(new Event('activitychange'));
     });
   })();
 </script>
