@@ -71,6 +71,14 @@ dist_home     := E3AJVW95W5JFMD
 dist_travel   := E2LVEB8WVCV9QY
 dist_books    := E3EZKV7YFBDKD1
 
+# The stylesheets and scripts each site's pages ask for with a ?v= of the build
+# time. The ?v= makes a browser fetch them again, but CloudFront leaves the
+# query string out of its cache key, so `deploy` clears these paths there too.
+# A file given a ?v= in a layout or page belongs here as well.
+versioned_home   := /assets/css/modern.css
+versioned_travel := /assets/css/globe-core.css /assets/css/travel.css /assets/js/outline-fold.js /assets/js/globe-core.js /assets/js/globe.js
+versioned_books  := /assets/css/globe-core.css /assets/css/books.css /assets/js/outline-fold.js /assets/js/globe-core.js /assets/js/globe.js
+
 # Every Ruby command goes through this, never through a bare `rbenv exec`.
 #
 # tmuxinator's Homebrew wrapper starts with GEM_HOME set to its own Cellar
@@ -432,14 +440,17 @@ check-clean: ## Fail unless the working tree is clean (a deploy prerequisite)
 # `deploy` uploads whatever `build` last produced; it does not build for you.
 # The commit it makes is local — push it yourself.
 #
-# CloudFront still holds the old objects afterwards — follow with `bust-cache`.
+# It clears the site's versioned stylesheets and scripts from CloudFront (see
+# versioned_<site> above), but the pages themselves are still the old ones
+# there afterwards — follow with `bust-cache`.
 #
 # The sequence lives in scripts/deploy-site.sh, because it is a sequence with
 # conditions in it and would be unreadable folded onto one line per site.
 .PHONY: deploy
 deploy: _logs-dir check-clean ## <site> Upload a built site, then stamp and commit what is live
 	@$(foreach s,$(SELECTED),test -n "$(bucket_$(s))" || { echo "No bucket is recorded for $(label_$(s)). Set bucket_$(s) in the Makefile once it exists."; exit 1; };)
-	$(foreach s,$(SELECTED),scripts/deploy-site.sh "$(label_$(s))" "$(dest_$(s))" "$(bucket_$(s))" "$(stamp_$(s))";)
+	@$(foreach s,$(SELECTED),test -n "$(dist_$(s))" || { echo "No CloudFront distribution is recorded for $(label_$(s)). Set dist_$(s) in the Makefile once it exists."; exit 1; };)
+	$(foreach s,$(SELECTED),scripts/deploy-site.sh "$(label_$(s))" "$(dest_$(s))" "$(bucket_$(s))" "$(stamp_$(s))" && aws --profile armcknight cloudfront create-invalidation --distribution-id $(dist_$(s)) --paths $(versioned_$(s)) > /dev/null && echo "cleared $(versioned_$(s)) from CloudFront for $(label_$(s))";)
 
 # Invalidate CloudFront, so a fresh deploy is actually what gets served.
 #
