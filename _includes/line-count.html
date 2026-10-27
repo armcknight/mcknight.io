@@ -1,0 +1,8 @@
+{%- comment -%}
+  A count of lines, short: 594, 4.8k, 29.8k. Expects `n`, a whole number.
+{%- endcomment -%}
+{%- if include.n >= 1000 -%}
+  {{- include.n | divided_by: 100.0 | round | divided_by: 10.0 -}}k
+{%- else -%}
+  {{- include.n -}}
+{%- endif -%}

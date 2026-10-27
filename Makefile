@@ -241,9 +241,13 @@ resume: ## Rebuild the resume and CV PDFs from LaTeX and copy them into assets/p
 # project whose releases live in the homebrew-tools tap under a prefixed tag
 # declares that in _data/projects.yml — see scripts/fetch-releases.rb.
 #
-# The versions on the site are only as fresh as the last run.
+# It also writes _data/activity.yml, each devtool's commits per week over the
+# last year, which the projects page draws as a small bar chart. GitHub
+# computes those statistics on demand, so a first run can pause while it does.
+#
+# The versions and the activity on the site are only as fresh as the last run.
 .PHONY: releases
-releases: ## Refresh _data/releases.yml with each project's latest release
+releases: ## Refresh each project's latest release, and each devtool's commit activity
 	$(RUBY) ruby scripts/fetch-releases.rb
 
 # Strips EXIF metadata and losslessly compresses images, in place.

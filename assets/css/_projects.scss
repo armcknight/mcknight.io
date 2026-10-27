@@ -23,7 +23,7 @@
 .sort-switch {
   display: inline-flex;
   align-items: stretch;
-  margin-bottom: var(--space-3);
+  margin: 0 var(--space-3) var(--space-3) 0;
   border: 1px solid var(--border);
   border-radius: 6px;
   overflow: hidden;
@@ -125,6 +125,48 @@
 .ci-badge {
   height: 20px;
   width: auto;
+}
+
+// Commits: a small bar chart and its total, for the period the list's
+// data-activity names; the other two periods' charts are there but hidden.
+.activity {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.devtool-list[data-activity="year"] .activity:not(.activity-year),
+.devtool-list[data-activity="month"] .activity:not(.activity-month),
+.devtool-list[data-activity="week"] .activity:not(.activity-week) {
+  display: none;
+}
+
+.sparkline {
+  display: block;
+}
+
+.sparkline rect {
+  fill: var(--accent);
+}
+
+.sparkline rect.none {
+  fill: var(--border);
+}
+
+.activity-total,
+.activity-lines {
+  font-family: var(--font-family-mono);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+// Lines added and deleted, in the colours a diff uses.
+.activity-lines .added {
+  color: #1a7f37;
+}
+
+.activity-lines .deleted {
+  color: #cf222e;
 }
 
 // Under the name, not under the bullet.
@@ -429,7 +471,7 @@ body.lightbox-open {
 // Responsive design for projects
 @media (max-width: 650px) {
   // A tool on a phone: its name with the checks badge beside it, then its
-  // version and date under the name. A wrapping row put the badge wherever it
+  // last year of commits, then its version and date, under the name. A wrapping row put the badge wherever it
   // happened to fit. Placed by area, so a tool without a badge just leaves
   // that cell empty.
   .devtool-line {
@@ -437,6 +479,7 @@ body.lightbox-open {
     grid-template-columns: auto auto 1fr;
     grid-template-areas:
       "bullet name badge"
+      ".      activity activity"
       ".      release release";
     align-items: center;
     column-gap: var(--space-2);
@@ -459,6 +502,10 @@ body.lightbox-open {
 
   .devtool-line .project-release {
     grid-area: release;
+  }
+
+  .devtool-line .activity {
+    grid-area: activity;
   }
 
   .projects-grid {

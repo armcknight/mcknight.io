@@ -82,4 +82,7 @@ travel/.geo-cache
 # The books site's build, and its downloaded border snapshots and lookup cache.
 books/_site
 books/.cache
+
+# Lines added and deleted by each commit, fetched by scripts/fetch-releases.rb;
+# a commit's never change, so they are kept rather than asked for again.
 /.cache/

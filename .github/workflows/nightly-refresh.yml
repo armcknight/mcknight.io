@@ -1,6 +1,7 @@
 # Keeps the projects page of mcknight.io current: refreshes _data/releases.yml
-# with `make releases`, and if anything changed, commits it, builds the main
-# site, deploys it, clears /projects/ from CloudFront and pushes.
+# and _data/activity.yml with `make releases`, and if anything changed, commits
+# them, builds the main site, deploys it, clears /projects/ from CloudFront and
+# pushes.
 #
 # Three things start it:
 #
@@ -89,7 +90,15 @@ jobs:
         with:
           bundler-cache: true
 
-      - name: Fetch releases
+      # Each commit's lines added and deleted, which never change: kept from
+      # run to run, so only new commits cost an API call.
+      - uses: actions/cache@v4
+        with:
+          path: .cache
+          key: commit-stats-${{ github.run_id }}
+          restore-keys: commit-stats-
+
+      - name: Fetch releases and activity
         env:
           GH_TOKEN: ${{ secrets.RELEASES_TOKEN }}
         run: make releases
@@ -97,11 +106,11 @@ jobs:
       - name: See what changed
         id: diff
         run: |
-          if git diff --quiet -- _data/releases.yml; then
-            echo "No release changed."
+          if git diff --quiet -- _data/releases.yml _data/activity.yml; then
+            echo "No release or activity changed."
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
-            git diff -- _data/releases.yml
+            git diff -- _data/releases.yml _data/activity.yml
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
 
@@ -110,7 +119,7 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git commit --quiet -m 'update project release data' -- _data/releases.yml
+          git commit --quiet -m 'update project release and activity data' -- _data/releases.yml _data/activity.yml
           # Pushed before the build, so the DEPLOYED stamp names a commit that
           # is already on main. Rebasing it later would change its hash and
           # leave the stamp pointing at nothing.
