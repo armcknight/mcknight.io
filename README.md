@@ -601,6 +601,7 @@ own `src_`, `dest_`, `port_`, `stamp_`, `log_` and `label_` entries.
 | `scripts/new-post.sh` | Creates a post from a title, front matter and date filled in |
 | `scripts/fetch-releases.rb` | Generates `_data/releases.yml` and `_data/activity.yml` |
 | `.github/workflows/nightly-refresh.yml` | Runs `make releases` nightly and on a `release-published` dispatch, and deploys when it changed |
+| `scripts/nightly-refresh/` | The workflow's steps: refresh the data and say what changed, commit `releases.yml`, deploy and push the stamp |
 | `travel/` | The travel.mcknight.io site: its own config, data, page and scripts |
 | `books/` | The books.mcknight.io site: its own config, data, page and scripts |
 | `shared/` | What the subdomains share: the globe's core, and the plugin that copies it into each build |

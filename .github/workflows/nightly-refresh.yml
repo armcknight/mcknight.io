@@ -105,53 +105,15 @@ jobs:
           key: refresh-data-${{ github.run_id }}
           restore-keys: refresh-data-
 
-      - name: Keep the deployed activity to compare
-        run: |
-          if [ -f _data/activity.yml ]; then
-            cp _data/activity.yml "$RUNNER_TEMP/activity.yml"
-          fi
-
-      - name: Fetch releases and activity
+      - name: Fetch releases and activity, and see what changed
+        id: diff
         env:
           GH_TOKEN: ${{ secrets.RELEASES_TOKEN }}
-        run: make releases
-
-      # activity.yml's comment header holds the date it was made, so only its
-      # data lines are compared.
-      - name: See what changed
-        id: diff
-        run: |
-          releases=false
-          activity=false
-          if ! git diff --quiet -- _data/releases.yml; then
-            git diff -- _data/releases.yml
-            releases=true
-          fi
-          if [ ! -f "$RUNNER_TEMP/activity.yml" ]; then
-            echo "No activity in the cache to compare with."
-            activity=true
-          elif ! diff <(grep -v '^#' "$RUNNER_TEMP/activity.yml") <(grep -v '^#' _data/activity.yml); then
-            activity=true
-          fi
-          echo "releases=$releases" >> "$GITHUB_OUTPUT"
-          if [ "$releases" = true ] || [ "$activity" = true ]; then
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "No release or activity changed."
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-          fi
+        run: scripts/nightly-refresh/refresh-data.sh
 
       - name: Commit and push the release data
         if: steps.diff.outputs.releases == 'true' && env.DRY_RUN != 'true'
-        run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git commit --quiet -m 'update project release data' -- _data/releases.yml
-          # Pushed before the build, so the DEPLOYED stamp names a commit that
-          # is already on main. Rebasing it later would change its hash and
-          # leave the stamp pointing at nothing.
-          git pull --rebase --quiet origin main
-          git push origin HEAD:main
+        run: scripts/nightly-refresh/commit-releases.sh
 
       - name: Build
         if: steps.diff.outputs.changed == 'true' && env.DRY_RUN != 'true'
@@ -163,27 +125,9 @@ jobs:
           role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
           aws-region: us-east-1
 
-      # The Makefile and scripts/deploy-site.sh name the `armcknight` profile,
-      # as they do on a laptop, so give the role's credentials that name.
-      - name: Name the AWS profile
+      - name: Deploy, and push the DEPLOYED stamp
         if: steps.diff.outputs.changed == 'true' && env.DRY_RUN != 'true'
-        run: |
-          aws configure set aws_access_key_id "$AWS_ACCESS_KEY_ID" --profile armcknight
-          aws configure set aws_secret_access_key "$AWS_SECRET_ACCESS_KEY" --profile armcknight
-          aws configure set aws_session_token "$AWS_SESSION_TOKEN" --profile armcknight
-          aws configure set region "$AWS_REGION" --profile armcknight
-
-      - name: Deploy
-        if: steps.diff.outputs.changed == 'true' && env.DRY_RUN != 'true'
-        run: |
-          make deploy home
-          make bust-cache home PATHS="/projects/ /projects/index.html"
-
-      - name: Push the DEPLOYED stamp
-        if: steps.diff.outputs.changed == 'true' && env.DRY_RUN != 'true'
-        run: |
-          git pull --rebase --quiet origin main
-          git push origin HEAD:main
+        run: scripts/nightly-refresh/deploy.sh
 
       - uses: actions/cache/save@v4
         if: env.DRY_RUN != 'true'
