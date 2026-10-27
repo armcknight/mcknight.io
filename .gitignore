@@ -90,3 +90,4 @@ books/.cache
 # Each devtool's commit activity, made by `make releases`. Its windows end
 # today, so it changes nearly every day; see the Makefile's `releases`.
 /_data/activity.yml
+/worktrees/
