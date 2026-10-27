@@ -160,6 +160,14 @@ init: ## Install Homebrew, the Brewfile, the pinned Ruby, and the gems
 _check-home-data:
 	@$(if $(filter home,$(SELECTED)),$(RUBY) ruby scripts/check-projects.rb,true)
 
+# Internal. Makes _data/activity.yml, the projects page's commit activity, when
+# the main site is being built and the file is missing. git ignores it (see
+# `releases` below), so a fresh clone has none, and without it the page's
+# charts are empty. Needs `gh` signed in. An existing file is left as it is,
+# however old: `make releases` refreshes it.
+_activity-data:
+	@$(if $(filter home,$(SELECTED)),test -f _data/activity.yml || $(RUBY) ruby scripts/fetch-releases.rb --activity-only,true)
+
 # Internal. `build` and `deploy` tee their output into logs/, which git ignores,
 # and neither would survive the directory being absent.
 _logs-dir:
@@ -182,7 +190,7 @@ _logs-dir:
 # This only builds. Nothing reaches the internet until `deploy`, and `deploy`
 # uploads whatever is in the output directory without building it.
 .PHONY: build
-build: _logs-dir optimize-images _check-home-data ## <site> Build a site into its output directory
+build: _logs-dir optimize-images _check-home-data _activity-data ## <site> Build a site into its output directory
 	$(foreach s,$(SELECTED),echo "building $(label_$(s))"; set -o pipefail; $(RUBY) bundle exec jekyll build --source $(src_$(s)) --destination $(dest_$(s)) 2>&1 | tee logs/$(log_$(s)).log;)
 
 # Serves a built site and opens it.
@@ -244,6 +252,8 @@ resume: ## Rebuild the resume and CV PDFs from LaTeX and copy them into assets/p
 # It also writes _data/activity.yml, each devtool's commits per week over the
 # last year, which the projects page draws as a small bar chart. GitHub
 # computes those statistics on demand, so a first run can pause while it does.
+# activity.yml is ignored by git: its windows end today, so it changes nearly
+# every day. The nightly workflow keeps its copy in the Actions cache.
 #
 # The versions and the activity on the site are only as fresh as the last run.
 .PHONY: releases

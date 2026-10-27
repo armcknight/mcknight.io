@@ -1,7 +1,9 @@
 # Keeps the projects page of mcknight.io current: refreshes _data/releases.yml
-# and _data/activity.yml with `make releases`, and if anything changed, commits
-# them, builds the main site, deploys it, clears /projects/ from CloudFront and
-# pushes.
+# and _data/activity.yml with `make releases`, and if either changed, builds the
+# main site, deploys it, clears /projects/ from CloudFront and pushes. Only
+# releases.yml is committed. activity.yml counts commits over windows that end
+# today, so it changes nearly every day; it is ignored by git and kept from run
+# to run in the Actions cache instead, which is what a run compares against.
 #
 # Three things start it:
 #
@@ -90,36 +92,61 @@ jobs:
         with:
           bundler-cache: true
 
-      # Each commit's lines added and deleted, which never change: kept from
-      # run to run, so only new commits cost an API call.
-      - uses: actions/cache@v4
+      # Each commit's lines added and deleted, which never change, so only new
+      # commits cost an API call; and the activity.yml the site last deployed
+      # with, to compare against. Restored here but saved only at the end, by a
+      # run that deployed or had nothing to deploy: a dry run or a failed deploy
+      # must not leave its data as the one the next run compares against.
+      - uses: actions/cache/restore@v4
         with:
-          path: .cache
-          key: commit-stats-${{ github.run_id }}
-          restore-keys: commit-stats-
+          path: |
+            .cache
+            _data/activity.yml
+          key: refresh-data-${{ github.run_id }}
+          restore-keys: refresh-data-
+
+      - name: Keep the deployed activity to compare
+        run: |
+          if [ -f _data/activity.yml ]; then
+            cp _data/activity.yml "$RUNNER_TEMP/activity.yml"
+          fi
 
       - name: Fetch releases and activity
         env:
           GH_TOKEN: ${{ secrets.RELEASES_TOKEN }}
         run: make releases
 
+      # activity.yml's comment header holds the date it was made, so only its
+      # data lines are compared.
       - name: See what changed
         id: diff
         run: |
-          if git diff --quiet -- _data/releases.yml _data/activity.yml; then
+          releases=false
+          activity=false
+          if ! git diff --quiet -- _data/releases.yml; then
+            git diff -- _data/releases.yml
+            releases=true
+          fi
+          if [ ! -f "$RUNNER_TEMP/activity.yml" ]; then
+            echo "No activity in the cache to compare with."
+            activity=true
+          elif ! diff <(grep -v '^#' "$RUNNER_TEMP/activity.yml") <(grep -v '^#' _data/activity.yml); then
+            activity=true
+          fi
+          echo "releases=$releases" >> "$GITHUB_OUTPUT"
+          if [ "$releases" = true ] || [ "$activity" = true ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
             echo "No release or activity changed."
             echo "changed=false" >> "$GITHUB_OUTPUT"
-          else
-            git diff -- _data/releases.yml _data/activity.yml
-            echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Commit and push the data
-        if: steps.diff.outputs.changed == 'true' && env.DRY_RUN != 'true'
+      - name: Commit and push the release data
+        if: steps.diff.outputs.releases == 'true' && env.DRY_RUN != 'true'
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git commit --quiet -m 'update project release and activity data' -- _data/releases.yml _data/activity.yml
+          git commit --quiet -m 'update project release data' -- _data/releases.yml
           # Pushed before the build, so the DEPLOYED stamp names a commit that
           # is already on main. Rebasing it later would change its hash and
           # leave the stamp pointing at nothing.
@@ -157,3 +184,11 @@ jobs:
         run: |
           git pull --rebase --quiet origin main
           git push origin HEAD:main
+
+      - uses: actions/cache/save@v4
+        if: env.DRY_RUN != 'true'
+        with:
+          path: |
+            .cache
+            _data/activity.yml
+          key: refresh-data-${{ github.run_id }}
