@@ -4,8 +4,10 @@
 #
 # Three things start it:
 #
-#   schedule             every night, so a release nobody announced still shows
-#                        up by morning.
+#   schedule             every night in four large population centers (US
+#                        East, Central Europe, New Delhi and Tokyo), so a
+#                        release nobody announced still shows up by morning
+#                        there.
 #   repository_dispatch  `release-published`, sent by the shared CI and release
 #                        workflows in armcknight/workflows when a devtool
 #                        releases or merges, so the page changes at once. By hand:
@@ -28,9 +30,20 @@ name: nightly-refresh
 
 on:
   schedule:
-    # 09:17 UTC, which is the small hours in the US. Off the hour, because the
-    # top of the hour is when GitHub's scheduler is busiest and most late.
-    - cron: '17 9 * * *'
+    # The small hours in each of four large population centers, so each wakes
+    # up to a current page. Times are UTC, and cron does not know daylight
+    # saving time, so the local time moves one hour in the summer where the
+    # zone has it. Off the hour, because the top of the hour is when GitHub's
+    # scheduler is busiest and most late.
+    #
+    # Central Europe: 02:17 CET, 03:17 CEST.
+    - cron: '17 1 * * *'
+    # US East: 03:17 EST, 04:17 EDT.
+    - cron: '17 8 * * *'
+    # Tokyo: 03:17 JST.
+    - cron: '17 18 * * *'
+    # New Delhi: 03:17 IST (UTC+5:30, so the minute is :47 UTC).
+    - cron: '47 21 * * *'
   repository_dispatch:
     types: [release-published]
   workflow_dispatch:

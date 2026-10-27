@@ -108,10 +108,11 @@ make build && make deploy
 make bust-cache PATHS="/projects/ /projects/index.html"
 ```
 
-`.github/workflows/nightly-refresh.yml` does this on GitHub every night, and at
-once when a devtool releases or merges: the shared CI and release workflows in
-armcknight/workflows send it a `release-published` dispatch. It deploys only if
-`releases.yml` changed. To start one by hand:
+`.github/workflows/nightly-refresh.yml` does this on GitHub every night in four
+large population centers (about 03:00 in US East, Central Europe, New Delhi and
+Tokyo), and at once when a devtool releases or merges: the shared CI and
+release workflows in armcknight/workflows send it a `release-published`
+dispatch. It deploys only if `releases.yml` changed. To start one by hand:
 
 ```
 gh api repos/armcknight/mcknight.io/dispatches -f event_type=release-published
