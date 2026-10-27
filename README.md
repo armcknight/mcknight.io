@@ -4,7 +4,9 @@ The source of [mcknight.io](https://mcknight.io): a [Jekyll](https://jekyllrb.co
 site built to `_site/`, served from an S3 bucket behind a CloudFront
 distribution.
 
-There is no CI. Publishing is a person running `make` on a workstation.
+Publishing is a person running `make` on a workstation, with one exception:
+`.github/workflows/nightly-refresh.yml` keeps the projects page current by
+itself (see [Refresh the versions on the projects page](#runbooks)).
 
 ```
 make init                  # once per machine
@@ -105,6 +107,21 @@ git add _data/releases.yml && git commit -m "refresh release data"
 make build && make deploy
 make bust-cache PATHS="/projects/ /projects/index.html"
 ```
+
+`.github/workflows/nightly-refresh.yml` does this on GitHub every night, and at
+once when a devtool releases or merges: the shared CI and release workflows in
+armcknight/workflows send it a `release-published` dispatch. It deploys only if
+`releases.yml` changed. To start one by hand:
+
+```
+gh api repos/armcknight/mcknight.io/dispatches -f event_type=release-published
+```
+
+Runs queue one at a time, and a newer dispatch replaces one that is still
+waiting, so a burst of merges makes one or two deploys. From the Actions tab
+the run is a dry run by default: it prints the diff and stops. It needs the
+`RELEASES_TOKEN` and `AWS_DEPLOY_ROLE_ARN` secrets; the comment at the top of
+the workflow says what each must allow.
 
 **Change the resume.** Editing `resume/*.tex` changes nothing a visitor sees
 until the PDFs are rebuilt, so do it in the same commit:
@@ -573,6 +590,7 @@ own `src_`, `dest_`, `port_`, `stamp_`, `log_` and `label_` entries.
 | `blog/img/` | Post images, including the optional per-post `thumbnail` |
 | `scripts/new-post.sh` | Creates a post from a title, front matter and date filled in |
 | `scripts/fetch-releases.rb` | Generates `_data/releases.yml` |
+| `.github/workflows/nightly-refresh.yml` | Runs `make releases` nightly and on a `release-published` dispatch, and deploys when it changed |
 | `travel/` | The travel.mcknight.io site: its own config, data, page and scripts |
 | `books/` | The books.mcknight.io site: its own config, data, page and scripts |
 | `shared/` | What the subdomains share: the globe's core, and the plugin that copies it into each build |
@@ -604,7 +622,7 @@ Two conventions worth knowing:
   `release-tag-prefix`. App Store apps have no release to read, so their version
   comes from the iTunes lookup API. `releases.yml` is committed, which keeps
   builds offline and immune to rate limits — the versions shown are only as fresh
-  as the last `make releases`.
+  as the last `make releases`, which `nightly-refresh.yml` runs at least nightly.
 - **Social cards.** A post gets a card image only if its front matter sets
   `thumbnail:`, pointing at a file in `blog/img/`. Without one the card is title
   and description text, deliberately — there is no fallback image.

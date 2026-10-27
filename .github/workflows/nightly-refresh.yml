@@ -1,0 +1,137 @@
+# Keeps the projects page of mcknight.io current: refreshes _data/releases.yml
+# with `make releases`, and if anything changed, commits it, builds the main
+# site, deploys it, clears /projects/ from CloudFront and pushes.
+#
+# Three things start it:
+#
+#   schedule             every night, so a release nobody announced still shows
+#                        up by morning.
+#   repository_dispatch  `release-published`, sent by the shared CI and release
+#                        workflows in armcknight/workflows when a devtool
+#                        releases or merges, so the page changes at once. By hand:
+#                          gh api repos/armcknight/mcknight.io/dispatches -f event_type=release-published
+#   workflow_dispatch    from the Actions tab. `dry-run` is on by default there:
+#                        it fetches and prints the diff, and stops.
+#
+# Only a run started by hand can be a dry run. The other two always deploy
+# when the data changed, and do nothing more when it did not.
+#
+# Secrets:
+#
+#   RELEASES_TOKEN       a token that can read releases of every repo in
+#                        _data/projects.yml. Some are private, and GITHUB_TOKEN
+#                        reads only this one.
+#   AWS_DEPLOY_ROLE_ARN  an IAM role this repo may assume through GitHub's OIDC
+#                        provider, allowed to sync the mcknight.io bucket and
+#                        invalidate its CloudFront distribution.
+name: nightly-refresh
+
+on:
+  schedule:
+    # 09:17 UTC, which is the small hours in the US. Off the hour, because the
+    # top of the hour is when GitHub's scheduler is busiest and most late.
+    - cron: '17 9 * * *'
+  repository_dispatch:
+    types: [release-published]
+  workflow_dispatch:
+    inputs:
+      dry-run:
+        description: Fetch and show what changed, but commit and deploy nothing
+        type: boolean
+        default: true
+
+# One refresh at a time, and at most one waiting. GitHub cancels a run that is
+# waiting in the group when a newer one joins, but never the one that is
+# running, so a burst of ten merges makes one or two deploys, not ten, and no
+# deploy is stopped halfway through an upload.
+concurrency:
+  group: nightly-refresh
+  cancel-in-progress: false
+
+permissions:
+  # To push the refreshed data and the DEPLOYED stamp.
+  contents: write
+  # To assume the deploy role through OIDC.
+  id-token: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      # The Makefile runs Ruby through rbenv, which the runner does not have;
+      # setup-ruby has already put the right Ruby on the PATH. And the recipes
+      # use `set -o pipefail`, which the dash that is /bin/sh on Ubuntu lacks.
+      MAKEFLAGS: RUBY= SHELL=/bin/bash
+      DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry-run }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          # Full history, so a rebase onto a main that moved during the run
+          # has a merge base to work from.
+          fetch-depth: 0
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Fetch releases
+        env:
+          GH_TOKEN: ${{ secrets.RELEASES_TOKEN }}
+        run: make releases
+
+      - name: See what changed
+        id: diff
+        run: |
+          if git diff --quiet -- _data/releases.yml; then
+            echo "No release changed."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            git diff -- _data/releases.yml
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Commit and push the data
+        if: steps.diff.outputs.changed == 'true' && env.DRY_RUN != 'true'
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit --quiet -m 'update project release data' -- _data/releases.yml
+          # Pushed before the build, so the DEPLOYED stamp names a commit that
+          # is already on main. Rebasing it later would change its hash and
+          # leave the stamp pointing at nothing.
+          git pull --rebase --quiet origin main
+          git push origin HEAD:main
+
+      - name: Build
+        if: steps.diff.outputs.changed == 'true' && env.DRY_RUN != 'true'
+        run: make build home
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        if: steps.diff.outputs.changed == 'true' && env.DRY_RUN != 'true'
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: us-east-1
+
+      # The Makefile and scripts/deploy-site.sh name the `armcknight` profile,
+      # as they do on a laptop, so give the role's credentials that name.
+      - name: Name the AWS profile
+        if: steps.diff.outputs.changed == 'true' && env.DRY_RUN != 'true'
+        run: |
+          aws configure set aws_access_key_id "$AWS_ACCESS_KEY_ID" --profile armcknight
+          aws configure set aws_secret_access_key "$AWS_SECRET_ACCESS_KEY" --profile armcknight
+          aws configure set aws_session_token "$AWS_SESSION_TOKEN" --profile armcknight
+          aws configure set region "$AWS_REGION" --profile armcknight
+
+      - name: Deploy
+        if: steps.diff.outputs.changed == 'true' && env.DRY_RUN != 'true'
+        run: |
+          make deploy home
+          make bust-cache home PATHS="/projects/ /projects/index.html"
+
+      - name: Push the DEPLOYED stamp
+        if: steps.diff.outputs.changed == 'true' && env.DRY_RUN != 'true'
+        run: |
+          git pull --rebase --quiet origin main
+          git push origin HEAD:main

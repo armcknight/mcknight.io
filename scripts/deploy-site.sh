@@ -34,8 +34,13 @@ sha=$(git rev-parse HEAD)
 printf '%s\n%s\n' "$sha" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > "$dest/DEPLOYED"
 echo "deploying $label at $sha"
 
-# pipefail, or a failed upload would be hidden by tee's exit status.
-set -o pipefail 2>/dev/null || true
+# pipefail, or a failed upload would be hidden by tee's exit status. Tried in
+# a subshell first: a shell without it, like the dash that is /bin/sh on
+# Ubuntu, exits on an unknown `set -o` rather than failing the command, so
+# `|| true` alone cannot catch it.
+if (set -o pipefail) 2>/dev/null; then
+    set -o pipefail
+fi
 aws s3 sync "$dest/" "s3://$bucket/" --profile armcknight --delete | tee "logs/$(basename "$bucket")_deploy.log"
 
 # Only now that the upload succeeded does the repo claim this is live.
