@@ -91,3 +91,4 @@ books/.cache
 # today, so it changes nearly every day; see the Makefile's `releases`.
 /_data/activity.yml
 /worktrees/
+/.envrc
