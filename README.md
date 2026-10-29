@@ -151,6 +151,16 @@ make bust-cache PATHS="/assets/pdf/*"
 `_config.yml` excludes `resume`, so its sources are never published; only the
 two PDFs are.
 
+The CV is not edited in `resume/cv.tex`: `make resume` generates it from the
+same data the experience page shows (`_data/experience.yaml`,
+`education.yaml`, `presentations.yaml`), through the template
+`resume/cv.tex.erb`, with `scripts/generate-cv.rb`. Change what the CV says
+in the data, and how it looks in the template; then commit the regenerated
+`cv.tex` in the resume repo, so it still builds on its own. In the data,
+`cv: false` leaves an entry out of the CV, `summary` is a job's one-line
+description, and `links` gives each name in a deliverable its own link; the
+comment at the top of the script says more.
+
 **Everything at once.** One wildcard costs a single path rather than one per
 file, and beats listing more than a handful:
 
@@ -607,6 +617,7 @@ own `src_`, `dest_`, `port_`, `stamp_`, `log_` and `label_` entries.
 | `blog/_posts/` | Posts, named `YYYY-MM-DD-slug.md` |
 | `blog/img/` | Post images, including the optional per-post `thumbnail` |
 | `scripts/new-post.sh` | Creates a post from a title, front matter and date filled in |
+| `scripts/generate-cv.rb` | Writes `resume/cv.tex` from `_data/` through `resume/cv.tex.erb` |
 | `scripts/fetch-releases.rb` | Generates `_data/releases.yml` and `_data/activity.yml` |
 | `.github/workflows/nightly-refresh.yml` | Runs `make releases` nightly and on a `release-published` dispatch, and deploys when it changed |
 | `scripts/nightly-refresh/` | The workflow's steps: refresh the data and say what changed, commit `releases.yml`, deploy and push the stamp |

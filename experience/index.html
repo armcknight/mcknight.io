@@ -356,7 +356,7 @@ document.addEventListener('DOMContentLoaded', function() {
             content += `<ul style="margin: 0.5rem 0; padding-left: 1.5rem; list-style: none;">`;
             honors.forEach(honor => { // Show all honors
               content += `<li style="margin-bottom: 0.5rem; position: relative; padding-left: 1.5rem;"><span style="position: absolute; left: 0;">🏆</span>`;
-              content += `<strong>${honor.award}</strong>`;
+              content += `<strong>${honor.award}${honor.from ? ', ' + honor.from : ''}</strong>`;
               if (honor.year) {
                 content += `<br/><span style="font-size: 0.9rem; color: #666;">${honor.year}</span>`;
               }
@@ -799,7 +799,7 @@ document.addEventListener('DOMContentLoaded', function() {
             content += `<ul style="margin: 0.5rem 0; padding-left: 1.5rem; list-style: none;">`;
             honors.forEach(honor => { // Show all honors
               content += `<li style="margin-bottom: 0.5rem; position: relative; padding-left: 1.5rem;"><span style="position: absolute; left: 0;">🏆</span>`;
-              content += `<strong>${honor.award}</strong>`;
+              content += `<strong>${honor.award}${honor.from ? ', ' + honor.from : ''}</strong>`;
               if (honor.year) {
                 content += `<br/><span style="font-size: 0.9rem; color: #666;">${honor.year}</span>`;
               }

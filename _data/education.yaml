@@ -5,6 +5,7 @@ education:
     institution: Old Dominion University
     details:
       - Thesis track in bioinformatics, robotics, image processing and meshing research topics
+      - "Thesis: \"Protein Loop Length Estimation from Medium Resolution CryoEM Images\""
       - Three published papers with two conference presentations
       - C++ programming TA for three semesters
       - Minor in actuarial mathematics
@@ -21,37 +22,57 @@ education:
     tags: [academic, masters, computer-science, research, bioinformatics]
     honors: 
       - year: 2013
-        award: Gene Newman Award, Virginia Modeling, Analysis and Simulation Center Capstone conference
+        award: Gene Newman Award
+        from: Virginia Modeling, Analysis and Simulation Center Capstone conference
         description: Best overall paper
         tags: [academic, research, awards, paper, conference]
+
+  - start: September 2009
+    end: May 2012
+    degree: B.Sc., Computer Science
+    institution: Old Dominion University
+    details:
+      - Graduated with Distinction; Dean's List 2010–2011; First Place, ODU-ACM Programming Contest (2011)
+      - Graduate-level versions of courses as part of the Accelerated Master's program
+    tags: [academic, undergraduate, computer-science]
+    honors:
       - year: 2012
         award: Graduate with Distinction
+        from: Old Dominion University
         description: Awarded with B.Sc.
         tags: [academic, honors, undergraduate, distinction]
       - year: 2012
-        award: Undergraduate Research Award, Spring Undergraduate Research Fair
+        award: Undergraduate Research Award
+        from: ODU Spring Undergraduate Research Fair
         description: Outstanding undergraduate achievement
         tags: [academic, research, undergraduate, fair]
       - year: 2011
-        award: First Place, ODU-ACM Programming Contest
+        award: First Place
+        from: ODU-ACM Programming Contest
         tags: [academic, programming, competition, first-place]
-      - year: 2010, 2011
+      - year: 2010 – 2011
         award: Dean's List
+        from: Old Dominion University
         tags: [academic, honors, undergraduate, deans-list]
   - start: September 2003
     end: June 2009
     degree: A.Sc., Dept. of Computer Science
     institution: Northern Virginia Community College; Piedmont Virginia Community College
+    # Not in the CV's education section, which starts at the B.Sc.; its honor
+    # still is, in the CV's honors.
+    cv: false
     tags: [academic, masters, computer-science, research, bioinformatics] 
     honors:
       - year: 2009
         award: Summa Cum Laude
+        from: Piedmont Virginia Community College
         tags: [academic, honors, community-college, summa-cum-laude]
   
   - start: September 1999
     end: June 2003
     degree: High School Diploma
     institution: CD Hylton High School
+    cv: false
     location: Woodbridge, VA
     tags: [high-school]
     highlights:
@@ -63,6 +84,7 @@ education:
   - start: September 1997
     end: June 1999
     institution: Middle School
+    cv: false
     location: Manassas, VA
     tags: [middle-school]
     highlights:

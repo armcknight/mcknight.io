@@ -6,17 +6,23 @@ experience:
     title: Senior iOS Developer
     location: Remote
     employment_type: (FTE)
+    summary: Application observability platform
     tags: [iOS, macOS, tvOS, watchOS, visionOS, cocoa, swiftUI, mobile, swift, objective-c++, xcodegen, github-actions]
-    stack: 
-      - languages: [Swift, Objective-C++]
+    stack:
+      - languages: [Objective-C++, Swift]
       - frameworks: [SwiftUI]
-      - tools: [XcodeGen, Swiftlint, clang-format, CodeCov, pre-commit, Fastlane]
+      - tools: [XcodeGen, CocoaPods, SPM, Carthage, Swiftlint, clang-format, CodeCov, pre-commit, Fastlane, Arkana]
       - infrastructure: [GitHub Actions, SauceLabs, TestFlight]
-    highlights:
-      - Integrating Specto's profiling feature into Sentry's Cocoa SDK
-      - "User Feedback widget: first user-facing UI shipped in Sentry Cocoa SDK"
-      - Wrangled sample and demo apps for developers and Sales team
-      - Numerous improvements to CI and build system
+    deliverables:
+      - name: Sentry Cocoa SDK
+        url: https://github.com/getsentry/sentry-cocoa
+        description: mobile app crash and performance monitoring
+        details:
+          - Spearheaded launching iOS/macOS SwiftUI apps for Seer AI workflows
+          - Integrated Specto's profiler into Sentry's Cocoa SDK and iterated with new API/features
+          - "User Feedback widget: first user-facing UI shipped in Sentry Cocoa SDK"
+          - Built and maintained sample and demo apps for developers and Sales team
+          - "CI overhauls: added workflows, streamlined inconsistencies, and parallelized long-running jobs"
 
   - start: November 2019
     end: January 2021
@@ -25,32 +31,35 @@ experience:
     title: Senior iOS Developer
     location: Remote
     employment_type: (FTE)
+    summary: Mobile app profiling SDK with shared C++ core between iOS and Android
     tags: [iOS, macOS, mobile, objective-c++, swift, cocoa, protobuf, jinja, xcodegen, bazel, python, go, github-actions]
-    stack: 
+    stack:
       - languages: [Objective-C++, Swift, Go, Python]
       - tools: [Protobuf, Jinja, XcodeGen, Bazel]
       - infrastructure: [GitHub Actions]
+    deliverables:
+      - Mobile app profiling SDK with shared C++ core between iOS and Android, Python scripts to generate scoped Xcode projects from Bazel targets (pre `rules-xcode`)
     highlights:
-      - Mobile app profiling SDK with shared C++ core between iOS and Android
-      - Python scripts to generate scoped Xcode projects from Bazel targets (pre `rules-xcode`)
-      - Acquired by Sentry in December 2020
+      - First employee at startup; grew and maintained iOS profiling SDK
+      - Added safe init, launch profiling, signal propagation
+      - Automated scoped Xcode project generation from Bazel targets (pre `rules_xcodeproj`)
+      - Joined Sentry as acquisition in December 2020; SDK integrated into Sentry Cocoa
 
   - start: January 2019
-    end: November 2019
+    end: October 2019
     era: professional
     company: Rightpoint Consulting
     title: Senior iOS Developer
     location: Remote
     employment_type: (Contract-to-Perm)
+    summary: Security-focused app and SDK (NDA)
     tags: [iOS, mobile, swift, consulting, contract, security, remote]
-    stack: 
+    stack:
       - languages: [Swift]
       - tools: [SwiftGen, SwiftLint, Sourcery]
-      - infrastructure: [CircleCI, Browserstack, Countly, Postman]
-    highlights:
-      - Security-focused app and SDK (NDA)
+      - infrastructure: [CircleCI, Postman, Browserstack, Countly]
 
-  - start: September 2011
+  - start: November 2011
     end: Current
     era: professional
     company: Insight Therapeutics
@@ -60,11 +69,15 @@ experience:
     tags: [iOS, mobile, medical, healthcare, consulting, contract, remote]
     stack: 
       - languages: [Objective-C, Swift]
-      - frameworks: [MessageUI, CoreGraphics, CoreData, FMDB, SQLite, SSZipArchive, RNCryptor]
-      - infrastructure: [cocoapods-keys]
+      - frameworks: [MessageUI, Storyboards, CoreGraphics, CoreData, FMDB, SQLite, SSZipArchive, RNCryptor]
+      - infrastructure: [cocoapods-keys, Trello, BitBucket]
     deliverables:
       - name: ClotRx & DementiaRx
         url: http://itunes.apple.com/us/app/clot-rx/id408979176?mt=8
+        # Each app its own link in the CV; the experience page links the name.
+        links:
+          ClotRx: http://itunes.apple.com/us/app/clot-rx/id408979176?mt=8
+          DementiaRx: http://itunes.apple.com/us/app/dementia-rx/id496024720?mt=8
         description: reference e-pamphlets
         details:
           - Hybrid app with WKWebView
@@ -91,6 +104,7 @@ experience:
     title: iOS Developer
     location: Remote
     employment_type: (Contract)
+    summary: Medical inventory management app/SDK with barcode/QR scanning
     tags: [iOS, mobile, medical, healthcare, contract, remote, firebase, opencv]
     stack: 
       - languages: [Swift]
@@ -101,10 +115,9 @@ experience:
       - Reimplemented major area of app with new UI and platform API
       - Added crash reporting (Crashlytics) and logging (XCGLogging)
       - Augmented and documented analytics (Firebase)
-    deliverables:
       - name: 121 Scan
         url: https://itunes.apple.com/us/app/121-scan/id1187264063
-        description: Assisted launches via iTunes and another internal enterprise app
+        description: Assisted launches via iTunes (121 Scan) and another internal enterprise app
 
   - start: December 2016
     end: July 2017
@@ -113,12 +126,12 @@ experience:
     title: iOS Developer
     location: Remote
     employment_type: (FTE)
+    summary: In-App Messaging SDK
     tags: [iOS, mobile, messaging, sdk, remote, objc, swift]
     stack: 
       - languages: [C, Objective-C, Swift]
-      - frameworks: [OCMock, Specta, Expecta, Rails, Thrift, WebSockets, SPDY]
+      - frameworks: [OCMock, Specta, Expecta, Rails, Thrift, WebSockets, SPDY, SQLite]
       - infrastructure: [CocoaPods, Jenkins]
-      - platforms: [iOS]
     deliverables:
       - ObjC SDKs for data and UI components, an embeddable app layer and fully-functional sample app
     highlights:
@@ -133,15 +146,16 @@ experience:
     end: December 2016
     era: professional
     company: Twitter
-    title: iOS/Fullstack Developer
+    title: Software Engineer
     location: Cambridge, MA
     employment_type: (FTE)
+    summary: Mobile app crash reporting and analytics
     tags: [iOS, mobile, crash-reporting, backend, fullstack, data, analytics, scala, java]
     stack: 
       - languages: [Objective-C, C, Swift, Java, Scala, Clojure, Coffeescript]
       - frameworks: [Rails, React, Protobuf]
-      - infrastructure: [Storm, Heron, Cascading, Scalding, Graphite, Beanstalk, Kafka, Redis, Cassandra, AWS, TeamCity, Chef]
-      - reporting:[Vertica, Zeppelin]
+      - infrastructure: [Storm, Heron, Cascading, Scalding, Graphite, Beanstalk, Kafka, Redis, Cassandra, AWS, TeamCity, Chef, Trello]
+      - reporting: [Vertica, Zeppelin]
     deliverables:
       - Crashlytics/Fabric SDKs, Mac app and command line tools, front- and back-end maintenance and analytics, Unity iOS support
     highlights:
@@ -160,11 +174,12 @@ experience:
     title: iOS Developer
     location: Cambridge, MA
     employment_type: (FTE)
+    summary: Companion iOS app for wearable peripheral with BTLE link
     tags: [iOS, mobile, medical, wearables, bluetooth, objc, swift]
     stack: 
       - languages: [Objective-C, Swift]
       - frameworks: [CoreBluetooth, NSOperation]
-      - platforms: [iOS, Android]
+      - platforms: [Android]
     deliverables:
       - Companion iOS app for wearable peripheral with BTLE link
     highlights:
@@ -177,7 +192,7 @@ experience:
   - start: July 2013
     end: December 2014
     era: professional
-    company: Raizlabs Consulting
+    company: Raizlabs
     title: iOS Developer
     location: Boston, MA
     employment_type: (FTE)
@@ -185,7 +200,6 @@ experience:
     stack: 
       - languages: [Objective-C, Swift]
       - infrastructure: [Jenkins, TeamCity]
-      - platforms: [iOS]
     deliverables:
       - name: Care.com
         url: https://itunes.apple.com/us/app/care.com/id328453619?mt=8
@@ -212,7 +226,7 @@ experience:
   - start: October 2012
     end: May 2013
     era: semi-pro
-    school: ODU (Systems Lab)
+    school: ODU Systems Lab
     title: iOS Developer
     location: Norfolk, VA
     employment_type: (Student Intern)
@@ -287,6 +301,7 @@ experience:
     end: April 2011
     era: semi-pro
     company: XVD Longboards
+    cv: false
     title: Web Developer
     location: Norfolk, VA
     employment_type: (Contract)
@@ -303,6 +318,7 @@ experience:
     end: June 2009
     era: foodservice
     company: Restaurants
+    cv: false
     title: Chef
     location: Woodbridge, VA; Charlottesville, VA
     employment_type: (Hourly)

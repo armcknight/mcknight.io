@@ -239,6 +239,11 @@ endserve: ## <site> Stop a served site
 # Rebuilds the LaTeX resume and CV, then copies the two PDFs the site links to
 # into assets/pdf/.
 #
+# The CV's LaTeX is generated first, from the experience page's own data
+# (_data/experience.yaml, education.yaml, presentations.yaml) through the
+# template resume/cv.tex.erb; see scripts/generate-cv.rb. Change the CV there,
+# not in resume/cv.tex, and commit the regenerated cv.tex in the resume repo.
+#
 # resume/ is a submodule of armcknight/resume, where the .tex sources are
 # edited and committed; its build/ is scratch space that git ignores — the
 # tracked artifacts are the two copies under assets/pdf/, which is why the copy
@@ -248,6 +253,7 @@ endserve: ## <site> Stop a served site
 # Needs a TeX distribution: the resume's own Makefile drives pdflatex directly.
 .PHONY: resume
 resume: ## Rebuild the resume and CV PDFs from LaTeX and copy them into assets/pdf
+	$(RUBY) ruby scripts/generate-cv.rb
 	pushd resume && make build
 	cp resume/build/pdfs/cv.pdf assets/pdf/andrew-mcknight-cv.pdf
 	cp resume/build/pdfs/ios_resume.pdf assets/pdf/andrew-mcknight-resume-ios.pdf
