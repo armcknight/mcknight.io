@@ -232,10 +232,11 @@ endserve: ## <site> Stop a served site
 # Rebuilds the LaTeX resume and CV, then copies the two PDFs the site links to
 # into assets/pdf/.
 #
-# resume/build/ is scratch space that git ignores — the tracked artifacts are the
-# two copies under assets/pdf/, which is why the copy step exists. Editing
-# resume/*.tex changes nothing a visitor sees until this runs, so run it in the
-# same commit as the .tex change.
+# resume/ is a submodule of armcknight/resume, where the .tex sources are
+# edited and committed; its build/ is scratch space that git ignores — the
+# tracked artifacts are the two copies under assets/pdf/, which is why the copy
+# step exists. Moving the submodule changes nothing a visitor sees until this
+# runs, so run it in the same commit as the submodule change.
 #
 # Needs a TeX distribution: the resume's own Makefile drives pdflatex directly.
 .PHONY: resume

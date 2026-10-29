@@ -133,15 +133,23 @@ missing (`gh` must be signed in), but leaves an existing one as it is. A
 deploy from a workstation therefore shows that machine's activity until the
 next run of the workflow; run `make releases` first to deploy current numbers.
 
-**Change the resume.** Editing `resume/*.tex` changes nothing a visitor sees
-until the PDFs are rebuilt, so do it in the same commit:
+**Change the resume.** `resume/` is a submodule of
+[armcknight/resume](https://github.com/armcknight/resume), a private repo, so
+the resume is changed and committed there. Nothing a visitor sees changes
+until the PDFs are rebuilt here, from the submodule at the commit this repo
+points to:
 
 ```
-$EDITOR resume/cv.tex
+git submodule update --init                  # once per clone
+git -C resume pull                           # or commit the change in resume/
 make resume     # regenerates and copies both PDFs into assets/pdf/
+git add resume assets/pdf && git commit -m "update resume"
 make build && make deploy
 make bust-cache PATHS="/assets/pdf/*"
 ```
+
+`_config.yml` excludes `resume`, so its sources are never published; only the
+two PDFs are.
 
 **Everything at once.** One wildcard costs a single path rather than one per
 file, and beats listing more than a handful:
@@ -605,7 +613,7 @@ own `src_`, `dest_`, `port_`, `stamp_`, `log_` and `label_` entries.
 | `travel/` | The travel.mcknight.io site: its own config, data, page and scripts |
 | `books/` | The books.mcknight.io site: its own config, data, page and scripts |
 | `shared/` | What the subdomains share: the globe's core, and the plugin that copies it into each build |
-| `resume/` | LaTeX sources for the resume and CV; `make resume` builds them |
+| `resume/` | Submodule of armcknight/resume: LaTeX sources for the resume and CV; `make resume` builds them |
 | `assets/pdf/` | The built PDFs the site links to — these are the tracked artifacts, not `resume/build/` |
 | `robots.txt` | Who may crawl the site: everyone, for search, link previews and AI answers, but not the crawlers that train AI models. `travel/` and `books/` have the same file. It names `sitemap.xml`, which `jekyll-sitemap` writes |
 | `DEPLOYED` | What is live |
