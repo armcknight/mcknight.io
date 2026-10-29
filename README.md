@@ -157,9 +157,8 @@ same data the experience page shows (`_data/experience.yaml`,
 `resume/cv.tex.erb`, with `scripts/generate-cv.rb`. Change what the CV says
 in the data, and how it looks in the template; then commit the regenerated
 `cv.tex` in the resume repo, so it still builds on its own. In the data,
-`cv: false` leaves an entry out of the CV, `summary` is a job's one-line
-description, and `links` gives each name in a deliverable its own link; the
-comment at the top of the script says more.
+`cv: false` leaves an entry out of the CV; the comment at the top of
+`_data/experience.yaml` describes every field.
 
 **Everything at once.** One wildcard costs a single path rather than one per
 file, and beats listing more than a handful:

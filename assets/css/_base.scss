@@ -213,6 +213,18 @@ blockquote p {
   margin-right: auto;
 }
 
+// A page that should use the whole window — the experience timeline — sets
+// `content_class: content-wide content-full`: its main container drops the
+// site's maximum width and keeps only a fixed margin each side.
+main.container:has(> .content-full) {
+  max-width: none;
+  padding: 0 var(--space-8);
+
+  @media (max-width: 768px) {
+    padding: 0 var(--space-4);
+  }
+}
+
 // Header
 .site-header {
   border-bottom: 1px solid var(--border);

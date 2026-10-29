@@ -19,11 +19,6 @@
 # What the data may say, beyond what the experience page shows:
 #   cv: false            leaves an entry out of the CV (education: out of the
 #                        education section; its honors are still listed)
-#   summary:             a job's one-line description, first in its entry
-#   links:               on a deliverable or highlight, the names in it that
-#                        link somewhere, { name: url }, in place of its url:
-#                        for a name like "ClotRx & DementiaRx" with a link
-#                        for each app. The experience page still uses url.
 # Text may use `backticks` for code, and "straight quotes", which become TeX's.
 
 require 'erb'
@@ -82,11 +77,6 @@ class CV
     "\\textcolor{color1}{\\href{#{url.to_s.gsub(/[%#]/) { |c| "\\#{c}" }}}{#{tex(name)}}}"
   end
 
-  # Text with each of the names in `links` ({ name => url }) made a link.
-  def linked(text, links)
-    links.reduce(tex(text)) { |result, (name, url)| result.sub(tex(name)) { link(name, url) } }
-  end
-
   # "Jan 2021 – Current", or "Jan – Apr 2018" within one year.
   def dates(item)
     start = short_date(item['start'])
@@ -110,24 +100,22 @@ class CV
     items.empty? ? nil : items.map { |item| tex(item) }.join(', ')
   end
 
-  # A deliverable or highlight: a plain string, or a name with a url, a
-  # description and perhaps more links. A deliverable is written as its name,
-  # then what it is; a highlight is its description, the name in it linked,
-  # as the experience page writes them.
+  # A deliverable or highlight: a plain string, or a name with a url and a
+  # description. A deliverable is written as its name, then what it is; a
+  # highlight is its description, the name in it linked, as the experience
+  # page writes them.
   def item(entry, kind)
     return tex(entry) unless entry.is_a?(Hash)
 
-    links = entry['links'] || (entry['url'] ? { entry['name'] => entry['url'] } : {})
-    return linked(entry['description'], links) if kind == :highlight
+    name = entry['url'] ? link(entry['name'], entry['url']) : tex(entry['name'])
+    return tex(entry['description']).sub(tex(entry['name'])) { name } if kind == :highlight
 
-    name = linked(entry['name'], links)
     entry['description'] ? "#{name}: #{tex(entry['description'])}" : name
   end
 
   # The \item lines of one job's entry, indented for the template.
   def job_items(job)
     lines = []
-    lines << "\\item #{tex(job['summary'])}" if job['summary']
     lines << "\\item \\textbf{Stack}: #{stack(job)}" if stack(job)
     deliverables = job['deliverables'].to_a
     if deliverables.size == 1 && deliverables.first.is_a?(String)
