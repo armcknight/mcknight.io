@@ -216,18 +216,25 @@ build: _logs-dir optimize-images _check-home-data _activity-data ## <site> Build
 #
 # It serves the build, not the sources: there is no watch and no live reload, so
 # each change needs another build.
+#
+# It stops first if something already listens on a site's port. The server runs
+# in the background with its output thrown away, so otherwise it would fail to
+# start without a word, and the browser would open on whatever was there, such
+# as a server left from an earlier `serve`.
 .PHONY: serve
 serve: ## <site> Serve a built site and open it
+	@$(foreach s,$(SELECTED),if lsof -ti :$(port_$(s)) -sTCP:LISTEN >/dev/null 2>&1; then echo "Something already serves port $(port_$(s)), where $(label_$(s)) goes. Run \`make endserve $(s)\` first."; exit 1; fi;)
 	$(foreach s,$(SELECTED),(cd $(dest_$(s)) && nohup python3 -m http.server $(port_$(s)) --bind localhost >/dev/null 2>&1 &); echo "serving $(label_$(s)) at http://localhost:$(port_$(s))"; open http://localhost:$(port_$(s));)
 
 # Stops a served site, by the port it is on rather than by killing every Python
-# process on the machine, which is what this used to do.
+# process on the machine, which is what this used to do. Only the process that
+# listens on the port: a browser with a connection open to it is on the port too.
 #
 #   make endserve              stops the main site
 #   make endserve home travel  stops both
 .PHONY: endserve
 endserve: ## <site> Stop a served site
-	@$(foreach s,$(SELECTED),pids=$$(lsof -ti :$(port_$(s)) 2>/dev/null); if [ -n "$$pids" ]; then echo "$$pids" | xargs kill && echo "stopped $(label_$(s)) on port $(port_$(s))"; else echo "nothing was serving $(label_$(s)) on port $(port_$(s))"; fi;)
+	@$(foreach s,$(SELECTED),pids=$$(lsof -ti :$(port_$(s)) -sTCP:LISTEN 2>/dev/null); if [ -n "$$pids" ]; then echo "$$pids" | xargs kill && echo "stopped $(label_$(s)) on port $(port_$(s))"; else echo "nothing was serving $(label_$(s)) on port $(port_$(s))"; fi;)
 
 # Rebuilds the LaTeX resume and CV, then copies the two PDFs the site links to
 # into assets/pdf/.
