@@ -5,10 +5,19 @@
   // which are now in the blog section
 }
 
-// Recent posts section (shown on home page)
+// "Recent Posts" on the home page: closer to the paragraphs above it and to
+// the posts below it than an h2's own margins put it.
+.home-content > h2 {
+  margin-top: var(--space-8);
+  margin-bottom: var(--space-4);
+}
+
+// A list of posts, on the home page, the blog's index and its tag pages: the
+// gap between posts set here, as a grid's items keep their own margins on top
+// of it.
 .blog-posts {
   display: grid;
-  gap: 0;
+  gap: var(--space-6);
 }
 
 .blog-post-preview {
@@ -19,9 +28,21 @@
   padding-bottom: 0;
 }
 
+// "View all posts", under the recent ones: as close to them as their heading
+// is, and the footer, on this page only, as close again below it.
+.home-all-posts {
+  margin-top: var(--space-4);
+  margin-bottom: 0;
+}
+
+main:has(.home-content) + .site-footer {
+  margin-top: var(--space-6);
+}
+
 .blog-post-title {
   font-size: var(--text-2xl);
   font-weight: 600;
+  margin-top: 0;
   margin-bottom: var(--space-1);
 }
 
