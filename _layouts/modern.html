@@ -100,12 +100,14 @@
   </footer>
 
   <script>
-    // Handle floating back-to-top button positioning relative to footer
+    // Handle floating back-to-top button positioning relative to footer: the
+    // button, and any others beside it, as the experience page's previous and
+    // next entry buttons, which share its class
     document.addEventListener('DOMContentLoaded', function() {
-      const floatingButton = document.querySelector('.floating-back-to-top');
+      const floatingButtons = document.querySelectorAll('.floating-back-to-top');
       const footer = document.querySelector('.site-footer');
       
-      if (!floatingButton || !footer) return;
+      if (!floatingButtons.length || !footer) return;
       
       const buttonSpacing = 24; // var(--space-6) = 1.5rem = 24px
       const scrollThreshold = 200; // Show button after scrolling 200px down
@@ -115,23 +117,16 @@
         const footerRect = footer.getBoundingClientRect();
         const windowHeight = window.innerHeight;
         
-        // Show/hide based on scroll position
-        if (scrollY > scrollThreshold) {
-          floatingButton.classList.add('visible');
-        } else {
-          floatingButton.classList.remove('visible');
-        }
-        
         // Position relative to footer when footer is visible
-        if (footerRect.top < windowHeight) {
-          // Footer is visible, position button above footer
-          const footerVisibleHeight = windowHeight - footerRect.top;
-          const newBottom = footerVisibleHeight + buttonSpacing;
-          floatingButton.style.bottom = newBottom + 'px';
-        } else {
-          // Footer not visible, use default position
-          floatingButton.style.bottom = buttonSpacing + 'px';
-        }
+        const bottom = footerRect.top < windowHeight
+          ? (windowHeight - footerRect.top) + buttonSpacing // Footer is visible, position buttons above footer
+          : buttonSpacing; // Footer not visible, use default position
+        
+        floatingButtons.forEach(function(floatingButton) {
+          // Show/hide based on scroll position
+          floatingButton.classList.toggle('visible', scrollY > scrollThreshold);
+          floatingButton.style.bottom = bottom + 'px';
+        });
       }
       
       // Update on scroll and resize

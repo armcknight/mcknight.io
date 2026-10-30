@@ -17,6 +17,18 @@ Git-style timeline - start simple with just dates
 
 <div class="git-timeline-container">
   <h2>Career Timeline</h2>
+
+  {% comment %}
+    Which kinds of entry the timeline shows, any number of them at once.
+    Hidden until the script below can work it; without it, nothing is drawn.
+  {% endcomment %}
+  <div class="sort-switch" id="timeline-kinds" role="group" aria-label="Show in the timeline" hidden>
+    <span class="sort-switch-label">Show</span>
+    <label><input type="checkbox" value="job" checked> Jobs</label>
+    <label><input type="checkbox" value="education" checked> Education</label>
+    <label><input type="checkbox" value="presentation" checked> Presentations</label>
+    <label><input type="checkbox" value="mentorship" checked> Mentorship</label>
+  </div>
   
   <!-- Git-style graph view -->
   <div class="git-graph">
@@ -26,6 +38,7 @@ Git-style timeline - start simple with just dates
       <!-- Simple commit list with just dates -->
       {% for job in site.data.experience.experience %}
         <div class="git-commit" 
+             data-kind="job"
              data-start="{{ job.start }}"
              data-end="{{ job.end }}"
              data-company="{{ job.organization }}"
@@ -46,6 +59,7 @@ Git-style timeline - start simple with just dates
       
       {% for edu in site.data.education.education %}
         <div class="git-commit" 
+             data-kind="education"
              data-start="{{ edu.start }}"
              data-end="{{ edu.end }}"
              data-company="{{ edu.institution }}"
@@ -62,6 +76,32 @@ Git-style timeline - start simple with just dates
             <span class="commit-company">{{ edu.institution }}</span>
           </div>
         </div>
+      {% endfor %}
+
+      {% comment %}
+        Talks and mentoring sessions: one date each, so one dot each, with no
+        end date. Their event stands where a job's organization does, and
+        their venue and place where its location does.
+      {% endcomment %}
+      {% assign single_kinds = "presentation,mentorship" | split: "," %}
+      {% for kind in single_kinds %}
+        {% if kind == "presentation" %}{% assign entries = site.data.presentations.presentations %}{% else %}{% assign entries = site.data.mentorship.mentorship %}{% endif %}
+        {% for entry in entries %}
+          <div class="git-commit"
+               data-kind="{{ kind }}"
+               data-start="{{ entry.date }}"
+               data-company="{{ entry.event }}"
+               data-title="{{ entry.title }}"
+               data-location="{% if entry.venue %}{{ entry.venue }}, {% endif %}{{ entry.location }}"
+               data-details="{{ entry.details | jsonify | escape }}"
+               data-era="{{ kind }}">
+            <div class="commit-dot"></div>
+            <div class="commit-info">
+              <span class="commit-date">{{ entry.date }}</span>
+              <span class="commit-company">{{ entry.event }}</span>
+            </div>
+          </div>
+        {% endfor %}
       {% endfor %}
     </div>
   </div>
@@ -99,164 +139,194 @@ document.addEventListener('DOMContentLoaded', function() {
   
 
   
-  // Collect all commits (start and end dates)
-  let allCommits = [];
-  
-  // Process experience items
-  const commits = document.querySelectorAll('.git-commit');
-  commits.forEach(commit => {
+  // Collect every commit (start and end dates) of every kind of entry: jobs,
+  // education, presentations and mentorship. The timeline shows those of the
+  // kinds the switch above it has on (see showKinds below).
+  const everyCommit = [];
+
+  document.querySelectorAll('#git-commits .git-commit').forEach(commit => {
     const startDate = parseDate(commit.dataset.start);
     const endDate = parseDate(commit.dataset.end);
-    // The organization: a job's, or a school's for education
+    // The organization: a job's, a school's, or a talk's or session's event
     const company = commit.dataset.company;
     const era = commit.dataset.era;
-    
+    const kind = commit.dataset.kind;
+
     // Skip commits with missing company/school data
     if (!company || company.trim() === '') {
       console.log(`Skipping commit with empty company/school: start="${commit.dataset.start}", end="${commit.dataset.end}", era="${era}"`);
       return;
     }
-    
+
+    // An entry on a single day, a talk or a session, is one commit, shown, as
+    // an end commit is: a dot on a branch of its own, with no range.
+    if (!commit.dataset.end) {
+      if (startDate) {
+        everyCommit.push({ date: startDate, company, type: 'end', single: true, era, kind, element: commit, originalDate: commit.dataset.start });
+      }
+      return;
+    }
+
     // Add start commit
     if (startDate) {
-      allCommits.push({
+      everyCommit.push({
         date: startDate,
         company: company,
         type: 'start',
         era: era,
+        kind: kind,
         element: commit,
         originalDate: commit.dataset.start // Store original start date string
       });
     }
-    
+
     // Add end commit (if different from start)
     if (endDate && endDate.getTime() !== startDate?.getTime()) {
-      allCommits.push({
+      everyCommit.push({
         date: endDate,
         company: company,
         type: 'end',
         era: era,
+        kind: kind,
         element: commit,
         originalDate: commit.dataset.end // Store original end date string
       });
     }
   });
-  
-  // Add birth commit as the anchor point for the timeline
-  allCommits.push({
+
+  // Add birth commit as the anchor point for the timeline, whatever is shown
+  everyCommit.push({
     date: new Date(1985, 0, 1), // January 1, 1985
     company: "Born 1985",
     type: 'birth',
     era: 'birth',
+    kind: 'birth',
     element: null,
     originalDate: "1985"
   });
-  
+
   // Sort chronologically (newest first) - important for git graph branch logic
-  allCommits.sort((a, b) => b.date - a.date);
-  
-  // Assign branches - every experience gets its own branch
-  // Main branch = empty trunk line
-  // All experiences get dedicated side branches
-  const branchAssignments = {};
-  
-  // Group commits by company+era to get their full date ranges
-  const entryRanges = {};
-  allCommits.forEach(commit => {
-    const key = commit.company + commit.era;
-    if (!entryRanges[key]) {
-      entryRanges[key] = {
-        company: commit.company,
-        era: commit.era,
-        start: commit.date,
-        end: commit.date,
-        commits: []
-      };
-    }
-    entryRanges[key].commits.push(commit);
-    
-    // Update the range
-    if (commit.date < entryRanges[key].start) entryRanges[key].start = commit.date;
-    if (commit.date > entryRanges[key].end) entryRanges[key].end = commit.date;
-  });
-  
-  // Sort entries by start date (earliest first)
-  const sortedEntries = Object.values(entryRanges).sort((a, b) => a.start - b.start);
-  
-  // Assign each experience a unique branch number for colors (skip branch 0 - it's the empty trunk)
-  let nextBranch = 1; // Start from branch 1
-  
-  // Also create efficient horizontal positioning based on overlaps
-  const branchPositions = {}; // Maps branch number to horizontal position index
-  const activeBranches = []; // Track active ranges for efficient positioning
-  let nextPosition = 1; // Start from position 1 (position 0 is main branch)
-  
-  sortedEntries.forEach(entry => {
-    const key = entry.company + entry.era;
-    
-    // Every experience gets its own unique branch number for color
-    branchAssignments[key] = nextBranch++;
-    
-    // But for horizontal positioning, find the leftmost available position
-    let assignedPosition = -1;
-    
-    for (let positionIndex = 0; positionIndex < activeBranches.length; positionIndex++) {
-      const activeBranch = activeBranches[positionIndex];
-      let hasOverlap = false;
-      
-      for (let activeEntry of activeBranch) {
-        // Check if current entry overlaps with this active entry
-        if (entry.start < activeEntry.end && entry.end > activeEntry.start) {
-          hasOverlap = true;
-          break;
-        }
-      }
-      
-      if (!hasOverlap) {
-        // No overlap, can use this position
-        assignedPosition = positionIndex + 1; // +1 because position 0 is main branch
-        break;
-      }
-    }
-    
-    // If no existing position can accommodate this entry, create a new position
-    if (assignedPosition === -1) {
-      assignedPosition = nextPosition++;
-      activeBranches.push([]);
-    }
-    
-    // Map branch number to horizontal position
-    branchPositions[branchAssignments[key]] = assignedPosition;
-    activeBranches[assignedPosition - 1].push(entry); // -1 because activeBranches is 0-indexed but position numbers start from 1
-  });
-  
-  // Apply branch assignments to commits
-  allCommits.forEach(commit => {
-    if (commit.type === 'birth') {
-      // Birth commit always goes on the main branch
-      commit.branch = 0;
-    } else {
-      const key = commit.company + commit.era;
-      commit.branch = branchAssignments[key];
-    }
-  });
-  
+  everyCommit.sort((a, b) => b.date - a.date);
+
   // Create git graph visualization
   const canvas = document.getElementById('git-canvas');
   const ctx = canvas.getContext('2d');
   const commitsContainer = document.getElementById('git-commits');
-  
+
   const BRANCH_WIDTH = 15;
   const LINE_HEIGHT = 30;
-      const MAIN_BRANCH_X = 5; // Small padding to ensure main line is fully visible
-  
+  const MAIN_BRANCH_X = 5; // Small padding to ensure main line is fully visible
+
+  // The commits shown, and their branches: set by assignBranches() from the
+  // kinds the switch has on, and read by layout() and drawGitBranches().
+  let allCommits = [];
+  let branchAssignments = {};
+  let entryRanges = {};
+  let branchPositions = {};
+  let gitGraphWidth = 0;
+  let textAreaX = 0;
+
+  // Assign branches - every entry shown gets its own branch, and a lane: the
+  // leftmost one no other entry's range overlaps.
+  // Main branch = empty trunk line
+  function assignBranches() {
+    branchAssignments = {};
+
+    // Group commits by company+era to get their full date ranges
+    entryRanges = {};
+    allCommits.forEach(commit => {
+      const key = commit.company + commit.era;
+      if (!entryRanges[key]) {
+        entryRanges[key] = {
+          company: commit.company,
+          era: commit.era,
+          start: commit.date,
+          end: commit.date,
+          commits: []
+        };
+      }
+      entryRanges[key].commits.push(commit);
+
+      // Update the range
+      if (commit.date < entryRanges[key].start) entryRanges[key].start = commit.date;
+      if (commit.date > entryRanges[key].end) entryRanges[key].end = commit.date;
+    });
+
+    // Sort entries by start date (earliest first)
+    const sortedEntries = Object.values(entryRanges).sort((a, b) => a.start - b.start);
+
+    // Assign each experience a unique branch number for colors (skip branch 0 - it's the empty trunk)
+    let nextBranch = 1; // Start from branch 1
+
+    // Also create efficient horizontal positioning based on overlaps
+    branchPositions = {}; // Maps branch number to horizontal position index
+    const activeBranches = []; // Track active ranges for efficient positioning
+    let nextPosition = 1; // Start from position 1 (position 0 is main branch)
+
+    sortedEntries.forEach(entry => {
+      const key = entry.company + entry.era;
+      if (entry.era === 'birth') {
+        branchAssignments[key] = 0;
+        return;
+      }
+
+      // Every experience gets its own unique branch number for color
+      branchAssignments[key] = nextBranch++;
+
+      // A talk or session, on a single day, sits on the main line: no lane
+      if (entry.commits.every(commit => commit.single)) {
+        branchPositions[branchAssignments[key]] = 0;
+        return;
+      }
+
+      // But for horizontal positioning, find the leftmost available position
+      let assignedPosition = -1;
+
+      for (let positionIndex = 0; positionIndex < activeBranches.length; positionIndex++) {
+        const activeBranch = activeBranches[positionIndex];
+        let hasOverlap = false;
+
+        for (let activeEntry of activeBranch) {
+          // Check if current entry overlaps with this active entry
+          if (entry.start < activeEntry.end && entry.end > activeEntry.start) {
+            hasOverlap = true;
+            break;
+          }
+        }
+
+        if (!hasOverlap) {
+          // No overlap, can use this position
+          assignedPosition = positionIndex + 1; // +1 because position 0 is main branch
+          break;
+        }
+      }
+
+      // If no existing position can accommodate this entry, create a new position
+      if (assignedPosition === -1) {
+        assignedPosition = nextPosition++;
+        activeBranches.push([]);
+      }
+
+      // Map branch number to horizontal position
+      branchPositions[branchAssignments[key]] = assignedPosition;
+      activeBranches[assignedPosition - 1].push(entry); // -1 because activeBranches is 0-indexed but position numbers start from 1
+    });
+
+    // Apply branch assignments to commits; the birth commit is on the main branch
+    allCommits.forEach(commit => {
+      commit.branch = branchAssignments[commit.company + commit.era];
+    });
+
+    // The graph is as wide as its lanes; the text starts just right of it
+    const maxPosition = Math.max(0, ...Object.values(branchPositions));
+    gitGraphWidth = MAIN_BRANCH_X + (maxPosition * BRANCH_WIDTH) + 10; // Minimal padding
+    textAreaX = gitGraphWidth + 10; // Text area starts very close to git graph
+  }
+
   // How wide an entry can be: whatever the timeline has, less the graph on
   // the left. Under its header line, on a desktop, the stack takes a column on
   // the left, a fifth of that within limits, and the deliverables, highlights
   // and details the rest; on a phone they follow one another.
-  const maxPosition = Math.max(...Object.values(branchPositions));
-  const gitGraphWidth = MAIN_BRANCH_X + (maxPosition * BRANCH_WIDTH) + 10; // Minimal padding
-  const textAreaX = gitGraphWidth + 10; // Text area starts very close to git graph
   const graph = document.querySelector('.git-graph');
   const STACK_GAP = 16;
   // Set by layout() from the room there is at the time
@@ -558,13 +628,79 @@ document.addEventListener('DOMContentLoaded', function() {
     // Wide enough for the entries
     commitsContainer.style.width = (textAreaX + TEXT_WIDTH + 8) + 'px';
     commitsContainer.style.position = 'relative';
+
+    // The entries have moved: so may have where the previous and next buttons go
+    updateEntryButtons();
   }
 
-  layout();
+  // The previous and next entry buttons: to the one whose top is the nearest
+  // above, or below, the top of the window. Only the entries shown are on the
+  // page, so they follow the switch above the timeline without asking it.
+  //
+  // Where a button would scroll to is worked out as the browser would end up:
+  // an entry near the end of the page can only come as far up as the page
+  // scrolls. A button that would move the page less than ENTRY_SLACK, or the
+  // wrong way, has nowhere to go, and is disabled: the previous one at the
+  // topmost entry, the next one at the end of the page, or as soon as the
+  // footer comes into view.
+  const ENTRY_MARGIN = 16; // room left above the entry scrolled to
+  const ENTRY_SLACK = 20; // the least a button moves the page; less counts as there already
+  const prevButton = document.getElementById('entry-prev');
+  const nextButton = document.getElementById('entry-next');
+
+  function entryTarget(direction) {
+    const scrollY = window.scrollY;
+    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    const targets = Array.from(commitsContainer.querySelectorAll('.commit-info'))
+      .map(entry => Math.min(maxScroll, Math.max(0, entry.getBoundingClientRect().top + scrollY - ENTRY_MARGIN)))
+      .sort((a, b) => a - b);
+    return direction > 0
+      ? targets.find(top => top > scrollY + ENTRY_SLACK)
+      : targets.reverse().find(top => top < scrollY - ENTRY_SLACK);
+  }
+
+  // Once the footer shows, and the buttons rise above it, the last entries
+  // are all in view: there is no next one to go to.
+  const footer = document.querySelector('.site-footer');
+  function footerShows() {
+    return footer && footer.getBoundingClientRect().top < window.innerHeight;
+  }
+
+  function updateEntryButtons() {
+    prevButton.disabled = entryTarget(-1) === undefined;
+    nextButton.disabled = footerShows() || entryTarget(1) === undefined;
+  }
+
+  function scrollToEntry(direction) {
+    const target = entryTarget(direction);
+    if (target !== undefined) window.scrollTo({ top: target, behavior: 'smooth' });
+  }
+
+  prevButton.addEventListener('click', () => scrollToEntry(-1));
+  nextButton.addEventListener('click', () => scrollToEntry(1));
+  let entryButtonsFrame = 0;
+  window.addEventListener('scroll', () => {
+    cancelAnimationFrame(entryButtonsFrame);
+    entryButtonsFrame = requestAnimationFrame(updateEntryButtons);
+  });
+
+  // Which kinds of entry the timeline shows, as the switch above it says: all
+  // of them to begin with. A change shows or hides those entries and lays the
+  // timeline out again, their branches and lanes too.
+  const kindSwitch = document.getElementById('timeline-kinds');
+  function showKinds() {
+    const shown = new Set(Array.from(kindSwitch.querySelectorAll('input:checked')).map(input => input.value));
+    allCommits = everyCommit.filter(commit => commit.kind === 'birth' || shown.has(commit.kind));
+    assignBranches();
+    layout();
+  }
+  kindSwitch.hidden = false;
+  kindSwitch.addEventListener('change', showKinds);
+  showKinds();
 
   function getBranchX(branchIndex) {
     if (branchIndex === 0) return MAIN_BRANCH_X; // Main branch
-    const position = branchPositions[branchIndex] || branchIndex; // Use position mapping, fallback to branch index
+    const position = branchPositions[branchIndex] ?? branchIndex; // Use position mapping (0 is the main line), fallback to branch index
     const result = MAIN_BRANCH_X + (position * BRANCH_WIDTH); // Side branches
     return result;
   }
@@ -636,6 +772,10 @@ document.addEventListener('DOMContentLoaded', function() {
                commit.type === 'end';
       });
       
+      // A talk or session, on a single day, is a dot on the main line: no
+      // branch to draw
+      if (!startCommit && endCommit && endCommit.single) return;
+
       if (startCommit) {
         const startCommitIndex = allCommits.findIndex(c => c === startCommit);
         const startY = commitPositions[startCommitIndex].yPosition;
@@ -744,6 +884,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
 });
 </script>
+
+{% comment %}
+  To the previous and next entry the timeline shows, left of the button to the
+  top and drawn like it: its chevron, turned.
+{% endcomment %}
+<button type="button" class="floating-back-to-top floating-entry-prev" id="entry-prev" aria-label="Previous entry">
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <path transform="rotate(-90 12 12)" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/>
+  </svg>
+</button>
+<button type="button" class="floating-back-to-top floating-entry-next" id="entry-next" aria-label="Next entry">
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <path transform="rotate(90 12 12)" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/>
+  </svg>
+</button>
 
 <a href="#top" class="floating-back-to-top">
   <svg viewBox="0 0 24 24" fill="currentColor">

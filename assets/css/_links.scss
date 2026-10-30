@@ -90,6 +90,30 @@
   height: 20px;
 }
 
+// The experience page's previous and next entry buttons: the same button, in
+// a row to the left of the one to the top, each a button's width and a gap
+// further in. Buttons, not links, so their font and padding are reset.
+.floating-entry-prev,
+.floating-entry-next {
+  padding: 0;
+  font: inherit;
+}
+
+.floating-entry-next {
+  right: calc(var(--space-6) + 48px + var(--space-2));
+}
+
+.floating-entry-prev {
+  right: calc(var(--space-6) + 2 * (48px + var(--space-2)));
+}
+
+// With nowhere to go, at the first entry or the end of the page: shown, so the
+// row does not jump, but faded and not to be pressed.
+.floating-back-to-top.visible:disabled {
+  opacity: 0.35;
+  pointer-events: none;
+}
+
 // Responsive design for links page
 @media (max-width: 650px) {
   .links-sections {
