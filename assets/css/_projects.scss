@@ -58,6 +58,12 @@
   pointer-events: none;
 }
 
+// A switch without a label of its own inside it, its heading above it as the
+// experience timeline's: no line before its first button.
+.sort-switch label:first-child {
+  border-left: none;
+}
+
 .sort-switch label:has(input:checked) {
   background-color: var(--accent);
   color: white;

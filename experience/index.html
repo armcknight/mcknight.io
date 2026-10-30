@@ -1,7 +1,8 @@
 ---
 layout: modern
 title: "Experience"
-content_class: content-wide content-full
+content_class: content-wide
+floating_top: true
 ---
 
 <div class="page-header">
@@ -22,12 +23,14 @@ Git-style timeline - start simple with just dates
     Which kinds of entry the timeline shows, any number of them at once.
     Hidden until the script below can work it; without it, nothing is drawn.
   {% endcomment %}
-  <div class="sort-switch" id="timeline-kinds" role="group" aria-label="Show in the timeline" hidden>
-    <span class="sort-switch-label">Show</span>
-    <label><input type="checkbox" value="job" checked> Jobs</label>
-    <label><input type="checkbox" value="education" checked> Education</label>
-    <label><input type="checkbox" value="presentation" checked> Presentations</label>
-    <label><input type="checkbox" value="mentorship" checked> Mentorship</label>
+  <div class="timeline-kinds" id="timeline-kinds" hidden>
+    <h3 class="timeline-kinds-heading" id="timeline-kinds-heading">Show</h3>
+    <div class="sort-switch" role="group" aria-labelledby="timeline-kinds-heading">
+      <label><input type="checkbox" value="job" checked> Jobs</label>
+      <label><input type="checkbox" value="education" checked> Education</label>
+      <label><input type="checkbox" value="presentation" checked> Presentations</label>
+      <label><input type="checkbox" value="mentorship" checked> Mentorship</label>
+    </div>
   </div>
   
   <!-- Git-style graph view -->
@@ -899,9 +902,3 @@ document.addEventListener('DOMContentLoaded', function() {
     <path transform="rotate(90 12 12)" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/>
   </svg>
 </button>
-
-<a href="#top" class="floating-back-to-top">
-  <svg viewBox="0 0 24 24" fill="currentColor">
-    <path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/>
-  </svg>
-</a>

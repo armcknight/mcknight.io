@@ -198,9 +198,39 @@
   color: var(--text-secondary);
 }
 
+// Which kinds of entry the timeline shows: a heading, as an entry's sections
+// have, over a row of buttons.
+.timeline-kinds-heading {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 var(--space-2) 0;
+}
+
+// One row while the buttons fit, at whatever width and text size; wrapping
+// onto more rows when they do not, each row filled, rather than running past
+// the edge. The lines between buttons, in any number of rows, are the border
+// colour showing through a 1px gap.
+.timeline-kinds .sort-switch {
+  flex-wrap: wrap;
+  max-width: 100%;
+  gap: 1px;
+  background-color: var(--border);
+}
+
+.timeline-kinds .sort-switch label {
+  flex: 1 1 auto;
+  justify-content: center;
+  border-left: none;
+}
+
+.timeline-kinds .sort-switch label:not(:has(input:checked)) {
+  background-color: var(--background);
+}
+
 // Git-style timeline visualization
 .git-timeline-container {
-  margin-top: var(--space-8);
+  // Right after the page's intro, whose margin is room enough (see .page-header)
+  margin-top: 0;
   
   h2 {
     font-size: var(--text-3xl);
