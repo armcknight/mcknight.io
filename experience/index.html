@@ -9,7 +9,7 @@ floating_top: true
   <h1 class="page-title">Experience</h1>
   <p class="page-subtitle">Professional background, education, and expertise</p>
 
-  <p>If you'd prefer something in PDF format, you can download my <a href="/assets/pdf/andrew-mcknight-resume-ios.pdf">iOS resume</a> and <a href="/assets/pdf/andrew-mcknight-cv.pdf">curriculum vitae</a>.</p>
+  <p>If you'd prefer something in PDF format, you can download my <a href="/assets/pdf/andrew-mcknight-resume-ios.pdf">iOS resume</a> [<a href="/assets/pdf/andrew-mcknight-resume-ios-print.pdf">print version</a>] or <a href="/assets/pdf/andrew-mcknight-cv.pdf">curriculum vitæ</a> [<a href="/assets/pdf/andrew-mcknight-cv-print.pdf">print version</a>].</p>
 </div>
 
 {% comment %}
@@ -94,7 +94,7 @@ Git-style timeline - start simple with just dates
                data-kind="{{ kind }}"
                data-start="{{ entry.date }}"
                data-company="{{ entry.event }}"
-               data-title="{{ entry.title }}"
+               data-title="{{ entry.title }}{% if entry.length %} ({{ entry.length }}){% endif %}"
                data-location="{% if entry.venue %}{{ entry.venue }}, {% endif %}{{ entry.location }}"
                data-details="{{ entry.details | jsonify | escape }}"
                data-era="{{ kind }}">
@@ -343,6 +343,8 @@ document.addEventListener('DOMContentLoaded', function() {
   function parseList(json) {
     try {
       const value = JSON.parse(json || 'null');
+      // A single string is a list of one
+      if (typeof value === 'string') return [value];
       return Array.isArray(value) ? value : [];
     } catch (e) {
       return [];

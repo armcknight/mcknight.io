@@ -2,7 +2,8 @@ presentations:
   - id: iosdevcampco-2018
     date: May 2018
     event: iOSDevCampCO
-    title: Colloquial Swift (45 min)
+    title: Colloquial Swift
+    length: 45 min
     location: Colorado Springs, CO
     details:
       - Presented findings from analysis of common function implementations in open source repositories as a way to generate possible Swift Evolution proposals
@@ -10,7 +11,8 @@ presentations:
   - id: cocoaheads-boston-2017
     date: Jun 2017
     event: CocoaHeads Boston
-    title: UIViewController Decomposition and UI Reuse (20 min)
+    title: UIViewController Decomposition and UI Reuse
+    length: 20 min
     venue: MIT
     location: Cambridge, MA
     details:
@@ -19,7 +21,8 @@ presentations:
   - id: boston-algorithms-2017
     date: Jan 2017
     event: Boston Algorithms Meetup
-    title: HyperLogLog (20 min)
+    title: HyperLogLog
+    length: 20 min
     venue: Twitter
     location: Cambridge, MA
     details:
@@ -29,7 +32,8 @@ presentations:
   - id: mdevcon-2016
     date: Mar 2016
     event: mDevCon
-    title: Command and NSOperation (45 min)
+    title: Command and NSOperation
+    length: 45 min
     location: Amsterdam, NL
     details:
       - Delivered presentation on the Command software design pattern, and NSOperation

@@ -18,8 +18,8 @@ exclude:
   # Written straight into _site by `make deploy`, so a build never copies a
   # stale stamp over the live one.
   - DEPLOYED
-  # The resume's LaTeX sources, a submodule. Only the PDFs that `make resume`
-  # copies into assets/pdf are for visitors.
+  # The resume's LaTeX sources, a submodule. Only the PDFs that `make
+  # website-resumes` copies into assets/pdf are for visitors.
   - resume
   - .gitignore
   - Brewfile*

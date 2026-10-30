@@ -29,8 +29,8 @@ endif
 # Makefile, which is what puts it in front of the action rather than behind it.
 KNOWN_GOALS := $(SITES) \
 	$(shell grep -oE '^[a-zA-Z_][a-zA-Z0-9_-]*:' $(firstword $(MAKEFILE_LIST)) | tr -d ':' | sort -u)
-# Pattern targets (help-<topic>, resume-<name>) are known by their prefix.
-STRAY_GOALS := $(filter-out $(KNOWN_GOALS) help-% resume-%,$(MAKECMDGOALS))
+# Pattern targets (help-<topic>, resume-<name>, all-resumes-<name>) are known by their prefix.
+STRAY_GOALS := $(filter-out $(KNOWN_GOALS) help-% resume-% all-resumes-%,$(MAKECMDGOALS))
 
 ifneq ($(STRAY_GOALS),)
 $(error No such target or site: $(STRAY_GOALS). Sites are: $(SITES). Run `make help`)
@@ -237,46 +237,80 @@ serve: ## <site> Serve a built site and open it
 endserve: ## <site> Stop a served site
 	@$(foreach s,$(SELECTED),pids=$$(lsof -ti :$(port_$(s)) -sTCP:LISTEN 2>/dev/null); if [ -n "$$pids" ]; then echo "$$pids" | xargs kill && echo "stopped $(label_$(s)) on port $(port_$(s))"; else echo "nothing was serving $(label_$(s)) on port $(port_$(s))"; fi;)
 
+# MARK: - Resumes
+
 # Generates a resume from the experience page's own data and builds its PDF:
 #
 #   make resume-ios            the `ios` entry in resume/selections.yml ->
-#                              resume/.build/ios.tex -> resume/pdfs/ios.pdf
+#                              resume/.build/screen/ios.tex ->
+#                              resume/pdfs/screen/ios.pdf
 #   make resume-cv             the full CV, likewise
 #
 # Each entry in the resume repo's selections.yml picks a resume's sections
 # and, by id, the entries in each, and an entry of the same name in its
 # letters.yml is that application's cover letter, built through letter.tex.erb
-# into resume/pdfs/<name>-letter.pdf. A new application is a new entry in
+# into resume/pdfs/screen/<name>-letter.pdf. A new application is a new entry in
 # either or both, and `make resume-<its name>`. The data is _data/
 # experience.yaml, education.yaml, presentations.yaml and mentorship.yaml,
 # and the layout is resume/resume.tex.erb. Change them: the .tex the run
 # writes is generated, and the resume repo ignores it.
 #
-# Every copy is for the web, without the address and phone number, unless
-# built with WEB=false: `make resume-reddit WEB=false` writes the private
-# copies, under names of their own, resume/pdfs/reddit-private.pdf and
-# reddit-letter-private.pdf, so they never replace a copy for the web, nor
-# reach assets/pdf/ through `make resume`, which copies only those.
+# Every copy leaves out the address and phone number (personally identifying
+# information), fit for the web, unless built with PII=true. PRINT=true makes
+# a copy for paper: no hyperlinks, publications without their mirrors but with
+# their DOI where known. Each of the four copies has a directory of its own
+# under resume/pdfs/ (and resume/.build/), so they never replace one another,
+# and only screen/ and print/ ever reach assets/pdf/, through `make website-resumes`:
+#
+#   screen/cv.pdf        the default    screen-pii/cv-pii.pdf        PII=true
+#   print/cv-print.pdf   PRINT=true     print-pii/cv-pii-print.pdf   both
+#
+# The file names say which copy, too, for a file moved out of its directory.
 #
 # resume/ is a submodule of armcknight/resume; its .build/ and pdfs/ are
 # scratch space that git ignores. Needs a TeX distribution.
-WEB ?= true
-RESUME_SUFFIX := $(if $(filter false,$(WEB)),-private)
-resume-%: ## <name> Generate the <name> resume and cover letter in resume/ and build their PDFs; WEB=false for the private copies
-	@case "$(WEB)" in true|false) ;; *) echo 'WEB is true (the default) or false, not "$(WEB)"'; exit 1;; esac
-	$(RUBY) ruby scripts/generate-resume.rb $* $(if $(filter false,$(WEB)),--private)
+PII ?= false
+PRINT ?= false
+RESUME_VARIANT := $(if $(filter true,$(PRINT)),print,screen)$(if $(filter true,$(PII)),-pii)
+RESUME_SUFFIX := $(if $(filter true,$(PII)),-pii)$(if $(filter true,$(PRINT)),-print)
+resume-%: ## <name> Generate the <name> resume and cover letter in resume/ and build their PDFs; PII=true with address and phone, PRINT=true for paper
+	@case "$(PII)" in true|false) ;; *) echo 'PII is false (the default) or true, not "$(PII)"'; exit 1;; esac
+	@case "$(PRINT)" in true|false) ;; *) echo 'PRINT is false (the default) or true, not "$(PRINT)"'; exit 1;; esac
+	$(RUBY) ruby scripts/generate-resume.rb $* $(if $(filter true,$(PII)),--pii) $(if $(filter true,$(PRINT)),--print)
 	@for f in $*$(RESUME_SUFFIX) $*-letter$(RESUME_SUFFIX); do \
-		if [ -f resume/.build/$$f.tex ]; then $(MAKE) -C resume --no-print-directory pdf NAME=$$f || exit 1; fi; \
+		if [ -f resume/.build/$(RESUME_VARIANT)/$$f.tex ]; then $(MAKE) -C resume --no-print-directory pdf NAME=$$f VARIANT=$(RESUME_VARIANT) || exit 1; fi; \
 	done
 
 # The two the site links to, the CV and the iOS resume, built and copied into
 # assets/pdf/. Those copies are the tracked artifacts, so nothing a visitor
 # sees changes until this runs; run it in the same commit as the change to the
 # data or the resume submodule.
-.PHONY: resume
-resume: resume-cv resume-ios ## Rebuild the CV and iOS resume PDFs and copy them into assets/pdf
-	cp resume/pdfs/cv.pdf assets/pdf/andrew-mcknight-cv.pdf
-	cp resume/pdfs/ios.pdf assets/pdf/andrew-mcknight-resume-ios.pdf
+.PHONY: website-resumes
+website-resumes: resume-cv resume-ios ## Rebuild the CV and iOS resume PDFs the site links to, screen and print copies, and copy them into assets/pdf
+	$(MAKE) resume-cv resume-ios PRINT=true PII=false
+	cp resume/pdfs/screen/cv.pdf assets/pdf/andrew-mcknight-cv.pdf
+	cp resume/pdfs/screen/ios.pdf assets/pdf/andrew-mcknight-resume-ios.pdf
+	cp resume/pdfs/print/cv-print.pdf assets/pdf/andrew-mcknight-cv-print.pdf
+	cp resume/pdfs/print/ios-print.pdf assets/pdf/andrew-mcknight-resume-ios-print.pdf
+
+# Every resume and cover letter in the resume repo's selections.yml and
+# letters.yml, in all four copies: without and with the address and phone
+# number (PII), for the screen and for paper (PRINT), each into its directory
+# under resume/pdfs/ (screen, screen-pii, print, print-pii) only;
+# `make website-resumes` is what updates the site's copies.
+RESUME_NAMES = $(shell $(RUBY) ruby -ryaml -e 'puts YAML.load_file("resume/selections.yml").keys | YAML.load_file("resume/letters.yml").keys')
+.PHONY: all-resumes
+all-resumes: ## Build every resume and cover letter in all four copies: PII false/true, PRINT false/true
+	@for name in $(RESUME_NAMES); do \
+		$(MAKE) --no-print-directory all-resumes-$$name || exit 1; \
+	done
+
+# The four copies of one resume and its cover letter, e.g. `make all-resumes-cv`.
+all-resumes-%: ## <name> Build all four copies of the <name> resume and cover letter: PII false/true, PRINT false/true
+	@for pii in false true; do for print in false true; do \
+		$(MAKE) --no-print-directory resume-$* PII=$$pii PRINT=$$print > /dev/null || { echo "failed: resume-$* PII=$$pii PRINT=$$print"; exit 1; }; \
+		echo "built $* (PII=$$pii, PRINT=$$print)"; \
+	done; done
 
 # Refreshes _data/releases.yml with the latest release version and date for every
 # app and devtool on the projects page of the main site.

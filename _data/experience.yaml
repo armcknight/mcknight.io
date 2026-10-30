@@ -59,17 +59,17 @@ experience:
     stack:
       - languages: [Objective-C++, Swift, Python]
       - frameworks: [SwiftUI, Django]
-      - tools: [XcodeGen, CocoaPods, SPM, Carthage, Swiftlint, clang-format, CodeCov, pre-commit, Fastlane, Arkana, Claude Code]
-      - infrastructure: [GitHub Actions, SauceLabs, TestFlight, Linear]
+      - tools: [Claude Code, SPM, XcodeGen, CocoaPods, Carthage, Swiftlint, clang-format, CodeCov, pre-commit, Fastlane, Arkana]
+      - infrastructure: [GitHub Actions, Redash, SauceLabs, TestFlight, Linear]
     deliverables:
       - name: Sentry Cocoa SDK
         url: https://github.com/getsentry/sentry-cocoa
         description: mobile app crash and performance monitoring
         details:
           - Integrated Specto's profiler into Sentry's Cocoa SDK and iterated with new API/features
-          - "User Feedback widget: first user-facing UI shipped in Sentry Cocoa SDK"
+          - Built User Feedback widget, the first user-facing UI shipped in Sentry Cocoa SDK
           - Built and maintained sample and demo apps for developers and Sales team
-          - "CI overhauls: parallelized long-running jobs, modularized suites, fixed state corruption issues, standardized fixtures"
+          - Parallelized long-running CI jobs and modularized test suites to find and fix statefulness issues
       - name: Seer for iOS and macOS
         description: experimental apps interacting with our agentic offerings
       - name: SaaS Billing Platformization
@@ -112,9 +112,7 @@ experience:
       - languages: [Swift]
       - tools: [SwiftGen, SwiftLint, Sourcery]
       - infrastructure: [CircleCI, Postman, Browserstack, Countly]
-    deliverables:
-      - name: (Confidential)
-        description: Identity security app and SDK
+    deliverables: Identity security app and SDK (under NDA)
 
   - id: insight-therapeutics
     start: November 2011

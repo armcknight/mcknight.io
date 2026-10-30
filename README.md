@@ -142,7 +142,7 @@ points to:
 ```
 git submodule update --init                  # once per clone
 git -C resume pull                           # or commit the change in resume/
-make resume     # regenerates the CV and iOS resume, copies both PDFs into assets/pdf/
+make website-resumes   # regenerates the CV and iOS resume, copies each, and its print copy, into assets/pdf/
 git add resume assets/pdf && git commit -m "update resume"
 make build && make deploy
 make bust-cache PATHS="/assets/pdf/*"
@@ -158,8 +158,12 @@ writes each from the same data the experience page shows
 template `resume/resume.tex.erb`. Which sections a resume has, in which order,
 and which entries in each, by the `id` each entry has in the data, its entry in
 `resume/selections.yml` says: `cv` is the full CV, `ios` the standard iOS
-resume. `make resume-<name>` generates `resume/.build/<name>.tex` from the
-`<name>` entry and builds its PDF into `resume/pdfs/`; a resume for a new job
+resume. `make resume-<name>` generates `resume/.build/screen/<name>.tex` from the
+`<name>` entry and builds its PDF into `resume/pdfs/screen/`; `PII=true` adds
+the address and phone number, `PRINT=true` makes a copy for paper, and each
+copy has its own directory (`screen`, `screen-pii`, `print`, `print-pii`) and
+a name to match (`cv.pdf`, `cv-pii.pdf`, `cv-print.pdf`, `cv-pii-print.pdf`),
+which `make all-resumes` fills for every resume; a resume for a new job
 application is a new entry there and `make resume-<its name>`. Change what a
 resume says in the data, what it includes in its entry, and how it looks in
 the template: the `.tex` is generated, and the resume repo ignores it. The
@@ -168,7 +172,7 @@ at the top of `_data/experience.yaml` every field of a job.
 
 A cover letter is an entry in `resume/letters.yml` (its recipient, greeting
 and paragraphs, as plain text), under the same name as the application's
-resume: `make resume-<name>` builds `resume/pdfs/<name>-letter.pdf` through
+resume: `make resume-<name>` builds `resume/pdfs/screen/<name>-letter.pdf` through
 `resume/letter.tex.erb` along with the resume, or alone where there is no
 resume of that name.
 
@@ -635,7 +639,7 @@ own `src_`, `dest_`, `port_`, `stamp_`, `log_` and `label_` entries.
 | `travel/` | The travel.mcknight.io site: its own config, data, page and scripts |
 | `books/` | The books.mcknight.io site: its own config, data, page and scripts |
 | `shared/` | What the subdomains share: the globe's core, and the plugin that copies it into each build |
-| `resume/` | Submodule of armcknight/resume: LaTeX sources for the resume and CV; `make resume` builds them |
+| `resume/` | Submodule of armcknight/resume: LaTeX sources for the resume and CV; `make website-resumes` builds the site's two, `make all-resumes` every copy |
 | `assets/pdf/` | The built PDFs the site links to — these are the tracked artifacts, not `resume/pdfs/` |
 | `robots.txt` | Who may crawl the site: everyone, for search, link previews and AI answers, but not the crawlers that train AI models. `travel/` and `books/` have the same file. It names `sitemap.xml`, which `jekyll-sitemap` writes |
 | `DEPLOYED` | What is live |
@@ -683,7 +687,7 @@ Beyond that:
 - An AWS profile named `armcknight`, able to write the bucket and create
   invalidations. Used by `deploy`, `bust-cache`, and the cache-status target.
 - `gh` logged in, for `make releases` — some of the source repos are private.
-- A TeX distribution, for `make resume`.
+- A TeX distribution, for `make website-resumes` and the other resume targets.
 
 ## When something looks wrong
 

@@ -5,21 +5,25 @@ education:
     degree: M.Sc., Dept. of Computer Science
     institution: Old Dominion University
     details:
-      - Thesis-track research in bioinformatics, robotics, image processing and 3D meshing applied to protein folding
-      - Three published papers with two conference presentations
-      - C++ programming TA for three semesters
+      - Thesis-track research in bioinformatics, robotics and 3D image meshing applied to protein folding
+      - Three published papers with two conference presentations, winning multiple awards
+      - C++ programming teaching and lab assistant for three semesters
     # Each publication: its title, linked to `url`, the official copy; then,
     # optional, `mirrors`, other sites' copies, linked as [Mirror 1],
     # [Mirror 2]...; and `personal_mirror`, a copy hosted on this site
     # (/assets/pdf/papers/<file>.pdf) where its copyright allows, linked as
-    # [Personal Mirror]. The experience page and the CV show them all.
+    # [Personal Mirror]. The experience page and the CV show them all. And
+    # `doi`, where it has one: what a copy of the CV for paper (PRINT=true)
+    # shows in place of the links.
     publications:
       - title: "Protein Loop Length Estimation from Medium Resolution CryoEM Images (M.Sc. thesis)"
         url: https://digitalcommons.odu.edu/computerscience_etds/32/
+        doi: 10.25777/cxy3-9791
         personal_mirror: /assets/pdf/papers/mcknight-2013-msc-thesis-protein-loop-length-estimation.pdf
         year: 2013
       - title: "Estimating loop length from CryoEM images at medium resolutions"
         url: https://link.springer.com/article/10.1186/1472-6807-13-S1-S5
+        doi: 10.1186/1472-6807-13-S1-S5
         personal_mirror: /assets/pdf/papers/mcknight-2013-bmc-structural-biology-estimating-loop-length.pdf
         year: 2013
       - title: "Estimating Lower Bounds on the Length of Protein Polymer Chain Segments using Robot Motion Planning"
@@ -28,6 +32,7 @@ education:
         year: 2013
       - title: "CryoEM Skeleton Length Estimation using a Decimated Curve"
         url: https://dl.acm.org/doi/abs/10.1109/BIBMW.2012.6470283
+        doi: 10.1109/BIBMW.2012.6470283
         mirrors:
           - https://class-pages.pages.cs.odu.edu/crtcpub/publications/cryoem-skeleton-length-estimation-using-a-decimated-curve-2012/
         personal_mirror: /assets/pdf/papers/mcknight-2012-ieee-bibmw-cryoem-skeleton-length.pdf
@@ -45,7 +50,7 @@ education:
     institution: Old Dominion University
     details:
       - Graduate-level versions of courses as part of the Accelerated Master's program
-      - Minor in actuarial mathematics
+      - Minor in actuarial mathematics, up to advanced probability, diff-eq and multivariate calculus
     honors:
       - year: 2012
         award: Graduate with Distinction

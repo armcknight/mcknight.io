@@ -10,9 +10,11 @@
 #
 #   ruby scripts/generate-resume.rb reddit
 #
-# writes resume/.build/reddit.tex from the `reddit` entry in
-# resume/selections.yml, and resume/.build/reddit-letter.tex from the one in
-# resume/letters.yml: either, or both, as each has an entry by that name. The
+# writes resume/.build/screen/reddit.tex from the `reddit` entry in
+# resume/selections.yml, and resume/.build/screen/reddit-letter.tex from the
+# one in resume/letters.yml: either, or both, as each has an entry by that
+# name. --pii and --print choose the copy, and its directory: screen,
+# screen-pii, print or print-pii. The
 # selections, the letters, the templates (resume.tex.erb unless a selection
 # names another) and the output all live in the resume repo (the resume/
 # submodule), which is private, so they can hold what the public site must
@@ -42,25 +44,32 @@ DATA = File.join(ROOT, '_data')
 RESUME = File.join(ROOT, 'resume')
 BUILD = File.join(RESUME, '.build')
 
-USAGE = 'usage: ruby scripts/generate-resume.rb <name> [--private], for an entry in resume/selections.yml or letters.yml'
+USAGE = 'usage: ruby scripts/generate-resume.rb <name> [--pii] [--print], for an entry in resume/selections.yml or letters.yml'
 name = ARGV.reject { |arg| arg.start_with?('--') }.first or abort USAGE
-unknown = ARGV.select { |arg| arg.start_with?('--') } - ['--private']
+unknown = ARGV.select { |arg| arg.start_with?('--') } - ['--pii', '--print']
 abort "#{USAGE}; not #{unknown.join(', ')}" if unknown.any?
-# The copy for the web, without the address and phone number, unless asked for
-# the private one, which also gets names of its own, <name>-private.tex, so it
-# can never be mistaken for, or overwrite, the copy for the web.
-WEB = !ARGV.include?('--private')
-SUFFIX = WEB ? '' : '-private'
+# Without the address and phone number (personally identifying information),
+# fit for the web, unless asked for them with --pii.
+PII = ARGV.include?('--pii')
+# The copy for paper, with --print: no hyperlinks, and publications without
+# their mirrors but with their DOI.
+PRINT = ARGV.include?('--print')
+# Each copy in a directory of its own, so one can never be mistaken for, or
+# overwrite, another: screen (the default), screen-pii, print, print-pii. Its
+# file names say so too, -pii and -print after the name, as a file moved out of
+# its directory has only its name to go by.
+VARIANT = "#{PRINT ? 'print' : 'screen'}#{PII ? '-pii' : ''}"
+SUFFIX = "#{PII ? '-pii' : ''}#{PRINT ? '-print' : ''}"
 selections = YAML.load_file(File.join(RESUME, 'selections.yml'))
 letters = YAML.load_file(File.join(RESUME, 'letters.yml'))
-# Whether a copy is for the web is the run's to say, not an entry's: a `web`
-# key left in one would be ignored, so it stops the run instead.
+# Whether a copy has the address and phone number is the run's to say, not an
+# entry's: a `web` key left in one would be ignored, so it stops the run instead.
 { 'selections.yml' => selections, 'letters.yml' => letters }.each do |file, entries|
   stale = entries.select { |_, entry| entry.is_a?(Hash) && entry.key?('web') }.keys
   next if stale.empty?
 
   abort "resume/#{file}: #{stale.join(', ')} still say web:, which no entry sets now; " \
-        'build the private copy with `make resume-<name> WEB=false` instead'
+        'build the copy with the address and phone number with `make resume-<name> PII=true` instead'
 end
 unless selections.key?(name) || letters.key?(name)
   abort "No resume or letter #{name} in resume/selections.yml or letters.yml; " \
@@ -99,10 +108,15 @@ class Resume
     @source = source
   end
 
-  # Whether this is the copy for the web, without the address and phone
-  # number: as the run was asked, never as an entry says.
-  def web?
-    WEB
+  # Whether this copy has the address and phone number: as the run was asked,
+  # never as an entry says.
+  def pii?
+    PII
+  end
+
+  # Whether this is the copy for paper, without hyperlinks.
+  def print?
+    PRINT
   end
 
   # The selection's sections, in its order, each with its entries.
@@ -185,7 +199,8 @@ class Resume
   def job_items(job)
     stack_lines = stack(job) ? ["\\item \\textbf{Stack}: #{stack(job)}"] : []
 
-    deliverables = job['deliverables'].to_a
+    # A single string is a list of one
+    deliverables = job['deliverables'].is_a?(String) ? [job['deliverables']] : job['deliverables'].to_a
     deliverable_lines =
       if deliverables.size == 1 && deliverables.first.is_a?(String)
         ["\\item \\textbf{Deliverables}: #{tex(deliverables.first)}"]
@@ -286,8 +301,8 @@ end
 # whichever of the two has an entry under the name.
 selection = selections[name]
 render(File.join(RESUME, selection ? selection['template'] || 'resume.tex.erb' : 'resume.tex.erb'),
-       File.join(BUILD, "#{name}#{SUFFIX}.tex"),
+       File.join(BUILD, VARIANT, "#{name}#{SUFFIX}.tex"),
        selection && Resume.new(DATA, "selections.yml, #{name}", selection: selection))
 render(File.join(RESUME, 'letter.tex.erb'),
-       File.join(BUILD, "#{name}-letter#{SUFFIX}.tex"),
+       File.join(BUILD, VARIANT, "#{name}-letter#{SUFFIX}.tex"),
        letters[name] && Resume.new(DATA, "letters.yml, #{name}", letter: letters[name]))
