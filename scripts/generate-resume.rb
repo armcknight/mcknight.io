@@ -180,30 +180,35 @@ class Resume
     entry['description'] ? "#{name}: #{tex(entry['description'])}" : name
   end
 
-  # The \item lines of one job's entry, indented for the template.
+  # The \item lines of one job's entry, indented for the template: its stack,
+  # its highlights, then its deliverables.
   def job_items(job)
-    lines = []
-    lines << "\\item \\textbf{Stack}: #{stack(job)}" if stack(job)
+    stack_lines = stack(job) ? ["\\item \\textbf{Stack}: #{stack(job)}"] : []
+
     deliverables = job['deliverables'].to_a
-    if deliverables.size == 1 && deliverables.first.is_a?(String)
-      lines << "\\item \\textbf{Deliverables}: #{tex(deliverables.first)}"
-    elsif deliverables.any?
-      # \cvlistlabel, from the template, keeps it on the page with the list.
-      lines << '\\item \\cvlistlabel{Deliverables}'
-      lines.concat(list(deliverables.map { |d| [item(d, :deliverable), d.is_a?(Hash) ? d['details'].to_a.map { |x| tex(x) } : []] }))
-    end
-    highlights = job['highlights'].to_a.map { |h| item(h, :highlight) }
-    if highlights.any?
-      # Labelled when the entry says more than its highlights; on their own
-      # they are the entry.
-      if lines.empty?
-        lines.concat(highlights.map { |h| "\\item #{h}" })
+    deliverable_lines =
+      if deliverables.size == 1 && deliverables.first.is_a?(String)
+        ["\\item \\textbf{Deliverables}: #{tex(deliverables.first)}"]
+      elsif deliverables.any?
+        # \cvlistlabel, from the template, keeps it on the page with the list.
+        ['\\item \\cvlistlabel{Deliverables}'] +
+          list(deliverables.map { |d| [item(d, :deliverable), d.is_a?(Hash) ? d['details'].to_a.map { |x| tex(x) } : []] })
       else
-        lines << '\\item \\cvlistlabel{Highlights}'
-        lines.concat(list(highlights.map { |h| [h, []] }))
+        []
       end
-    end
-    lines
+
+    highlights = job['highlights'].to_a.map { |h| item(h, :highlight) }
+    highlight_lines =
+      if highlights.empty?
+        []
+      elsif stack_lines.empty? && deliverable_lines.empty?
+        # On their own, the highlights are the entry: no label
+        highlights.map { |h| "\\item #{h}" }
+      else
+        ['\\item \\cvlistlabel{Highlights}'] + list(highlights.map { |h| [h, []] })
+      end
+
+    stack_lines + highlight_lines + deliverable_lines
   end
 
   private

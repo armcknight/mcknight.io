@@ -394,9 +394,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const details = parseList(data.details);
     if (details.length) body += bulletList(details);
 
-    // Education: year · linked title
+    // Education: year · linked title, and [mirror], a copy hosted here
     const publications = parseList(data.publications).map(pub => {
-      const title = pub.url ? `<a href="${pub.url}" target="_blank">${pub.title}</a>` : pub.title;
+      let title = pub.url ? `<a href="${pub.url}" target="_blank">${pub.title}</a>` : pub.title;
+      if (pub.mirror) title += ` [<a href="${pub.mirror}" target="_blank">mirror</a>]`;
       return [pub.year, title].filter(Boolean).join(' · ');
     });
     if (publications.length) body += sectionHeading('Publications') + bulletList(publications);
