@@ -394,10 +394,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const details = parseList(data.details);
     if (details.length) body += bulletList(details);
 
-    // Education: year · linked title, and [mirror], a copy hosted here
+    // Education: year · linked title, then [Mirror 1], [Mirror 2]... for
+    // other sites' copies, and [Personal Mirror] for one hosted here
     const publications = parseList(data.publications).map(pub => {
       let title = pub.url ? `<a href="${pub.url}" target="_blank">${pub.title}</a>` : pub.title;
-      if (pub.mirror) title += ` [<a href="${pub.mirror}" target="_blank">mirror</a>]`;
+      (pub.mirrors || []).forEach((url, i) => { title += ` [<a href="${url}" target="_blank">Mirror ${i + 1}</a>]`; });
+      if (pub.personal_mirror) title += ` [<a href="${pub.personal_mirror}" target="_blank">Personal Mirror</a>]`;
       return [pub.year, title].filter(Boolean).join(' · ');
     });
     if (publications.length) body += sectionHeading('Publications') + bulletList(publications);
