@@ -392,8 +392,11 @@ blockquote p {
     padding: 0 var(--space-8);
   }
   
+  // Onto a second line, centred, when it does not fit on one beside the picture
   .site-title {
     font-size: var(--text-4xl);
+    white-space: normal;
+    text-align: center;
   }
   
   .avatar {
@@ -411,8 +414,11 @@ blockquote p {
   // The picture and name top-aligned, the icons centred under the name, in
   // the room the taller picture leaves beside them, and the links on a row
   // of their own below
+  // The name's column no wider than what is left beside the picture: as just
+  // 1fr, it would grow to the name's unbroken width, past the window's edge,
+  // and the links' row, spanning it, with it.
   .site-header .content {
-    grid-template-columns: auto 1fr;
+    grid-template-columns: auto minmax(0, 1fr);
     grid-template-areas:
       "avatar title"
       "avatar social"
