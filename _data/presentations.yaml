@@ -1,12 +1,14 @@
 presentations:
-  - date: May 2018
+  - id: iosdevcampco-2018
+    date: May 2018
     event: iOSDevCampCO
     title: Colloquial Swift (45 min)
     location: Colorado Springs, CO
     details:
-      - Presented findings from Colloquial Swift personal project (see entry in previous section)
+      - Presented findings from analysis of common function implementations in open source repositories as a way to generate possible Swift Evolution proposals
 
-  - date: Jun 2017
+  - id: cocoaheads-boston-2017
+    date: Jun 2017
     event: CocoaHeads Boston
     title: UIViewController Decomposition and UI Reuse (20 min)
     venue: MIT
@@ -14,7 +16,8 @@ presentations:
     details:
       - Discussing strategies to separate responsibilities from UIViewControllers and a library of reusable UI components, e.g. animated transparent modal presentation with a close button
 
-  - date: Jan 2017
+  - id: boston-algorithms-2017
+    date: Jan 2017
     event: Boston Algorithms Meetup
     title: HyperLogLog (20 min)
     venue: Twitter
@@ -23,16 +26,8 @@ presentations:
       - Helped organized this initial meeting of the group
       - Covered the theoretical workings of the HyperLogLog algorithm, with a copresenter giving a working demostration
 
-  - date: Jul 2016
-    event: Girls Who Code
-    title: iOS Dev Session
-    venue: Twitter
-    location: Cambridge, MA
-    details:
-      - Part of GWC summer internship covering programming first principles to full-stack style development
-      - Designed and led iOS session where we built a Flappy Bird clone, introducing them to Xcode as an IDE, Interface Builder, Playgrounds and Swift
-
-  - date: Mar 2016
+  - id: mdevcon-2016
+    date: Mar 2016
     event: mDevCon
     title: Command and NSOperation (45 min)
     location: Amsterdam, NL
@@ -41,16 +36,8 @@ presentations:
       - Introduced subclasses we open sourced at Crashlytics for asynchronous and compound operations
       - Previously delivered at a lunchtime tech talk at Twitter, Cambridge, MA (Nov 2015) and CocoaHeads Boston meetup, MIT, Cambridge, MA (Dec 2015)
 
-  - date: Oct 2015
-    event: NeighborNest
-    title: Web Dev Session
-    venue: Twitter
-    location: San Francisco, CA
-    details:
-      - Community program to help advocate technology literacy
-      - Assisted in session where students worked on a Twitter clone, teaching functional programming concepts, Javascript, and some front- and back- end concepts
-
-  - date: 2013
+  - id: vmasc-2013
+    date: 2013
     event: VMASC Capstone Conference
     title: Estimating lower bounds on the length of protein polymer chain segments using robot motion planning
     location: Suffolk, VA
@@ -58,7 +45,8 @@ presentations:
       - Presented research on using computational geometry and motion planning algorithms to model protein molecule structures
       - Best paper award
 
-  - date: Oct 2012
+  - id: ieee-wcsb-2012
+    date: Oct 2012
     event: IEEE WCSB
     title: CryoEM skeleton length estimation using a decimated curve
     location: Philadelphia, PA

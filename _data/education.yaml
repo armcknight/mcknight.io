@@ -1,5 +1,6 @@
 education:
-  - start: September 2010
+  - id: odu-msc
+    start: September 2010
     end: June 2013
     degree: M.Sc., Dept. of Computer Science
     institution: Old Dominion University
@@ -24,7 +25,8 @@ education:
         from: Virginia Modeling, Analysis and Simulation Center Capstone conference
         description: Best overall paper
 
-  - start: September 2009
+  - id: odu-bsc
+    start: September 2009
     end: May 2012
     degree: B.Sc., Computer Science
     institution: Old Dominion University
@@ -46,23 +48,21 @@ education:
       - year: 2010 – 2011
         award: Dean's List
         from: Old Dominion University
-  - start: September 2003
+  - id: community-college
+    start: September 2003
     end: June 2009
     degree: A.Sc., Dept. of Computer Science
-    institution: Northern Virginia Community College; Piedmont Virginia Community College
-    # Not in the CV's education section, which starts at the B.Sc.; its honor
-    # still is, in the CV's honors.
-    cv: false
+    institution: Virginia Community College System
     honors:
       - year: 2009
         award: Summa Cum Laude
         from: Piedmont Virginia Community College
   
-  - start: September 1999
+  - id: high-school
+    start: September 1999
     end: June 2003
     degree: High School Diploma
     institution: CD Hylton High School
-    cv: false
     location: Woodbridge, VA
     highlights:
       - AP Computer Science and Calculus A 
@@ -70,10 +70,10 @@ education:
       - Self-taught DOS and command line basics
       - Advanced studies diploma
   
-  - start: September 1997
+  - id: middle-school
+    start: September 1997
     end: June 1999
     institution: Middle School
-    cv: false
     location: Manassas, VA
     highlights:
       - Self-taught TI Basic, building math/science helper apps

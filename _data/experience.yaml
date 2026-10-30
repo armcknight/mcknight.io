@@ -1,10 +1,13 @@
 # Every job, for two readers: the experience page (experience/index.html)
-# and the CV (scripts/generate-cv.rb, through the resume repo's cv.tex.erb).
-# The CV lists them in the order written here; the page sorts them by date
-# itself.
+# and the CV and resumes (scripts/generate-resume.rb, through the resume repo's
+# resume.tex.erb). Which jobs a resume has, and in what order, its entry in
+# the resume repo's selections.yml says, by id; the page shows every job and
+# sorts them by date itself.
 #
 # Each entry:
 #
+#   id               A short name for the job, unique here, e.g. "sentry":
+#                    what a resume's selection file lists it by.
 #   start            "January 2021": a full month name and the year, or just
 #                    the year. Both readers parse it; the CV shortens it to
 #                    "Jan 2021".
@@ -40,14 +43,13 @@
 #   highlights       Optional. Each item is a string, or a map of name, url
 #                    and description, where the description mentions the name
 #                    and that mention becomes the link.
-#   cv               Optional. false leaves the entry out of the CV; the page
-#                    still shows it.
 #
 # In any text: `backticks` mark code, which the CV sets in typewriter type,
 # and "straight quotes" become curly ones there. Write & and other characters
 # as they are; the CV escapes them for LaTeX.
 experience:
-  - start: January 2021
+  - id: sentry
+    start: January 2021
     end: Current
     era: professional
     organization: Sentry
@@ -73,7 +75,8 @@ experience:
       - name: SaaS Billing Platformization
         description: helped overhaul the company's internal billing codebase to help product teams self-serve how they charge for their product segment
 
-  - start: November 2019
+  - id: specto
+    start: November 2019
     end: January 2021
     era: professional
     organization: Specto
@@ -97,7 +100,8 @@ experience:
       - First employee at startup; grew and maintained iOS profiling SDK
       - Joined Sentry as acquisition in December 2020; SDK integrated into Sentry Cocoa
 
-  - start: January 2019
+  - id: rightpoint
+    start: January 2019
     end: October 2019
     era: professional
     organization: Rightpoint Consulting
@@ -112,7 +116,8 @@ experience:
       - name: (Confidential)
         description: Identity security app and SDK
 
-  - start: November 2011
+  - id: insight-therapeutics
+    start: November 2011
     end: June 2019
     era: professional
     organization: Insight Therapeutics
@@ -154,7 +159,8 @@ experience:
     highlights:
       - Sole consulatation and development of multiple apps
 
-  - start: January 2018
+  - id: 121nexus
+    start: January 2018
     end: April 2018
     era: professional
     organization: 121nexus
@@ -175,7 +181,8 @@ experience:
           - Added crash reporting (Crashlytics) and logging (XCGLogging)
           - Augmented and documented analytics (Firebase)
 
-  - start: December 2016
+  - id: layer
+    start: December 2016
     end: July 2017
     era: professional
     organization: Layer
@@ -194,7 +201,8 @@ experience:
       - Migrated old SPDY/Thrift architecture to WebSockets with rewritten Thrift specs
       - Rearchitected auth and transport layers into state machines using TransitionKit
 
-  - start: April 2015
+  - id: twitter
+    start: April 2015
     end: December 2016
     era: professional
     organization: Twitter
@@ -221,11 +229,15 @@ experience:
       - name: FABConfig
         url: https://github.com/twitter-fabric/fabconfig
         description: Standardizes config of all Xcode projects and released the open source FABConfig
+      - name: FABOperation
+        url: https://github.com/google-fabric/FABOperation
+        description: Custom NSOperation subclasses for async work and grouping tasks
     highlights:
       - Presented work on rearchitectures at MobileDevCon 2016 in Amsterdam
       - Maintenance of backend lambda architecture, including on-call rotations
 
-  - start: January 2015
+  - id: mc10
+    start: January 2015
     end: April 2015
     era: professional
     organization: MC10
@@ -244,7 +256,8 @@ experience:
       - Set up continuous integration and deployment with TeamCity and Fabric
       - Assisted adoption of Agile processes, including delivering internal presentations
 
-  - start: July 2013
+  - id: raizlabs
+    start: July 2013
     end: December 2014
     era: professional
     organization: Raizlabs
@@ -280,7 +293,8 @@ experience:
         details:
           - Paging of API result display in table/collection views with custom pull-to-request footer and animation
 
-  - start: October 2012
+  - id: odu-systems-lab
+    start: October 2012
     end: May 2013
     era: semi-pro
     organization: ODU Systems Lab
@@ -294,7 +308,8 @@ experience:
       - Supervised two foreign exchange students
       - Consulting with clients on site
 
-  - start: May 2012
+  - id: intergraph
+    start: May 2012
     end: October 2012
     era: semi-pro
     organization: Intergraph
@@ -308,7 +323,8 @@ experience:
       - Unit and UI testing, regression testing in numerical modules
       - Manual acceptance testing for new features and fixes
 
-  - start: August 2012
+  - id: odu-capstone
+    start: August 2012
     end: May 2013
     era: higher-education
     organization: Old Dominion University
@@ -323,7 +339,8 @@ experience:
       - 4 presentations given to visiting professors and industry executives
       - Sole developer of iOS component of total solution
 
-  - start: August 2012
+  - id: odu-research-assistant
+    start: August 2012
     end: May 2014
     era: higher-education
     organization: Old Dominion University
@@ -337,7 +354,8 @@ experience:
       - Image processing, robotics and machine learning applications in bioinformatics
       - Multiple publications and conference presentations
 
-  - start: August 2012
+  - id: odu-lab-instructor
+    start: August 2012
     end: May 2014
     era: higher-education
     organization: Old Dominion University
@@ -350,7 +368,8 @@ experience:
       - "Assistant instructor for CS 150: Introduction to programming in C++"
       - Website maintenance, grading, office hours
 
-  - start: October 2010
+  - id: xvd-longboards
+    start: October 2010
     end: April 2011
     era: semi-pro
     organization: XVD Longboards
@@ -365,11 +384,11 @@ experience:
     highlights:
       - Paid with a couple custom longboards, which I got to help build myself!
 
-  - start: June 2003
+  - id: restaurants
+    start: June 2003
     end: June 2009
     era: foodservice
     organization: Restaurants
-    cv: false
     title: Chef
     location: Woodbridge, VA; Charlottesville, VA
     employment_type: Hourly

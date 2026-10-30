@@ -29,7 +29,8 @@ endif
 # Makefile, which is what puts it in front of the action rather than behind it.
 KNOWN_GOALS := $(SITES) \
 	$(shell grep -oE '^[a-zA-Z_][a-zA-Z0-9_-]*:' $(firstword $(MAKEFILE_LIST)) | tr -d ':' | sort -u)
-STRAY_GOALS := $(filter-out $(KNOWN_GOALS) help-%,$(MAKECMDGOALS))
+# Pattern targets (help-<topic>, resume-<name>) are known by their prefix.
+STRAY_GOALS := $(filter-out $(KNOWN_GOALS) help-% resume-%,$(MAKECMDGOALS))
 
 ifneq ($(STRAY_GOALS),)
 $(error No such target or site: $(STRAY_GOALS). Sites are: $(SITES). Run `make help`)
@@ -104,7 +105,7 @@ RUBY := env -u GEM_HOME -u GEM_PATH rbenv exec
 help: ## Show this help
 	@echo "mcknight.io — available make targets:"
 	@echo
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(firstword $(MAKEFILE_LIST)) \
+	@grep -E '^[a-zA-Z_%-]+:.*?## .*$$' $(firstword $(MAKEFILE_LIST)) \
 		| sort \
 		| awk 'BEGIN {FS = ":.*?## "} {printf "  \033[36m%-32s\033[0m %s\n", $$1, $$2}'
 	@echo
@@ -236,27 +237,46 @@ serve: ## <site> Serve a built site and open it
 endserve: ## <site> Stop a served site
 	@$(foreach s,$(SELECTED),pids=$$(lsof -ti :$(port_$(s)) -sTCP:LISTEN 2>/dev/null); if [ -n "$$pids" ]; then echo "$$pids" | xargs kill && echo "stopped $(label_$(s)) on port $(port_$(s))"; else echo "nothing was serving $(label_$(s)) on port $(port_$(s))"; fi;)
 
-# Rebuilds the LaTeX resume and CV, then copies the two PDFs the site links to
-# into assets/pdf/.
+# Generates a resume from the experience page's own data and builds its PDF:
 #
-# The CV's LaTeX is generated first, from the experience page's own data
-# (_data/experience.yaml, education.yaml, presentations.yaml) through the
-# template resume/cv.tex.erb; see scripts/generate-cv.rb. Change the CV there,
-# not in resume/cv.tex, and commit the regenerated cv.tex in the resume repo.
+#   make resume-ios            the `ios` entry in resume/selections.yml ->
+#                              resume/.build/ios.tex -> resume/pdfs/ios.pdf
+#   make resume-cv             the full CV, likewise
 #
-# resume/ is a submodule of armcknight/resume, where the .tex sources are
-# edited and committed; its build/ is scratch space that git ignores — the
-# tracked artifacts are the two copies under assets/pdf/, which is why the copy
-# step exists. Moving the submodule changes nothing a visitor sees until this
-# runs, so run it in the same commit as the submodule change.
+# Each entry in the resume repo's selections.yml picks a resume's sections
+# and, by id, the entries in each, and an entry of the same name in its
+# letters.yml is that application's cover letter, built through letter.tex.erb
+# into resume/pdfs/<name>-letter.pdf. A new application is a new entry in
+# either or both, and `make resume-<its name>`. The data is _data/
+# experience.yaml, education.yaml, presentations.yaml and mentorship.yaml,
+# and the layout is resume/resume.tex.erb. Change them: the .tex the run
+# writes is generated, and the resume repo ignores it.
 #
-# Needs a TeX distribution: the resume's own Makefile drives pdflatex directly.
+# Every copy is for the web, without the address and phone number, unless
+# built with WEB=false: `make resume-reddit WEB=false` writes the private
+# copies, under names of their own, resume/pdfs/reddit-private.pdf and
+# reddit-letter-private.pdf, so they never replace a copy for the web, nor
+# reach assets/pdf/ through `make resume`, which copies only those.
+#
+# resume/ is a submodule of armcknight/resume; its .build/ and pdfs/ are
+# scratch space that git ignores. Needs a TeX distribution.
+WEB ?= true
+RESUME_SUFFIX := $(if $(filter false,$(WEB)),-private)
+resume-%: ## <name> Generate the <name> resume and cover letter in resume/ and build their PDFs; WEB=false for the private copies
+	@case "$(WEB)" in true|false) ;; *) echo 'WEB is true (the default) or false, not "$(WEB)"'; exit 1;; esac
+	$(RUBY) ruby scripts/generate-resume.rb $* $(if $(filter false,$(WEB)),--private)
+	@for f in $*$(RESUME_SUFFIX) $*-letter$(RESUME_SUFFIX); do \
+		if [ -f resume/.build/$$f.tex ]; then $(MAKE) -C resume --no-print-directory pdf NAME=$$f || exit 1; fi; \
+	done
+
+# The two the site links to, the CV and the iOS resume, built and copied into
+# assets/pdf/. Those copies are the tracked artifacts, so nothing a visitor
+# sees changes until this runs; run it in the same commit as the change to the
+# data or the resume submodule.
 .PHONY: resume
-resume: ## Rebuild the resume and CV PDFs from LaTeX and copy them into assets/pdf
-	$(RUBY) ruby scripts/generate-cv.rb
-	pushd resume && make build
-	cp resume/build/pdfs/cv.pdf assets/pdf/andrew-mcknight-cv.pdf
-	cp resume/build/pdfs/ios_resume.pdf assets/pdf/andrew-mcknight-resume-ios.pdf
+resume: resume-cv resume-ios ## Rebuild the CV and iOS resume PDFs and copy them into assets/pdf
+	cp resume/pdfs/cv.pdf assets/pdf/andrew-mcknight-cv.pdf
+	cp resume/pdfs/ios.pdf assets/pdf/andrew-mcknight-resume-ios.pdf
 
 # Refreshes _data/releases.yml with the latest release version and date for every
 # app and devtool on the projects page of the main site.

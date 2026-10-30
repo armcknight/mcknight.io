@@ -1,0 +1,23 @@
+# Mentoring and teaching outside of school or work, for the resumes
+# (scripts/generate-resume.rb), in their Mentorship section; each has an id a
+# selection names it by, and the same fields as a talk in presentations.yaml.
+mentorship:
+  - id: girls-who-code-2016
+    date: Jul 2016
+    event: Girls Who Code
+    title: iOS Dev Session
+    venue: Twitter
+    location: Cambridge, MA
+    details:
+      - Part of GWC summer internship covering programming first principles to full-stack style development
+      - Designed and led iOS session where we built a Flappy Bird clone, introducing them to Xcode as an IDE, Interface Builder, Playgrounds and Swift
+
+  - id: neighbornest-2015
+    date: Oct 2015
+    event: NeighborNest
+    title: Web Dev Session
+    venue: Twitter
+    location: San Francisco, CA
+    details:
+      - Community program to help advocate technology literacy
+      - Assisted in session where students worked on a Twitter clone, teaching functional programming concepts, Javascript, and some front- and back- end concepts
