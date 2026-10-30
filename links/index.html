@@ -1,6 +1,8 @@
 ---
 layout: modern
 title: "Links"
+content_class: content-wide
+floating_top: true
 ---
 
 <div class="page-header" id="top">
@@ -22,7 +24,8 @@ get set of all tags
   {% endfor %}
 {% endfor %}
 
-{% assign uniq_tags = all_tags | split: "|" | uniq | sort %}
+{% assign tag_list = all_tags | split: "|" %}
+{% assign uniq_tags = tag_list | uniq | sort %}
 
 {% comment %}
 generate tag cloud
@@ -31,85 +34,40 @@ generate tag cloud
   <h2>Browse by Category</h2>
   <div class="tag-cloud">
     {% for tag in uniq_tags %}
-    <a href="#{{ tag }}" class="tag tag-link">{{ tag }}</a>
+    {%- comment -%} How many links have it: one entry in tag_list per link per tag {%- endcomment -%}
+    {%- assign tag_count = tag_list | where_exp: "t", "t == tag" | size %}
+    <a href="#{{ tag }}" class="tag tag-link">{{ tag }} ({{ tag_count }})</a>
     {% endfor %}
   </div>
 </div>
 
 {% comment %}
-for every tag, create a box of links that have that tag
+  For every tag, a box of the links that have it, in alphabetical order down
+  as many columns as fit, up to three: each at least 280px wide, and no box
+  split between two.
 {% endcomment %}
-{% assign total_tags = uniq_tags | size %}
-{% assign half_point = total_tags | divided_by: 2 | plus: 1 %}
-
 <div class="links-sections">
-  <div class="links-column">
-    {% for tag in uniq_tags limit: half_point %}
-      <section class="links-section" id="{{ tag }}">
-        <h3 class="links-section-title">{{ tag | capitalize }}</h3>
-        <ul class="links-list">
-          {% for link in site.data.links %}
-            {% for tags_hash in link[1] %}
-              {% for tag_array in tags_hash %}
-                {% assign link_tags = "" %}
-                {% for link_tag in tag_array[1] %}
-                  {% assign link_tags = link_tags | append: link_tag | append: "|" %}
-                {% endfor %}
-                {% assign link_tag_array = link_tags | split: "|" %}
-                {% if link_tag_array contains tag %}
-                  <li class="links-list-item">
-                    <a href="{{ link[0] }}" target="_blank" rel="noopener" class="links-list-link">{{ link[0] | remove: "https://" | remove: "http://" | remove: "www." | split: "/" | first }}</a>
-                  </li>
-                {% endif %}
+  {% for tag in uniq_tags %}
+    <section class="links-section" id="{{ tag }}">
+      <h3 class="links-section-title">{{ tag | capitalize }}</h3>
+      <ul class="links-list">
+        {% for link in site.data.links %}
+          {% for tags_hash in link[1] %}
+            {% for tag_array in tags_hash %}
+              {% assign link_tags = "" %}
+              {% for link_tag in tag_array[1] %}
+                {% assign link_tags = link_tags | append: link_tag | append: "|" %}
               {% endfor %}
+              {% assign link_tag_array = link_tags | split: "|" %}
+              {% if link_tag_array contains tag %}
+                <li class="links-list-item">
+                  <a href="{{ link[0] }}" target="_blank" rel="noopener" class="links-list-link">{{ link[0] | remove: "https://" | remove: "http://" | remove: "www." | split: "/" | first }}</a>
+                </li>
+              {% endif %}
             {% endfor %}
           {% endfor %}
-        </ul>
-        <a href="#top" class="back-to-top">
-          <svg viewBox="0 0 24 24" fill="currentColor">
-            <path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/>
-          </svg>
-          <span class="back-to-top-text">Back to top</span>
-        </a>
-      </section>
-    {% endfor %}
-  </div>
-  
-  <div class="links-column">
-    {% for tag in uniq_tags offset: half_point %}
-      <section class="links-section" id="{{ tag }}">
-        <h3 class="links-section-title">{{ tag | capitalize }}</h3>
-        <ul class="links-list">
-          {% for link in site.data.links %}
-            {% for tags_hash in link[1] %}
-              {% for tag_array in tags_hash %}
-                {% assign link_tags = "" %}
-                {% for link_tag in tag_array[1] %}
-                  {% assign link_tags = link_tags | append: link_tag | append: "|" %}
-                {% endfor %}
-                {% assign link_tag_array = link_tags | split: "|" %}
-                {% if link_tag_array contains tag %}
-                  <li class="links-list-item">
-                    <a href="{{ link[0] }}" target="_blank" rel="noopener" class="links-list-link">{{ link[0] | remove: "https://" | remove: "http://" | remove: "www." | split: "/" | first }}</a>
-                  </li>
-                {% endif %}
-              {% endfor %}
-            {% endfor %}
-          {% endfor %}
-        </ul>
-        <a href="#top" class="back-to-top">
-          <svg viewBox="0 0 24 24" fill="currentColor">
-            <path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/>
-          </svg>
-          <span class="back-to-top-text">Back to top</span>
-        </a>
-      </section>
-    {% endfor %}
-  </div>
+        {% endfor %}
+      </ul>
+    </section>
+  {% endfor %}
 </div>
-
-<a href="#top" class="floating-back-to-top">
-  <svg viewBox="0 0 24 24" fill="currentColor">
-    <path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/>
-  </svg>
-</a>

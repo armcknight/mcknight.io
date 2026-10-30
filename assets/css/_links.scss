@@ -1,26 +1,27 @@
 // Links page specific styles
 
-// Links sections layout
+// Links sections layout: one box per tag, down as many columns as fit at
+// 280px or wider, up to three, so three across the page's full width, two as
+// the window narrows, one on a phone. A box is never split between columns.
 .links-sections {
-  display: flex;
-  gap: var(--space-8);
-  align-items: flex-start;
-}
-
-.links-column {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
+  columns: 280px 3;
+  column-gap: var(--space-8);
 }
 
 .links-section {
-  padding-bottom: var(--space-1);
+  break-inside: avoid;
+  // The room between boxes is padding under each, inside the box: not a
+  // margin over its title, which a column keeps at its top only if it is the
+  // first, nor a margin under it, which some browsers (WebKit) carry over to
+  // the top of the next column. Either way the columns would start at
+  // different heights.
+  padding-bottom: calc(var(--space-1) + var(--space-10));
 }
 
 .links-section-title {
   font-size: var(--text-xl);
   font-weight: 600;
+  margin-top: 0;
   margin-bottom: var(--space-1);
   color: var(--text-primary);
 }
@@ -113,15 +114,3 @@
   opacity: 0.35;
   pointer-events: none;
 }
-
-// Responsive design for links page
-@media (max-width: 650px) {
-  .links-sections {
-    flex-direction: column !important;
-    gap: var(--space-6) !important;
-  }
-  
-  .links-column {
-    gap: var(--space-1) !important;
-  }
-} 
