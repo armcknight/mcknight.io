@@ -1,6 +1,8 @@
 ---
 layout: modern
 title: "Andrew McKnight's Blog"
+content_class: content-wide
+floating_top: true
 feedName: "Andrew McKnight's Blog"
 feedURL: "/feed.xml"
 ---
@@ -22,10 +24,10 @@ Generate tag cloud from all blog posts
 {% assign uniq_tags = all_tags | split: "|" | uniq | sort %}
 
 <div class="tags-section">
-  <h2>Browse by Topic</h2>
+  <h2>Topics</h2>
   <div class="tag-cloud">
     {% for tag in uniq_tags %}
-    <a href="/blog/tag/{{ tag | slugify }}.html" class="tag tag-link">{{ tag }}</a>
+    <a href="/blog/tag/{{ tag | slugify }}.html" class="tag tag-link">{{ tag }} ({{ site.tags[tag].size }})</a>
     {% endfor %}
   </div>
 </div>
@@ -37,10 +39,10 @@ Generate chronological navigation
 
 <div class="blog-navigation">
   <div class="chronological-nav">
-    <h3>Browse by Year</h3>
+    <h2>Years</h2>
     <div class="year-links">
       {% for year_group in posts_by_year %}
-      <a href="#year-{{ year_group.name }}" class="year-link">{{ year_group.name }} ({{ year_group.items.size }})</a>
+      <a href="#year-{{ year_group.name }}" class="tag-link">{{ year_group.name }} ({{ year_group.items.size }})</a>
       {% endfor %}
     </div>
   </div>
@@ -50,14 +52,6 @@ Generate chronological navigation
     <section class="year-section" id="year-{{ year_group.name }}">
       <h2 class="year-header">{{ year_group.name }}</h2>
       {% include modern-blog-listing.html posts=year_group.items %}
-      
-      <div class="year-nav">
-        <a href="#top" class="back-to-top">
-          <svg viewBox="0 0 24 24" fill="currentColor">
-            <path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/>
-          </svg>
-        </a>
-      </div>
     </section>
     {% endfor %}
   </div>

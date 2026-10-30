@@ -44,40 +44,35 @@
   top: var(--space-6);
 }
 
-.chronological-nav h3 {
-  font-size: var(--text-lg);
-  font-weight: 600;
-  margin-bottom: var(--space-3);
-  color: var(--text-primary);
+// "Years", an h2 as "Topics" is, and so level with the first year's header
+// beside it, which has the same font. Neither takes an h2's top margin: the
+// navigation's own, under the topics, is the room above both, which a flex
+// item's heading would otherwise add to rather than share.
+.chronological-nav h2,
+.blog-posts-container > .year-section:first-child .year-header {
+  margin-top: 0;
 }
 
+.chronological-nav h2 {
+  margin-bottom: var(--space-4);
+}
+
+// The years as pills, as the topics are (.tag-link), one under another.
 .year-links {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: var(--space-2);
-}
-
-.year-link {
-  color: var(--text-secondary);
-  text-decoration: none;
-  font-size: var(--text-sm);
-  font-weight: 500;
-  padding: var(--space-2) var(--space-3);
-  border-radius: 6px;
-  transition: all 0.15s ease;
-}
-
-.year-link:hover {
-  background-color: var(--background-alt);
-  color: var(--accent);
 }
 
 .blog-posts-container {
   flex: 1;
 }
 
+// Twice the room between posts, so a new year reads as one. The way back to
+// the top is the page's floating button (floating_top), not one per year.
 .year-section {
-  margin-bottom: var(--space-16);
+  margin-bottom: var(--space-12);
 }
 
 .year-header {
@@ -87,13 +82,6 @@
   color: var(--text-primary);
   border-bottom: 2px solid var(--border);
   padding-bottom: var(--space-2);
-}
-
-.year-nav {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: var(--space-6);
-  padding-top: var(--space-4);
 }
 
 // Individual blog post styles
@@ -178,46 +166,11 @@
   line-height: 1.4;
 }
 
-// Back to top button
-.back-to-top {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text-muted);
-  text-decoration: none;
-  margin-top: var(--space-2);
-  transition: color 0.15s ease;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background-color: var(--background-alt);
-  border: 1px solid var(--border);
-}
-
-.back-to-top:hover {
-  color: var(--accent);
-  background-color: var(--accent);
-  border-color: var(--accent);
-}
-
-.back-to-top:hover svg {
-  color: white;
-}
-
-.back-to-top svg {
-  width: 14px;
-  height: 14px;
-}
-
-.back-to-top-text {
-  display: none;
-}
-
 // Responsive design for blog
 @media (max-width: 650px) {
   .blog-navigation {
     flex-direction: column;
-    gap: var(--space-4);
+    gap: var(--space-6);
   }
   
   .chronological-nav {
@@ -231,11 +184,6 @@
     gap: var(--space-2);
   }
   
-  .year-link {
-    font-size: var(--text-xs);
-    padding: var(--space-1) var(--space-2);
-  }
-  
   .year-header {
     font-size: var(--text-2xl);
   }
@@ -246,9 +194,5 @@
   
   .article-content {
     font-size: var(--text-base);
-  }
-  
-  .back-to-top {
-    display: none !important;
   }
 } 
