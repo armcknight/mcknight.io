@@ -213,11 +213,32 @@
   flex-shrink: 0;
 }
 
-// A screenshot in the header takes the room the links leave.
+// Each one the same height, the badge and the buttons alike, so that centred
+// beside the picture they all start at the same height on every card. The
+// badge fills it as a block, without the room under an inline image's
+// baseline.
+.app-links > a {
+  height: 44px;
+  box-sizing: border-box;
+}
+
+.app-links .app-store-badge {
+  display: block;
+  height: 100%;
+}
+
+// A screenshot in the header takes an icon's room, 96px square, fitted inside
+// it whole, so every card's links sit where every other card's do. Pressed,
+// it opens at full size.
 .app-header .app-screenshot-link {
-  flex: 1 1 auto;
-  min-width: 0;
+  flex: 0 0 96px;
   margin-bottom: 0;
+}
+
+.app-header .app-screenshot {
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
 }
 
 .app-icon {
