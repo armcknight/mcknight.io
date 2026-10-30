@@ -484,7 +484,7 @@ check-clean: ## Fail unless the working tree is clean (a deploy prerequisite)
 deploy: _logs-dir check-clean ## <site> Upload a built site, then stamp and commit what is live
 	@$(foreach s,$(SELECTED),test -n "$(bucket_$(s))" || { echo "No bucket is recorded for $(label_$(s)). Set bucket_$(s) in the Makefile once it exists."; exit 1; };)
 	@$(foreach s,$(SELECTED),test -n "$(dist_$(s))" || { echo "No CloudFront distribution is recorded for $(label_$(s)). Set dist_$(s) in the Makefile once it exists."; exit 1; };)
-	$(foreach s,$(SELECTED),scripts/deploy-site.sh "$(label_$(s))" "$(dest_$(s))" "$(bucket_$(s))" "$(stamp_$(s))" && aws --profile armcknight cloudfront create-invalidation --distribution-id $(dist_$(s)) --paths $(versioned_$(s)) > /dev/null && echo "cleared $(versioned_$(s)) from CloudFront for $(label_$(s))";)
+	$(foreach s,$(SELECTED),scripts/deploy-site.sh "$(s)" "$(label_$(s))" "$(dest_$(s))" "$(bucket_$(s))" "$(stamp_$(s))" && aws --profile armcknight cloudfront create-invalidation --distribution-id $(dist_$(s)) --paths $(versioned_$(s)) > /dev/null && echo "cleared $(versioned_$(s)) from CloudFront for $(label_$(s))";)
 
 # Invalidate CloudFront, so a fresh deploy is actually what gets served.
 #

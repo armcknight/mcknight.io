@@ -1,8 +1,10 @@
 #!/bin/sh
 # Deploys one site: upload, stamp what is live, commit the stamp.
 #
-#   deploy-site.sh <label> <dest> <bucket> <stamp>
+#   deploy-site.sh <site> <label> <dest> <bucket> <stamp>
 #
+#     site    the site's name in the Makefile, e.g. travel: the commit that
+#             records the deploy is "deploy(<site>): <commit>"
 #     label   what to call the site in messages, e.g. travel.mcknight.io
 #     dest    the built directory to upload, e.g. travel/_site
 #     bucket  the S3 bucket name
@@ -17,10 +19,11 @@
 
 set -eu
 
-label=$1
-dest=$2
-bucket=$3
-stamp=$4
+site=$1
+label=$2
+dest=$3
+bucket=$4
+stamp=$5
 
 if [ ! -d "$dest" ]; then
     echo "Nothing to deploy for $label: $dest does not exist. Build it first."
@@ -64,6 +67,6 @@ if git diff --quiet -- "$stamp" && [ -z "$(git status --porcelain -- "$stamp")" 
     echo "$stamp unchanged; nothing to commit."
 else
     git add -- "$stamp"
-    git commit --quiet --only -m "record $(head -1 "$stamp" | cut -c1-12) as deployed to $label" -- "$stamp"
+    git commit --quiet --only -m "deploy($site): $(head -1 "$stamp" | cut -c1-12)" -- "$stamp"
     echo "committed $stamp as $(git rev-parse --short HEAD)"
 fi
