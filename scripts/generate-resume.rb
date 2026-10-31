@@ -84,6 +84,7 @@ class Resume
   # Each kind of section: its title, and whether its entries have ids to pick
   # them by.
   KINDS = {
+    'skills' => ['Skills', false],
     'education' => ['Education', true],
     'publications' => ['Publications', false],
     'experience' => ['Experience', true],
@@ -92,7 +93,15 @@ class Resume
     'mentorship' => ['Mentorship', true]
   }.freeze
 
-  Section = Struct.new(:kind, :title, :items)
+  # The options a kind of section takes besides only and except, each true or
+  # false, and what it is without one: experience with its stacks, and
+  # education not abridged to each degree's own line.
+  OPTIONS = {
+    'experience' => { 'stack' => true },
+    'education' => { 'abridged' => false }
+  }.freeze
+
+  Section = Struct.new(:kind, :title, :items, :options)
 
   attr_reader :experience, :education, :presentations, :mentorship
 
@@ -121,16 +130,33 @@ class Resume
 
   # The selection's sections, in its order, each with its entries.
   def sections
-    @selection.fetch('sections').map do |section|
+    @sections ||= @selection.fetch('sections').map do |section|
       kind, spec = section.first
       title, by_id = KINDS.fetch(kind) { abort "#{@source}: no section called #{kind}; there are #{KINDS.keys.join(', ')}" }
+      next Section.new(kind, title, skills(spec), {}) if kind == 'skills'
+
       spec = { 'only' => spec } if spec.is_a?(Array)
       spec = {} if spec == 'all'
-      extra = spec.keys - %w[only except]
-      abort "#{@source}: #{kind} takes all, a list of ids, only or except, not #{extra.join(', ')}" if extra.any?
-      Section.new(kind, title, pick(kind, all_of(kind), spec, by_id))
+      defaults = OPTIONS.fetch(kind, {})
+      extra = spec.keys - %w[only except] - defaults.keys
+      takes = (['all, a list of ids, only or except'] + defaults.keys).join(', ')
+      abort "#{@source}: #{kind} takes #{takes}, not #{extra.join(', ')}" if extra.any?
+      options = defaults.to_h { |option, default| [option, spec.fetch(option, default)] }
+      bad = options.reject { |_, value| [true, false].include?(value) }.keys
+      abort "#{@source}: #{kind}'s #{bad.join(', ')} is true or false" if bad.any?
+      Section.new(kind, title, pick(kind, all_of(kind), spec, by_id), options)
     end
   end
+
+  # A skills section's own list, written in the selection as a job's stack is
+  # in the data: categories, each one name and its items. [[name, items], ...]
+  def skills(spec)
+    shaped = spec.is_a?(Array) && spec.all? { |category| category.is_a?(Hash) && category.size == 1 && category.values.first.is_a?(Array) }
+    abort "#{@source}: skills is a list of categories, each - name: [items]" unless shaped
+
+    spec.map(&:first).reject { |_, items| items.empty? }
+  end
+
 
   def publications
     education.flat_map { |degree| degree['publications'].to_a }
@@ -182,6 +208,12 @@ class Resume
     items.empty? ? nil : items.map { |item| tex(item) }.join(', ')
   end
 
+  # A skills section's categories, each its name, capitalized, and its items on
+  # one line.
+  def skill_lines(categories)
+    categories.map { |name, items| [tex(name.capitalize), items.map { |item| tex(item) }.join(', ')] }
+  end
+
   # A deliverable or highlight: a plain string, or a name with a url and a
   # description. A deliverable is written as its name, then what it is; a
   # highlight is its description, the name in it linked, as the experience
@@ -199,22 +231,23 @@ class Resume
     entry['description'] ? "#{name}#{separator}#{tex(entry['description'])}" : name
   end
 
-  # The \item lines of one job's entry, indented for the template: its stack,
-  # its highlights, then its deliverables.
-  def job_items(job)
-    stack_lines = stack(job) ? ["\\item \\textbf{Stack}: #{stack(job)}"] : []
+  # The \item lines of one job's entry, indented for the template: its stack
+  # (unless its section says stack: false), its highlights, then its
+  # deliverables.
+  def job_items(job, with_stack: true)
+    stack_lines = with_stack && stack(job) ? ["\\item \\cvlabel{Stack}: #{stack(job)}"] : []
 
     # A single string is a list of one
     deliverables = job['deliverables'].is_a?(String) ? [job['deliverables']] : job['deliverables'].to_a
     deliverable_lines =
       if deliverables.size == 1 && deliverables.first.is_a?(String)
-        ["\\item \\textbf{Deliverable}: #{tex(deliverables.first)}"]
+        ["\\item \\cvlabel{Deliverable}: #{tex(deliverables.first)}"]
       elsif deliverables.size == 1
         # The only one, after the label, its details the list under it:
         # "Deliverable: Specto SDK, mobile app profiler"
         only = deliverables.first
         details = only['details'].to_a.map { |x| [tex(x), []] }
-        ["\\item \\textbf{Deliverable}: #{item(only, :deliverable, separator: ', ')}"] +
+        ["\\item \\cvlabel{Deliverable}: #{item(only, :deliverable, separator: ', ')}"] +
           (details.any? ? list(details) : [])
       elsif deliverables.any?
         # \cvlistlabel, from the template, keeps it on the page with the list.
@@ -231,6 +264,9 @@ class Resume
       elsif stack_lines.empty? && deliverable_lines.empty?
         # On their own, the highlights are the entry: no label
         highlights.map { |h| "\\item #{h}" }
+      elsif highlights.size == 1
+        # The only one, after the label, as a lone deliverable is
+        ["\\item \\cvlabel{Highlight}: #{highlights.first}"]
       else
         ['\\item \\cvlistlabel{Highlights}'] + list(highlights.map { |h| [h, []] })
       end

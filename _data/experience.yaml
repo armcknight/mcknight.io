@@ -116,7 +116,7 @@ experience:
       - infrastructure: [CircleCI, Postman, Browserstack, Countly]
     deliverables: Security app and SDK (under NDA)
 
-  - id: insight-therapeutics
+  - id: insight
     start: November 2011
     end: June 2019
     era: professional
@@ -129,7 +129,7 @@ experience:
       - frameworks: [CoreGraphics, CoreData, MessageUI, UICollectionView, FMDB, SQLite, Storyboards, SSZipArchive, RNCryptor]
       - infrastructure: [cocoapods-keys, Trello, BitBucket, AWS]
     highlights:
-      - Sole consulatation and development of multiple apps shipped in App Store and internally
+      - Sole consultation and development of multiple apps shipped in App Store and internally
     deliverables:
       - name: ClotRx
         url: http://itunes.apple.com/us/app/clot-rx/id408979176?mt=8

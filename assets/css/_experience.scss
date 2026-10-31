@@ -227,6 +227,32 @@
   background-color: var(--background);
 }
 
+// "Currently using": the current jobs' stacks, a column per category, side by side while
+// they fit, under a heading the size of the timeline's.
+.current-skills {
+  margin-bottom: var(--space-12);
+
+  h2 {
+    font-size: var(--text-3xl);
+    font-weight: 700;
+    margin-bottom: var(--space-6);
+    color: var(--text-primary);
+  }
+
+  // Headed as an entry's sections are in the timeline
+  h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 var(--space-2) 0;
+  }
+}
+
+.current-skills-groups {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: var(--space-6);
+}
+
 // Git-style timeline visualization
 .git-timeline-container {
   // Right after the page's intro, whose margin is room enough (see .page-header)

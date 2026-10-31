@@ -13,6 +13,42 @@ floating_top: true
 </div>
 
 {% comment %}
+  What I work with now: the stacks of the jobs that end "Current", merged:
+  each category once, in the order it first comes, and in it each item once.
+  Each category a heading over its items, as pills, as a job's stack is shown
+  in the timeline below. (A resume's Skills section is its own list, in the
+  resume repo's selections.yml, which this public site cannot read.)
+{% endcomment %}
+{% assign current_jobs = site.data.experience.experience | where: "end", "Current" %}
+{% assign current_categories = "" | split: "" %}
+{% for job in current_jobs %}{% for group in job.stack %}{% for pair in group %}
+  {% assign current_categories = current_categories | push: pair[0] %}
+{% endfor %}{% endfor %}{% endfor %}
+{% assign current_categories = current_categories | uniq %}
+{% if current_categories.size > 0 %}
+<section class="current-skills">
+  <h2>Currently using</h2>
+  <div class="current-skills-groups">
+    {% for category in current_categories %}
+    {% assign category_items = "" | split: "" %}
+    {% for job in current_jobs %}{% for group in job.stack %}{% for pair in group %}{% if pair[0] == category %}
+      {% assign category_items = category_items | concat: pair[1] %}
+    {% endif %}{% endfor %}{% endfor %}{% endfor %}
+    {% assign category_items = category_items | uniq %}
+    {% if category_items.size > 0 %}
+    <div class="current-skills-group">
+      <h3>{{ category | capitalize }}</h3>
+      <div class="stack-tags">
+        {% for item in category_items %}<span class="stack-tag">{{ item }}</span>{% endfor %}
+      </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+{% comment %}
 Git-style timeline - start simple with just dates
 {% endcomment %}
 
