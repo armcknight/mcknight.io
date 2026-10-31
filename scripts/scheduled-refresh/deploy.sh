@@ -1,10 +1,10 @@
 #!/bin/sh
 # Deploys the built main site, clears the projects page from CloudFront and
-# pushes the DEPLOYED stamp: run by .github/workflows/nightly-refresh.yml after
+# pushes the DEPLOYED stamp: run by .github/workflows/scheduled-refresh.yml after
 # aws-actions/configure-aws-credentials has put the deploy role's credentials
 # in the environment.
 #
-#   scripts/nightly-refresh/deploy.sh
+#   scripts/scheduled-refresh/deploy.sh
 #
 # The Makefile and scripts/deploy-site.sh name the `armcknight` profile, as
 # they do on a laptop, so the role's credentials are given that name first.

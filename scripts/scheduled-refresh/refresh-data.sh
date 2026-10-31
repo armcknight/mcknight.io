@@ -1,8 +1,8 @@
 #!/bin/sh
 # Refreshes the projects page's data with `make releases`, and says whether
-# the page would change: run by .github/workflows/nightly-refresh.yml.
+# the page would change: run by .github/workflows/scheduled-refresh.yml.
 #
-#   scripts/nightly-refresh/refresh-data.sh
+#   scripts/scheduled-refresh/refresh-data.sh
 #
 # releases.yml is committed, so git says whether it changed. activity.yml is
 # ignored by git, so it is compared with the copy the workflow restored from

@@ -29,7 +29,7 @@
 #   AWS_DEPLOY_ROLE_ARN  an IAM role this repo may assume through GitHub's OIDC
 #                        provider, allowed to sync the mcknight.io bucket and
 #                        invalidate its CloudFront distribution.
-name: nightly-refresh
+name: scheduled-refresh
 
 on:
   schedule:
@@ -61,7 +61,7 @@ on:
 # running, so a burst of ten merges makes one or two deploys, not ten, and no
 # deploy is stopped halfway through an upload.
 concurrency:
-  group: nightly-refresh
+  group: scheduled-refresh
   cancel-in-progress: false
 
 permissions:
@@ -88,8 +88,12 @@ jobs:
           # has a merge base to work from.
           fetch-depth: 0
 
+      # 3.2, the latest patch of the series .ruby-version (3.2.2) names: newer
+      # runner images have only each series' latest patch, and 3.2.2 failed to
+      # install on ubuntu-26.04, which ubuntu-latest became
       - uses: ruby/setup-ruby@v1
         with:
+          ruby-version: '3.2'
           bundler-cache: true
 
       # Each commit's lines added and deleted, which never change, so only new
@@ -109,11 +113,11 @@ jobs:
         id: diff
         env:
           GH_TOKEN: ${{ secrets.RELEASES_TOKEN }}
-        run: scripts/nightly-refresh/refresh-data.sh
+        run: scripts/scheduled-refresh/refresh-data.sh
 
       - name: Commit and push the release data
         if: steps.diff.outputs.releases == 'true' && env.DRY_RUN != 'true'
-        run: scripts/nightly-refresh/commit-releases.sh
+        run: scripts/scheduled-refresh/commit-releases.sh
 
       - name: Build
         if: steps.diff.outputs.changed == 'true' && env.DRY_RUN != 'true'
@@ -127,7 +131,7 @@ jobs:
 
       - name: Deploy, and push the DEPLOYED stamp
         if: steps.diff.outputs.changed == 'true' && env.DRY_RUN != 'true'
-        run: scripts/nightly-refresh/deploy.sh
+        run: scripts/scheduled-refresh/deploy.sh
 
       - uses: actions/cache/save@v4
         if: env.DRY_RUN != 'true'

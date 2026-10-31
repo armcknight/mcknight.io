@@ -5,7 +5,7 @@ site built to `_site/`, served from an S3 bucket behind a CloudFront
 distribution.
 
 Publishing is a person running `make` on a workstation, with one exception:
-`.github/workflows/nightly-refresh.yml` keeps the projects page current by
+`.github/workflows/scheduled-refresh.yml` keeps the projects page current by
 itself (see [Refresh the versions and commit activity on the projects page](#runbooks)).
 
 ```
@@ -108,7 +108,7 @@ make build && make deploy
 make bust-cache PATHS="/projects/ /projects/index.html"
 ```
 
-`.github/workflows/nightly-refresh.yml` does this on GitHub every night in four
+`.github/workflows/scheduled-refresh.yml` does this on GitHub every night in four
 large population centers (about 03:00 in US East, Central Europe, New Delhi and
 Tokyo), and at once when a devtool releases or merges: the shared CI and
 release workflows in armcknight/workflows send it a `release-published`
@@ -636,8 +636,8 @@ own `src_`, `dest_`, `port_`, `stamp_`, `log_` and `label_` entries.
 | `scripts/new-post.sh` | Creates a post from a title, front matter and date filled in |
 | `scripts/generate-resume.rb` | Writes a resume's `.tex` from `_data/` and its entry in `resume/selections.yml`, through `resume/resume.tex.erb` |
 | `scripts/fetch-releases.rb` | Generates `_data/releases.yml` and `_data/activity.yml` |
-| `.github/workflows/nightly-refresh.yml` | Runs `make releases` nightly and on a `release-published` dispatch, and deploys when it changed |
-| `scripts/nightly-refresh/` | The workflow's steps: refresh the data and say what changed, commit `releases.yml`, deploy and push the stamp |
+| `.github/workflows/scheduled-refresh.yml` | Runs `make releases` on a schedule (four times a day) and on a `release-published` dispatch, and deploys when it changed |
+| `scripts/scheduled-refresh/` | The workflow's steps: refresh the data and say what changed, commit `releases.yml`, deploy and push the stamp |
 | `travel/` | The travel.mcknight.io site: its own config, data, page and scripts |
 | `books/` | The books.mcknight.io site: its own config, data, page and scripts |
 | `shared/` | What the subdomains share: the globe's core, and the plugin that copies it into each build |
@@ -671,7 +671,7 @@ Two conventions worth knowing:
   `release-tag-prefix`. App Store apps have no release to read, so their version
   comes from the iTunes lookup API. `releases.yml` is committed, which keeps
   builds offline and immune to rate limits — the versions shown are only as fresh
-  as the last `make releases`, which `nightly-refresh.yml` runs at least nightly.
+  as the last `make releases`, which `scheduled-refresh.yml` runs four times a day.
 - **Social cards.** A post gets a card image only if its front matter sets
   `thumbnail:`, pointing at a file in `blog/img/`. Without one the card is title
   and description text, deliberately — there is no fallback image.

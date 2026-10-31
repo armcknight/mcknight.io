@@ -332,7 +332,7 @@ all-resumes-%: ## <name> Build all four copies of the <name> resume and cover le
 # last year, which the projects page draws as a small bar chart. GitHub
 # computes those statistics on demand, so a first run can pause while it does.
 # activity.yml is ignored by git: its windows end today, so it changes nearly
-# every day. The nightly workflow keeps its copy in the Actions cache.
+# every day. The scheduled workflow keeps its copy in the Actions cache.
 #
 # The versions and the activity on the site are only as fresh as the last run.
 .PHONY: releases
