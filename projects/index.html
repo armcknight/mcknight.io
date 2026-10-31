@@ -58,23 +58,27 @@ content_class: content-wide
       lines added and deleted first, over the period the commits switch shows.
       Hidden until the script below can work it.
     {% endcomment %}
-    <div class="sort-switch" id="devtool-sort" role="radiogroup" aria-label="Sort the developer tools by" hidden>
-      <span class="sort-switch-label">Sort by</span>
-      <label><input type="radio" name="devtool-sort" value="impact" checked> User Impact</label>
-      <label><input type="radio" name="devtool-sort" value="name"> Name</label>
-      <label><input type="radio" name="devtool-sort" value="release"> Release</label>
-      <label><input type="radio" name="devtool-sort" value="activity"> Activity</label>
+    <div class="switch-group">
+      <div class="switch-heading" id="devtool-sort-heading">Sort by</div>
+      <div class="sort-switch" id="devtool-sort" role="radiogroup" aria-labelledby="devtool-sort-heading" hidden>
+        <label><input type="radio" name="devtool-sort" value="impact" checked> User Impact</label>
+        <label><input type="radio" name="devtool-sort" value="name"> Name</label>
+        <label><input type="radio" name="devtool-sort" value="release"> Release</label>
+        <label><input type="radio" name="devtool-sort" value="activity"> Activity</label>
+      </div>
     </div>
     {% comment %}
       Which period every tool's commit chart covers. The list's
       data-activity says, and the stylesheet shows that chart; the year
       without a script, when this switch stays hidden.
     {% endcomment %}
-    <div class="sort-switch" id="activity-period" role="radiogroup" aria-label="Show commits over the past" hidden>
-      <span class="sort-switch-label">Commits</span>
-      <label><input type="radio" name="activity-period" value="year" checked> Year</label>
-      <label><input type="radio" name="activity-period" value="month"> Month</label>
-      <label><input type="radio" name="activity-period" value="week"> Week</label>
+    <div class="switch-group">
+      <div class="switch-heading" id="activity-period-heading">Commits</div>
+      <div class="sort-switch" id="activity-period" role="radiogroup" aria-labelledby="activity-period-heading" hidden>
+        <label><input type="radio" name="activity-period" value="year" checked> Year</label>
+        <label><input type="radio" name="activity-period" value="month"> Month</label>
+        <label><input type="radio" name="activity-period" value="week"> Week</label>
+      </div>
     </div>
     {% comment %}
       All in one box, as a list: each tool a bullet, with its name (a link to

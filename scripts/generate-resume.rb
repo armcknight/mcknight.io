@@ -143,7 +143,8 @@ class Resume
   end
 
   # Text for LaTeX: special characters escaped, `code` in typewriter type,
-  # "quotes" as TeX's curly ones.
+  # "quotes" as TeX's curly ones, **bold** in bold, as the experience page
+  # sets it.
   def tex(text)
     text.to_s.split(/(`[^`]*`)/).map do |part|
       if part.start_with?('`') && part.end_with?('`') && part.size > 1
@@ -151,7 +152,7 @@ class Resume
       else
         escape(part).gsub(/"([^"]*)"/) { "``#{Regexp.last_match(1)}''" }
       end
-    end.join
+    end.join.gsub(/\*\*(.+?)\*\*/) { "\\textbf{#{Regexp.last_match(1)}}" }
   end
 
   def link(name, url)
@@ -184,14 +185,18 @@ class Resume
   # A deliverable or highlight: a plain string, or a name with a url and a
   # description. A deliverable is written as its name, then what it is; a
   # highlight is its description, the name in it linked, as the experience
-  # page writes them.
-  def item(entry, kind)
+  # page writes them. A deliverable's name and description are separated by
+  # `separator`: a colon in a list, a comma after the "Deliverable:" label.
+  def item(entry, kind, separator: ': ')
     return tex(entry) unless entry.is_a?(Hash)
 
     name = entry['url'] ? link(entry['name'], entry['url']) : tex(entry['name'])
     return tex(entry['description']).sub(tex(entry['name'])) { name } if kind == :highlight
 
-    entry['description'] ? "#{name}: #{tex(entry['description'])}" : name
+    # Without a name, the description alone
+    return tex(entry['description']) unless entry['name']
+
+    entry['description'] ? "#{name}#{separator}#{tex(entry['description'])}" : name
   end
 
   # The \item lines of one job's entry, indented for the template: its stack,
@@ -203,7 +208,14 @@ class Resume
     deliverables = job['deliverables'].is_a?(String) ? [job['deliverables']] : job['deliverables'].to_a
     deliverable_lines =
       if deliverables.size == 1 && deliverables.first.is_a?(String)
-        ["\\item \\textbf{Deliverables}: #{tex(deliverables.first)}"]
+        ["\\item \\textbf{Deliverable}: #{tex(deliverables.first)}"]
+      elsif deliverables.size == 1
+        # The only one, after the label, its details the list under it:
+        # "Deliverable: Specto SDK, mobile app profiler"
+        only = deliverables.first
+        details = only['details'].to_a.map { |x| [tex(x), []] }
+        ["\\item \\textbf{Deliverable}: #{item(only, :deliverable, separator: ', ')}"] +
+          (details.any? ? list(details) : [])
       elsif deliverables.any?
         # \cvlistlabel, from the template, keeps it on the page with the list.
         ['\\item \\cvlistlabel{Deliverables}'] +

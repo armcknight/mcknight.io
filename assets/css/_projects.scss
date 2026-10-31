@@ -17,6 +17,58 @@
   gap: var(--space-6);
 }
 
+// A switch and its heading (.switch-group): the heading centred over the
+// switch, in a bracket as wide as it, ┌── Show ──┐. Here and on the
+// experience page. The group is as wide as the switch, and hidden with it.
+.switch-group {
+  display: inline-flex;
+  flex-direction: column;
+  vertical-align: top;
+  max-width: 100%;
+  margin: 0 var(--space-3) var(--space-3) 0;
+}
+
+.switch-group[hidden],
+.switch-group:has(> .sort-switch[hidden]) {
+  display: none;
+}
+
+.switch-heading {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0 0 2px 0;
+  font-family: var(--font-family-sans);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+// The bracket's two halves, either side of the text: each the lower half of
+// the line, its top border the bracket's line through the text's middle, its
+// outer border the corner's tick down to the switch's edge.
+.switch-heading::before,
+.switch-heading::after {
+  content: "";
+  flex: 1 1 0;
+  min-width: var(--space-3);
+  // From half the line height (1.5em) down to the line's foot
+  align-self: stretch;
+  margin-top: 0.75em;
+  border-top: 1px solid var(--border);
+}
+
+.switch-heading::before {
+  border-left: 1px solid var(--border);
+  border-top-left-radius: 3px;
+}
+
+.switch-heading::after {
+  border-right: 1px solid var(--border);
+  border-top-right-radius: 3px;
+}
+
 // How the developer tools are sorted: one of three, as a row of joined
 // buttons, the radio inputs kept for the keyboard and screen readers but drawn
 // as the buttons' pressed state.
@@ -35,12 +87,8 @@
   display: none;
 }
 
-.sort-switch-label {
-  display: inline-flex;
-  align-items: center;
-  padding: var(--space-1) var(--space-3);
-  color: var(--text-secondary);
-  background-color: var(--background-alt);
+.switch-group > .sort-switch {
+  margin: 0;
 }
 
 .sort-switch label {
@@ -58,8 +106,7 @@
   pointer-events: none;
 }
 
-// A switch without a label of its own inside it, its heading above it as the
-// experience timeline's: no line before its first button.
+// No line before the first button: the switch's own border is there.
 .sort-switch label:first-child {
   border-left: none;
 }

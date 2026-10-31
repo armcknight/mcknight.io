@@ -7,9 +7,9 @@ floating_top: true
 
 <div class="page-header">
   <h1 class="page-title">Experience</h1>
-  <p class="page-subtitle">Professional background, education, and expertise</p>
+  <p class="page-subtitle">Professional history and expertise, education, and curiosities.</p>
 
-  <p>If you'd prefer something in PDF format, you can download my <a href="/assets/pdf/andrew-mcknight-resume-ios.pdf">iOS resume</a> [<a href="/assets/pdf/andrew-mcknight-resume-ios-print.pdf">print version</a>] or <a href="/assets/pdf/andrew-mcknight-cv.pdf">curriculum vitæ</a> [<a href="/assets/pdf/andrew-mcknight-cv-print.pdf">print version</a>].</p>
+  <p class="pdf-downloads">If you'd prefer something in PDF format, you can download my <a href="/assets/pdf/andrew-mcknight-resume-ios.pdf">iOS resume</a> [<a href="/assets/pdf/andrew-mcknight-resume-ios-print.pdf">print version</a>] or <a href="/assets/pdf/andrew-mcknight-cv.pdf">curriculum vitæ</a> [<a href="/assets/pdf/andrew-mcknight-cv-print.pdf">print version</a>].</p>
 </div>
 
 {% comment %}
@@ -23,8 +23,8 @@ Git-style timeline - start simple with just dates
     Which kinds of entry the timeline shows, any number of them at once.
     Hidden until the script below can work it; without it, nothing is drawn.
   {% endcomment %}
-  <div class="timeline-kinds" id="timeline-kinds" hidden>
-    <h3 class="timeline-kinds-heading" id="timeline-kinds-heading">Show</h3>
+  <div class="timeline-kinds switch-group" id="timeline-kinds" hidden>
+    <h3 class="switch-heading" id="timeline-kinds-heading">Show</h3>
     <div class="sort-switch" role="group" aria-labelledby="timeline-kinds-heading">
       <label><input type="checkbox" value="job" checked> Jobs</label>
       <label><input type="checkbox" value="education" checked> Education</label>
@@ -351,14 +351,24 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
+  // 15px, under the entry's 18px (--text-lg): the lines are written to fill
+  // one line of the PDFs, and larger, most would leave a word or two on a
+  // line of their own here (16px, --text-base, still does). Lists nested in
+  // an item inherit it.
   function bulletList(items) {
-    return `<ul style="margin: 0.5rem 0; padding-left: 1.5rem;">` +
+    return `<ul style="margin: 0.5rem 0; padding-left: 1.5rem; font-size: 0.9375rem;">` +
       items.map(item => `<li style="margin-bottom: 0.25rem;">${item}</li>`).join('') +
       `</ul>`;
   }
 
   function sectionHeading(text) {
     return `<h3 style="font-size: 1rem; font-weight: 600; margin: 0.5rem 0 0.25rem 0;">${text}</h3>`;
+  }
+
+  // **bold** in the data, in bold, as the CV sets it
+  function boldMarked(parts) {
+    const bold = html => html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    return { header: bold(parts.header), body: bold(parts.body) };
   }
 
   // An entry's text, in two parts, since on a phone its stack goes between
@@ -414,12 +424,16 @@ document.addEventListener('DOMContentLoaded', function() {
     // Deliverables: a string, or a name (linked by url) - description, with details under it
     const deliverables = parseList(data.deliverables).map(deliverable => {
       if (typeof deliverable === 'string') return deliverable;
-      if (!deliverable.name) return null;
-      let text = deliverable.url ? `<a href="${deliverable.url}" target="_blank">${deliverable.name}</a>` : deliverable.name;
-      if (deliverable.description) text += ` - ${deliverable.description}`;
+      // Without a name, the description alone
+      if (!deliverable.name && !deliverable.description) return null;
+      let text = !deliverable.name ? deliverable.description :
+        deliverable.url ? `<a href="${deliverable.url}" target="_blank">${deliverable.name}</a>` : deliverable.name;
+      if (deliverable.name && deliverable.description) text += ` - ${deliverable.description}`;
       const subDetails = deliverable.details || [];
       if (subDetails.length) {
-        text += `<ul style="margin: 0.5rem 0 0 1.5rem; padding-left: 1rem;">` +
+        // Indented half as far as before (1.25rem, not 2.5rem), for more of
+        // each line's width
+        text += `<ul style="margin: 0.5rem 0 0 0; padding-left: 1.25rem;">` +
           subDetails.map(detail => `<li style="margin-bottom: 0.25rem;">${detail}</li>`).join('') +
           `</ul>`;
       }
@@ -487,7 +501,7 @@ document.addEventListener('DOMContentLoaded', function() {
     info.style.fontFamily = 'Charter, Georgia, Times New Roman, serif';
     info.style.whiteSpace = 'normal';
 
-    const parts = entryHTML(commit);
+    const parts = boldMarked(entryHTML(commit));
     info.innerHTML = parts.header;
     const stack = entryStack(commit);
     if (isMobile()) {
