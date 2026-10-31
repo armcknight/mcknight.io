@@ -137,15 +137,13 @@ next run of the workflow; run `make releases` first to deploy current numbers.
 [armcknight/resume](https://github.com/armcknight/resume), a private repo, so
 the resume is changed and committed there. Nothing a visitor sees changes
 until the PDFs are rebuilt here, from the submodule at the commit this repo
-points to. Git ignores those PDFs, which can always be built again, so a fresh
-clone has none until `make website-resumes` runs, and `make deploy` refuses
-to upload a build without them, which would delete the live ones:
+points to:
 
 ```
 git submodule update --init                  # once per clone
 git -C resume pull                           # or commit the change in resume/
 make website-resumes   # regenerates the CV and iOS resume, copies each, and its print copy, into assets/pdf/
-git add resume && git commit -m "update resume"
+git add resume assets/pdf && git commit -m "update resume"
 make build && make deploy
 make bust-cache PATHS="/assets/pdf/*"
 ```
@@ -642,7 +640,7 @@ own `src_`, `dest_`, `port_`, `stamp_`, `log_` and `label_` entries.
 | `books/` | The books.mcknight.io site: its own config, data, page and scripts |
 | `shared/` | What the subdomains share: the globe's core, and the plugin that copies it into each build |
 | `resume/` | Submodule of armcknight/resume: LaTeX sources for the resume and CV; `make website-resumes` builds the site's two, `make all-resumes` every copy |
-| `assets/pdf/` | The resume and CV PDFs the site links to, built by `make website-resumes` and ignored by git, and `papers/`, the published papers, tracked |
+| `assets/pdf/` | The built PDFs the site links to — these are the tracked artifacts, not `resume/pdfs/` — and `papers/`, the published papers |
 | `robots.txt` | Who may crawl the site: everyone, for search, link previews and AI answers, but not the crawlers that train AI models. `travel/` and `books/` have the same file. It names `sitemap.xml`, which `jekyll-sitemap` writes |
 | `DEPLOYED` | What is live |
 | `_site/`, `logs/` | Build output and transcripts. Untracked |
