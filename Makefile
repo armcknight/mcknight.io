@@ -569,7 +569,7 @@ bust-cache: ## <site> Invalidate CloudFront paths, e.g. PATHS="/ /index.html"
 # itself, or the tag pages and feeds that also list it.
 .PHONY: bust-blog-cache
 bust-blog-cache: ## Invalidate the blog index (/blog/ and /blog/index.html)
-	$(MAKE) bust-cache home PATHS="/blog /blog/index.html / /index.html /feed.xml"
+	$(MAKE) bust-cache home PATHS="/blog/ /blog/index.html / /index.html /feed.xml"
 
 # Lists recent invalidations newest first, with the status of each: InProgress
 # while CloudFront is still working through the edge locations, Completed once a
