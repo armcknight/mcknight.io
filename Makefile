@@ -29,8 +29,15 @@ endif
 # Makefile, which is what puts it in front of the action rather than behind it.
 KNOWN_GOALS := $(SITES) \
 	$(shell grep -oE '^[a-zA-Z_][a-zA-Z0-9_-]*:' $(firstword $(MAKEFILE_LIST)) | tr -d ':' | sort -u)
+# PAGES: with bust-cache among the goals, every other word that is neither a
+# site nor a target names a page of the site, as a site is named:
+# `make bust-cache experience`, `make bust-cache travel trips`. Anywhere else such
+# a word is still a stray, and stops everything.
+ifneq ($(filter bust-cache,$(MAKECMDGOALS)),)
+PAGES := $(filter-out $(KNOWN_GOALS),$(MAKECMDGOALS))
+endif
 # Pattern targets (help-<topic>, resume-<name>, all-resumes-<name>) are known by their prefix.
-STRAY_GOALS := $(filter-out $(KNOWN_GOALS) help-% resume-% all-resumes-%,$(MAKECMDGOALS))
+STRAY_GOALS := $(filter-out $(KNOWN_GOALS) $(PAGES) help-% resume-% all-resumes-%,$(MAKECMDGOALS))
 
 ifneq ($(STRAY_GOALS),)
 $(error No such target or site: $(STRAY_GOALS). Sites are: $(SITES). Run `make help`)
@@ -112,6 +119,9 @@ help: ## Show this help
 	@echo "  Targets marked <site> take \033[36mhome\033[0m, \033[36mtravel\033[0m, \033[36mbooks\033[0m, or several:"
 	@echo "    make build travel       make serve home travel      make deploy home"
 	@echo "  Naming no site means home."
+	@echo
+	@echo "  \033[36mbust-cache\033[0m takes pages by name too, \033[36mmake bust-cache experience\033[0m. Pages each site's last build has:"
+	@$(foreach s,$(SITES),echo "    $(s): $(or $(call built_pages,$(s)),(none, or not built))";)
 	@echo
 	@echo "  Every target above has a longer explainer. To read one:"
 	@echo "    make help-deploy        make help-bust-cache        make help-<target>"
@@ -522,8 +532,15 @@ deploy: _logs-dir check-clean ## <site> Upload a built site, then stamp and comm
 
 # Invalidate CloudFront, so a fresh deploy is actually what gets served.
 #
+#   make bust-cache experience               a page, both its cache keys
+#   make bust-cache experience blog/2026/08/10/claude-workflow-pt.-2.html
 #   make bust-cache PATHS="/ /index.html"
 #   make bust-cache travel PATHS="/*"
+#
+# A page (see PAGES at the top) is a word of its own, as a site is: a
+# directory's page, `experience`, becomes both its keys, /experience/ and
+# /experience/index.html (never /experience, which only redirects to
+# /experience/); a word ending in .html, that one path. PATHS adds to them.
 #
 # PATHS is a SPACE-separated list, each entry starting with `/`. That is what
 # `create-invalidation --paths` wants — one argument per path. Commas do not
@@ -549,20 +566,35 @@ deploy: _logs-dir check-clean ## <site> Upload a built site, then stamp and comm
 # Invalidation is asynchronous — `check-cache-invalidation-status` says whether
 # it has finished.
 .PHONY: bust-cache
-bust-cache: ## <site> Invalidate CloudFront paths, e.g. PATHS="/ /index.html"
-	@test -n "$(PATHS)" || { echo 'usage: make bust-cache [site] PATHS="/ /index.html"'; exit 1; }
+bust-cache: ## <site> <page>... Invalidate CloudFront: pages (e.g. experience) and PATHS="/ /index.html"
+	@test -n "$(BUST_PATHS)" || { echo 'usage: make bust-cache [site] [page...] [PATHS="/ /index.html"]'; $(foreach s,$(SELECTED),echo "pages $(label_$(s))'s last build has: $(or $(call built_pages,$(s)),none)";) exit 1; }
 	@$(foreach s,$(SELECTED),test -n "$(dist_$(s))" || { echo "No CloudFront distribution is recorded for $(label_$(s)). Set dist_$(s) in the Makefile once it exists."; exit 1; };)
-	$(foreach s,$(SELECTED),set -f; aws --profile armcknight cloudfront create-invalidation --distribution-id $(dist_$(s)) --paths $(PATHS);)
+	$(foreach s,$(SELECTED),set -f; aws --profile armcknight cloudfront create-invalidation --distribution-id $(dist_$(s)) --paths $(BUST_PATHS);)
 
-# Shorthand for the blog index's two cache keys, the pair that goes stale on every
-# new post. Identical to:
+# The pages a site's last build has, as bust-cache names them: each directory
+# of its build with an index.html, `$(call built_pages,home)`. Any other word
+# still works, for a page this list does not show, a post's .html among them.
+built_pages = $(sort $(patsubst $(dest_$(1))/%/index.html,%,$(wildcard $(dest_$(1))/*/index.html)))
+
+# Each page's paths, then PATHS
+BUST_PATHS = $(strip $(foreach p,$(PAGES),$(if $(filter %.html,$(p)),/$(p),/$(p)/ /$(p)/index.html)) $(PATHS))
+
+# The page words are goals too: each does nothing itself, as a site does not.
+ifneq ($(PAGES),)
+.PHONY: $(PAGES)
+$(PAGES):
+	@:
+endif
+
+# Shorthand for what goes stale on every new post: the blog index's two cache
+# keys, the home page's (which lists recent posts) and the feed. Identical to:
 #
-#   make bust-cache PATHS="/blog/ /blog/index.html"
+#   make bust-cache blog PATHS="/ /index.html /feed.xml"
 #
 # The main site only: the subdomain has no blog. It does not touch the post
 # itself, or the tag pages and feeds that also list it.
 .PHONY: bust-blog-cache
-bust-blog-cache: ## Invalidate the blog index (/blog/ and /blog/index.html)
+bust-blog-cache: ## Invalidate the blog index, the home page and the feed
 	$(MAKE) bust-cache home PATHS="/blog/ /blog/index.html / /index.html /feed.xml"
 
 # Lists recent invalidations newest first, with the status of each: InProgress
@@ -570,7 +602,8 @@ bust-blog-cache: ## Invalidate the blog index (/blog/ and /blog/index.html)
 # request will fetch from the origin again.
 #
 # A bust that reports Completed but still serves the old page is a browser cache,
-# not this one.
+# or a bust of the wrong paths: /experience is not /experience/, which is what a
+# browser asks for (get-invalidation, with its Id, lists the paths it had).
 .PHONY: check-cache-invalidation-status
 check-cache-invalidation-status: ## <site> List recent CloudFront invalidations and their status
 	@$(foreach s,$(SELECTED),test -n "$(dist_$(s))" || { echo "No CloudFront distribution is recorded for $(label_$(s))."; exit 1; };)
