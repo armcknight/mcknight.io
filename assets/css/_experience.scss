@@ -227,7 +227,7 @@
   background-color: var(--background);
 }
 
-// "Currently using": the current jobs' stacks, a column per category, side by side while
+// "Currently using" (currently_using in experience.yaml): a column per category, side by side while
 // they fit, under a heading the size of the timeline's.
 .current-skills {
   margin-bottom: var(--space-12);

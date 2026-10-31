@@ -52,6 +52,19 @@
 # `backticks` mark code, which the CV sets in typewriter type, and "straight
 # quotes" become curly ones there. Write & and other characters as they are;
 # the CV escapes them for LaTeX.
+
+# What I work with now, for the experience page only, under "Currently
+# using": shaped as a job's `stack`, a list of categories, each one name and
+# its items, each category a heading over its items. Written lower-case; the
+# page capitalizes them. Without it, the page leaves the section out. (A
+# resume's Skills section is its own list, in the resume repo's
+# selections.yml.)
+currently_using:
+  - mobile: [Swift, SwiftUI, Core Data, CloudKit, XCUITest, Objective-C++, AVFoundation, Xcode Instruments]
+  - backend: [Vapor, Fly.io, Supabase, AWS, Python, Django]
+  - tools: [Claude Code, SPM, XcodeGen, Swiftlint, clang-format, pre-commit, Fastlane, Arkana, Direnv]
+  - infrastructure: [GitHub Actions, TestFlight, Linear, Sentry]
+
 experience:
   - id: sentry
     start: January 2021
