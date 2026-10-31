@@ -27,7 +27,7 @@ presentations:
     location: Cambridge, MA
     details:
       - Helped organized this initial meeting of the group
-      - Covered the theoretical workings of the HyperLogLog algorithm, with a copresenter giving a working demostration
+      - Covered the theoretical workings of the HyperLogLog algorithm, with a copresenter giving a demo
 
   - id: mdevcon-2016
     date: Mar 2016
@@ -41,13 +41,12 @@ presentations:
       - Previously delivered at a lunchtime tech talk at Twitter, Cambridge, MA (Nov 2015) and CocoaHeads Boston meetup, MIT, Cambridge, MA (Dec 2015)
 
   - id: vmasc-2013
-    date: 2013
+    date: Apr 2013
     event: VMASC Capstone Conference
     title: Estimating lower bounds on the length of protein polymer chain segments using robot motion planning
     location: Suffolk, VA
     details:
-      - Presented research on using computational geometry and motion planning algorithms to model protein molecule structures
-      - Best paper award
+      - Best paper award on research using motion planning algorithms to model protein molecule structures
 
   - id: ieee-wcsb-2012
     date: Oct 2012
@@ -55,4 +54,12 @@ presentations:
     title: CryoEM skeleton length estimation using a decimated curve
     location: Philadelphia, PA
     details:
-      - Presented research on using a dynamic graph algorithm to identify protein molecule substructures from 3D images
+      - Using a dynamic graph algorithm to predict sequences of protein molecule substructures from 3D images
+
+  - id: odu-surs-2012
+    date: Apr 2012
+    event: ODU Spring Undergraduate Research Symposium
+    title: CryoEM skeleton length estimation using a decimated curve
+    location: Norfolk, VA
+    details:
+      - Developed further as a submission that was accepted to the IEEE WCSB later that fall

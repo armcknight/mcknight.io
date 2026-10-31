@@ -244,7 +244,7 @@ experience:
       - frameworks: [CoreBluetooth, NSOperation]
       - infrastructure: [TeamCity, Fabric]
     deliverables:
-      - iOS SDK communicating over BTLE with medical wearable hardware, with companion app
+      - iOS SDK and companion app with BTLE link to proprietary medical wearable hardware
     highlights:
       - Rearchitected SDK and app codebases with NSOperation queues managing BTLE link
       - Drove adoption of Agile practices, working directly with PMs and via company-wide presentations
