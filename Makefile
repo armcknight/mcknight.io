@@ -520,7 +520,8 @@ check-clean: ## Fail unless the working tree is clean (a deploy prerequisite)
 .PHONY: deploy
 deploy: _logs-dir check-clean ## <site> Upload a built site, then stamp and commit what is live
 	@# The upload deletes what the build lacks, so a build without the resume PDFs, ignored by git, would take them off the live site
-	@$(if $(filter home,$(SELECTED)),for f in $(RESUME_PDFS); do test -f $(dest_home)/assets/pdf/$$f || { echo "$(dest_home)/assets/pdf/$$f is missing, and deploying would delete it from $(label_home). Run \`make website-resumes\` and \`make build\` first."; exit 1; }; done)
+	@# A shell `if`, not make's $(if), whose arguments the message's commas would split
+	@if [ -n "$(filter home,$(SELECTED))" ]; then for f in $(RESUME_PDFS); do test -f $(dest_home)/assets/pdf/$$f || { echo "$(dest_home)/assets/pdf/$$f is missing, and deploying would delete it from $(label_home). Run \`make website-resumes\` and \`make build\` first."; exit 1; }; done; fi
 	@$(foreach s,$(SELECTED),test -n "$(bucket_$(s))" || { echo "No bucket is recorded for $(label_$(s)). Set bucket_$(s) in the Makefile once it exists."; exit 1; };)
 	@$(foreach s,$(SELECTED),test -n "$(dist_$(s))" || { echo "No CloudFront distribution is recorded for $(label_$(s)). Set dist_$(s) in the Makefile once it exists."; exit 1; };)
 	$(foreach s,$(SELECTED),scripts/deploy-site.sh "$(s)" "$(label_$(s))" "$(dest_$(s))" "$(bucket_$(s))" "$(stamp_$(s))" && aws --profile armcknight cloudfront create-invalidation --distribution-id $(dist_$(s)) --paths $(versioned_$(s)) > /dev/null && echo "cleared $(versioned_$(s)) from CloudFront for $(label_$(s))";)
