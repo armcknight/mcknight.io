@@ -282,9 +282,12 @@ resume-%: ## <name> Generate the <name> resume and cover letter in resume/ and b
 	done
 
 # The two the site links to, the CV and the iOS resume, built and copied into
-# assets/pdf/. Those copies are the tracked artifacts, so nothing a visitor
-# sees changes until this runs; run it in the same commit as the change to the
-# data or the resume submodule.
+# assets/pdf/, each with its print copy. Git ignores those copies, as they can
+# always be built again; the live site keeps the ones last deployed. Nothing a
+# visitor sees changes until this runs and the site is built and deployed, and
+# `deploy` refuses a build of mcknight.io without them (RESUME_PDFS).
+RESUME_PDFS := andrew-mcknight-cv.pdf andrew-mcknight-cv-print.pdf \
+	andrew-mcknight-resume-ios.pdf andrew-mcknight-resume-ios-print.pdf
 .PHONY: website-resumes
 website-resumes: resume-cv resume-ios ## Rebuild the CV and iOS resume PDFs the site links to, screen and print copies, and copy them into assets/pdf
 	$(MAKE) resume-cv resume-ios PRINT=true PII=false
@@ -516,6 +519,8 @@ check-clean: ## Fail unless the working tree is clean (a deploy prerequisite)
 # conditions in it and would be unreadable folded onto one line per site.
 .PHONY: deploy
 deploy: _logs-dir check-clean ## <site> Upload a built site, then stamp and commit what is live
+	@# The upload deletes what the build lacks, so a build without the resume PDFs, ignored by git, would take them off the live site
+	@$(if $(filter home,$(SELECTED)),for f in $(RESUME_PDFS); do test -f $(dest_home)/assets/pdf/$$f || { echo "$(dest_home)/assets/pdf/$$f is missing, and deploying would delete it from $(label_home). Run \`make website-resumes\` and \`make build\` first."; exit 1; }; done)
 	@$(foreach s,$(SELECTED),test -n "$(bucket_$(s))" || { echo "No bucket is recorded for $(label_$(s)). Set bucket_$(s) in the Makefile once it exists."; exit 1; };)
 	@$(foreach s,$(SELECTED),test -n "$(dist_$(s))" || { echo "No CloudFront distribution is recorded for $(label_$(s)). Set dist_$(s) in the Makefile once it exists."; exit 1; };)
 	$(foreach s,$(SELECTED),scripts/deploy-site.sh "$(s)" "$(label_$(s))" "$(dest_$(s))" "$(bucket_$(s))" "$(stamp_$(s))" && aws --profile armcknight cloudfront create-invalidation --distribution-id $(dist_$(s)) --paths $(versioned_$(s)) > /dev/null && echo "cleared $(versioned_$(s)) from CloudFront for $(label_$(s))";)

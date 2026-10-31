@@ -5,6 +5,10 @@ _site
 photos/**/*.jpg
 /logs/
 vendor
+# The resume and CV PDFs the site links to, which `make website-resumes`
+# builds from the data and the resume submodule. The papers beside them are
+# not generated, and stay tracked.
+/assets/pdf/andrew-mcknight-*.pdf
 
 # Created by https://www.toptal.com/developers/gitignore/api/emacs
 # Edit at https://www.toptal.com/developers/gitignore?templates=emacs
