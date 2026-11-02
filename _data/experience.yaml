@@ -138,7 +138,7 @@ experience:
     organization: Insight Therapeutics
     title: Lead iOS Developer
     location: Remote
-    employment_type: Contract (Part-time)
+    employment_type: Part-time contract
     stack:
       - languages: [Objective-C, Swift]
       - frameworks: [CoreGraphics, CoreData, MessageUI, UICollectionView, FMDB, SQLite, Storyboards, SSZipArchive, RNCryptor]
@@ -181,7 +181,7 @@ experience:
     organization: 121nexus
     title: Software Engineer
     location: Remote
-    employment_type: Contract (Part-time)
+    employment_type: Part-time contract
     stack:
       - languages: [Swift]
       - frameworks: [AVFoundation, OpenCV, Firebase]
