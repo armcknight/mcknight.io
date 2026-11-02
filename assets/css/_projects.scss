@@ -180,17 +180,18 @@
   width: auto;
 }
 
-// Commits: a small bar chart and its total, for the period the list's
-// data-activity names; the other two periods' charts are there but hidden.
+// Commits: a small bar chart and its total, for the period the nearest
+// data-activity names (the devtool list's, or the colophon's); the other two
+// periods' charts are there but hidden.
 .activity {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
 }
 
-.devtool-list[data-activity="year"] .activity:not(.activity-year),
-.devtool-list[data-activity="month"] .activity:not(.activity-month),
-.devtool-list[data-activity="week"] .activity:not(.activity-week) {
+[data-activity="year"] .activity:not(.activity-year),
+[data-activity="month"] .activity:not(.activity-month),
+[data-activity="week"] .activity:not(.activity-week) {
   display: none;
 }
 
@@ -565,6 +566,14 @@ body.lightbox-open {
     margin-right: 0;
   }
 
+  // The colophon's line has no bullet, so no column for one
+  .colophon .devtool-line {
+    grid-template-columns: auto 1fr;
+    grid-template-areas:
+      "name badge"
+      "activity activity";
+  }
+
   .devtool-line .project-title {
     grid-area: name;
   }
@@ -620,3 +629,16 @@ body.lightbox-open {
     gap: var(--space-4);
   }
 } 
+// The colophon: the line of a devtool (name, commits, status), without the
+// bullet that marks one in the list, as it is not in one; its text under it.
+.colophon .devtool-line::before {
+  content: none;
+}
+
+.colophon-description {
+  margin-top: var(--space-3);
+}
+
+.colophon-description p:last-child {
+  margin-bottom: 0;
+}

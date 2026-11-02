@@ -1,0 +1,34 @@
+{% comment %}
+  A project's commits, from _data/activity.yml (make releases): by year (a bar
+  a week), month or week (a bar a day), and the lines added and deleted in that
+  time. All three periods are drawn, and the stylesheet shows the one the
+  nearest [data-activity] names. For the devtools and the colophon on the
+  projects page.
+
+    {% assign activity = site.data.activity[name] %}
+    {% include activity.html activity=activity %}
+
+  (an include takes a variable, not an expression with brackets)
+{% endcomment %}
+{% assign activity = include.activity %}
+{% assign periods = "year,month,week" | split: "," %}
+{% if activity %}
+  {% assign last_week = activity.days | slice: 23, 7 %}
+  {% for period in periods %}
+    {% comment %}
+      Not "counts": the sparkline include assigns that, and an
+      include shares the page's variables.
+    {% endcomment %}
+    {% assign totals = activity[period] %}
+    {% case period %}
+      {% when "year" %}{% assign bars = activity.weeks %}{% assign span = "the past year, week by week" %}
+      {% when "month" %}{% assign bars = activity.days %}{% assign span = "the past 30 days, day by day" %}
+      {% else %}{% assign bars = last_week %}{% assign span = "the past 7 days, day by day" %}
+    {% endcase %}
+    <span class="activity activity-{{ period }}" title="{{ totals.commits }} commits in {{ span }}; {{ totals.added }} lines added and {{ totals.deleted }} deleted">
+      {% include sparkline.html counts=bars %}
+      <span class="activity-total">{{ totals.commits }} commits</span>
+      <span class="activity-lines"><span class="added">+{% include line-count.html n=totals.added %}</span>/<span class="deleted">-{% include line-count.html n=totals.deleted %}</span></span>
+    </span>
+  {% endfor %}
+{% endif %}

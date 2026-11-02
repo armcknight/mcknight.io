@@ -16,7 +16,7 @@ Delaunay Triangulator:
 Pippin:
   version: 13.0.1
   date: '2026-08-11'
-  url: https://github.com/TwoRingSoft/Pippin/releases/tag/13.0.1
+  url: https://github.com/armcknight/Pippin/releases/tag/13.0.1
   tag: 13.0.1
 swift-armcknight:
   version: 1.0.0

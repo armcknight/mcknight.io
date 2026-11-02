@@ -98,33 +98,12 @@ content_class: content-wide
             <div class="devtool-line">
               <h3 class="project-title"><a href="{{ project.website }}" target="_blank" rel="noopener">{{ project.name }}</a></h3>
               {% comment %}
-                Commits, by year (a bar a week), month or week (a bar a day),
-                and the lines added and deleted in that time, from
-                _data/activity.yml (make releases); all three periods are
+                Commits (_includes/activity.html): all three periods are
                 drawn and the switch above the list shows one, the year without
                 a script. Each chart is scaled to its own busiest bar, so the
                 bars show the rhythm and the numbers beside them how much.
               {% endcomment %}
-              {% if activity %}
-                {% assign last_week = activity.days | slice: 23, 7 %}
-                {% for period in periods %}
-                  {% comment %}
-                    Not "counts": the sparkline include assigns that, and an
-                    include shares the page's variables.
-                  {% endcomment %}
-                  {% assign totals = activity[period] %}
-                  {% case period %}
-                    {% when "year" %}{% assign bars = activity.weeks %}{% assign span = "the past year, week by week" %}
-                    {% when "month" %}{% assign bars = activity.days %}{% assign span = "the past 30 days, day by day" %}
-                    {% else %}{% assign bars = last_week %}{% assign span = "the past 7 days, day by day" %}
-                  {% endcase %}
-                  <span class="activity activity-{{ period }}" title="{{ totals.commits }} commits in {{ span }}; {{ totals.added }} lines added and {{ totals.deleted }} deleted">
-                    {% include sparkline.html counts=bars %}
-                    <span class="activity-total">{{ totals.commits }} commits</span>
-                    <span class="activity-lines"><span class="added">+{% include line-count.html n=totals.added %}</span>/<span class="deleted">-{% include line-count.html n=totals.deleted %}</span></span>
-                  </span>
-                {% endfor %}
-              {% endif %}
+              {% include activity.html activity=activity %}
               {% comment %}
                 The checks on the tool's branch, live: an image shields.io
                 makes from GitHub on each view, so it needs no rebuild. It
@@ -170,6 +149,32 @@ content_class: content-wide
       {% endfor %}
     </div>
   </section>
+
+  {% comment %}
+    How this site is made: the colophon entry in _data/projects.yml, its text,
+    a link to the source, the repo's commits over the year, as a devtool's are
+    shown, and the live status of its scheduled workflow, from shields.io.
+  {% endcomment %}
+  {% assign colophon = site.data.projects.colophon %}
+  {% if colophon %}
+  <section class="project-category colophon">
+    <h2>Colophon</h2>
+    <div class="project-card">
+      <div class="devtool-line" data-activity="year">
+        <h3 class="project-title"><a href="{{ colophon.website }}" target="_blank" rel="noopener">{{ colophon.name }}</a></h3>
+        {% assign colophon_activity = site.data.activity[colophon.name] %}
+        {% include activity.html activity=colophon_activity %}
+        {% if colophon.workflow %}
+          {% assign repo = colophon.website | remove: 'https://github.com/' %}
+          <a href="{{ colophon.website }}/actions/workflows/{{ colophon.workflow }}" target="_blank" rel="noopener" class="ci-badge-link">
+            <img src="https://img.shields.io/github/actions/workflow/status/{{ repo }}/{{ colophon.workflow }}?label={{ colophon.workflow | remove: '.yml' }}" alt="Status of {{ colophon.workflow }}" class="ci-badge" height="20" loading="lazy">
+          </a>
+        {% endif %}
+      </div>
+      <div class="colophon-description">{{ colophon.description | markdownify }}</div>
+    </div>
+  </section>
+  {% endif %}
 
 </div>
 

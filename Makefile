@@ -335,7 +335,8 @@ all-resumes-%: ## <name> Build all four copies of the <name> resume and cover le
 # project whose releases live in the homebrew-tools tap under a prefixed tag
 # declares that in _data/projects.yml — see scripts/fetch-releases.rb.
 #
-# It also writes _data/activity.yml, each devtool's commits per week over the
+# It also writes _data/activity.yml, each devtool's commits (and the colophon's
+# repo's, this site's own) per week over the
 # last year, which the projects page draws as a small bar chart. GitHub
 # computes those statistics on demand, so a first run can pause while it does.
 # activity.yml is ignored by git: its windows end today, so it changes nearly
@@ -343,7 +344,7 @@ all-resumes-%: ## <name> Build all four copies of the <name> resume and cover le
 #
 # The versions and the activity on the site are only as fresh as the last run.
 .PHONY: releases
-releases: ## Refresh each project's latest release, and each devtool's commit activity
+releases: ## Refresh each project's latest release, and each devtool's (and this site's) commit activity
 	$(RUBY) ruby scripts/fetch-releases.rb
 
 # Strips EXIF metadata and losslessly compresses images, in place.

@@ -206,3 +206,22 @@ coding-challenges:
         3       >24h  73385      0       >24h  71097      0
         2       >24h  84617      0       >24h  82236      0
         1       >24h  75019      0       >24h  70168      0
+
+# The colophon, last on the projects page: how this site and the resumes are
+# made, in Markdown (`description`, a paragraph per blank line), the source it
+# links to (`website`), that repo's commits, as a devtool's are counted
+# (`make releases`), and the live status of its scheduled workflow
+# (`workflow`, a file in its .github/workflows).
+colophon:
+  name: "mcknight.io"
+  website: "https://github.com/armcknight/mcknight.io"
+  website-name: "GitHub"
+  workflow: "scheduled-refresh.yml"
+  description: |
+    This site is generated with Jekyll, served from AWS S3 behind a CloudFront cache, as are [https://travel.mcknight.io](https://travel.mcknight.io) and [https://books.mcknight.io](https://books.mcknight.io).
+
+    This page is refreshed four times a day and any time one of the listed projects gets a new release, using GitHub Actions.
+
+    The [experience](/experience) page and the resume/CV linked from there are all generated from a single data set, kept in YAML files. For the resume/CV, it is injected into ERB templates that generate TeX sources, then typeset into PDFs.
+
+    This site has existed in similar form since 2015. Starting in 2026 I have substantially rebuilt it using Claude Code. I still write all text intended for human consumption by hand. I don't plan to change that.
