@@ -123,6 +123,23 @@ class Resume
     PII
   end
 
+  # The letterhead's email address: a letter's own `email:`, else the resume's
+  # of the same name, else this one.
+  DEFAULT_EMAIL = 'resume@andrew.mcknight.io'.freeze
+
+  def email
+    address = @letter['email'] || @selection['email'] || DEFAULT_EMAIL
+    abort "#{@source}: email is an address, as #{DEFAULT_EMAIL}, not #{address.inspect}" unless address.is_a?(String) && address.match?(/\A[^@\s]+@[^@\s]+\z/)
+    address
+  end
+
+  # \cvemail and \cvemailurl, which letterhead.tex writes the address with: the
+  # address as text, and as a mailto: link's target, escaped as link() does.
+  def email_macros
+    "\\newcommand*{\\cvemail}{#{tex(email)}}\n" \
+      "\\newcommand*{\\cvemailurl}{mailto:#{email.gsub(/[%#]/) { |c| "\\#{c}" }}}"
+  end
+
   # Whether this is the copy for paper, without hyperlinks.
   def print?
     PRINT
@@ -247,12 +264,22 @@ class Resume
         # "Deliverable: Specto SDK, mobile app profiler"
         only = deliverables.first
         details = only['details'].to_a.map { |x| [tex(x), []] }
-        ["\\item \\cvlabel{Deliverable}: #{item(only, :deliverable, separator: ', ')}"] +
-          (details.any? ? list(details) : [])
+        if details.any?
+          # Its details continued on a page name it: "Deliverable", then its name
+          marks = "\\InsertMark{cvlist}{Deliverable}#{only['name'] ? "\\cvitemstart{#{tex(only['name'])}}" : ''}"
+          ends_after(["\\item #{marks}\\cvlabel{Deliverable}: #{item(only, :deliverable, separator: ', ')}"] + list(details),
+                     '\\cvitemend\\cvlistend')
+        else
+          ["\\item \\cvlabel{Deliverable}: #{item(only, :deliverable, separator: ', ')}"]
+        end
       elsif deliverables.any?
         # \cvlistlabel, from the template, keeps it on the page with the list.
-        ['\\item \\cvlistlabel{Deliverables}'] +
-          list(deliverables.map { |d| [item(d, :deliverable), d.is_a?(Hash) ? d['details'].to_a.map { |x| tex(x) } : []] })
+        # Each deliverable named for a page that continues it
+        ends_after(['\\item \\cvlistlabel{Deliverables}'] +
+                   list(deliverables.map do |d|
+                     [item(d, :deliverable), d.is_a?(Hash) ? d['details'].to_a.map { |x| tex(x) } : [],
+                      d.is_a?(Hash) && d['name'] ? tex(d['name']) : nil]
+                   end), '\\cvlistend')
       else
         []
       end
@@ -268,7 +295,7 @@ class Resume
         # The only one, after the label, as a lone deliverable is
         ["\\item \\cvlabel{Highlight}: #{highlights.first}"]
       else
-        ['\\item \\cvlistlabel{Highlights}'] + list(highlights.map { |h| [h, []] })
+        ends_after(['\\item \\cvlistlabel{Highlights}'] + list(highlights.map { |h| [h, []] }), '\\cvlistend')
       end
 
     stack_lines + highlight_lines + deliverable_lines
@@ -320,15 +347,24 @@ class Resume
   # A nested itemize of [line, sub-lines] pairs.
   def list(entries)
     lines = ['\\begin{itemize}']
-    entries.each do |line, subs|
-      lines << "    \\item #{line}"
-      next if subs.empty?
-
-      lines << '    \\begin{itemize}'
-      lines.concat(subs.map { |sub| "        \\item #{sub}" })
-      lines << '    \\end{itemize}'
+    entries.each do |line, subs, name|
+      # A named item marks itself for a page that continues it, to its last line
+      item = ["    \\item #{name ? "\\cvitemstart{#{name}}" : ''}#{line}"]
+      unless subs.empty?
+        item << '    \\begin{itemize}'
+        item.concat(subs.map { |sub| "        \\item #{sub}" })
+        item << '    \\end{itemize}'
+      end
+      lines.concat(name ? ends_after(item, '\\cvitemend') : item)
     end
     lines << '\\end{itemize}'
+  end
+
+  # The lines with `mark` at the end of their last line of text, inside the
+  # lists that end there, where a mark goes on the page straight after it.
+  def ends_after(lines, mark)
+    last = lines.rindex { |line| !line.strip.start_with?('\\end{') }
+    lines.each_with_index.map { |line, index| index == last ? "#{line} #{mark}" : line }
   end
 end
 
@@ -351,6 +387,8 @@ selection = selections[name]
 render(File.join(RESUME, selection ? selection['template'] || 'resume.tex.erb' : 'resume.tex.erb'),
        File.join(BUILD, VARIANT, "#{name}#{SUFFIX}.tex"),
        selection && Resume.new(DATA, "selections.yml, #{name}", selection: selection))
+# The letter is given the resume's selection too, for what they share, as its
+# email address.
 render(File.join(RESUME, 'letter.tex.erb'),
        File.join(BUILD, VARIANT, "#{name}-letter#{SUFFIX}.tex"),
-       letters[name] && Resume.new(DATA, "letters.yml, #{name}", letter: letters[name]))
+       letters[name] && Resume.new(DATA, "letters.yml, #{name}", letter: letters[name], selection: selection || {}))

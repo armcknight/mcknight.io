@@ -48,7 +48,9 @@
 #                    and description, where the description mentions the name
 #                    and that mention becomes the link.
 #
-# In any text: **double asterisks** mark bold, on the page and in the CV;
+# In any text: **double asterisks** mark bold, on the page and in the CV (a
+# value that starts with them needs quotes, "**like** this": YAML reads a
+# leading * as an alias);
 # `backticks` mark code, which the CV sets in typewriter type, and "straight
 # quotes" become curly ones there. Write & and other characters as they are;
 # the CV escapes them for LaTeX.
@@ -62,12 +64,12 @@
 currently_using:
   - mobile: [Swift, SwiftUI, Core Data, CloudKit, XCUITest, Objective-C++, AVFoundation, Xcode Instruments]
   - backend: [Vapor, Fly.io, Supabase, AWS, Python, Django]
-  - tools: [Claude Code, SPM, XcodeGen, Swiftlint, clang-format, pre-commit, Fastlane, Arkana, Direnv]
+  - tools: [Claude Code, SPM, XcodeGen, SwiftLint, clang-format, pre-commit, Fastlane, Arkana, Direnv]
   - infrastructure: [GitHub Actions, TestFlight, Linear, Sentry]
 
 experience:
   - id: sentry
-    start: January 2021
+    start: November 2021
     end: Current
     era: professional
     organization: Sentry
@@ -76,25 +78,25 @@ experience:
     stack:
       - languages: [Objective-C++, Swift, Python]
       - frameworks: [SwiftUI, Django]
-      - tools: [Claude Code, SPM, XcodeGen, CocoaPods, Carthage, Swiftlint, clang-format, CodeCov, pre-commit, Fastlane, Arkana]
+      - tools: [Claude Code, SPM, XcodeGen, CocoaPods, Carthage, SwiftLint, clang-format, CodeCov, pre-commit, Fastlane, Arkana]
       - infrastructure: [GitHub Actions, Redash, SauceLabs, TestFlight, Linear]
     deliverables:
+      - name: Seer for iOS and macOS # listed as the top item for anthropic resumes
+        description: proposed and built native apps to manage our agentic offerings
       - name: Sentry Cocoa SDK
         url: https://github.com/getsentry/sentry-cocoa
-        description: mobile app crash and performance monitoring
+        description: app monitoring SDK for Sentry (200K orgs, 1M+ developers)
         details:
           - Integrated Specto's profiler into Sentry's Cocoa SDK and iterated with new API/features
           - Built User Feedback widget, the first user-facing UI shipped in Sentry Cocoa SDK
+          - Parallelized release CI job from 35 to 5; split test suites to fix statefulness issues
           - Built demo apps for SDK and Sales teams flexible enough to simulate any customer configuration
-          - Parallelized long-running CI jobs and modularized test suites to find and fix statefulness issues
-      - name: Seer for iOS and macOS
-        description: proposed and built native apps to manage our agentic offerings
       - name: Billing
         description: platformized legacy system for product teams to self-serve how they charge for features
 
   - id: specto
     start: November 2019
-    end: January 2021
+    end: November 2021
     era: professional
     organization: Specto
     title: Senior Software Engineer
@@ -110,10 +112,10 @@ experience:
         description: mobile app profiling SDK for iOS and Android
         details:
           - Shared C++ core between iOS and Android with Protobuf RPC to Python/Go backend
-          - Python scripts to generate scoped Xcode projects from Bazel targets (pre `rules-xcode`)
           - Hardened SDK init sequence, app launch profiling, NSURLProtocol hooks, MetricKit ingestion
-          - Signal and mach exception propagation with open source contributions to other crash reporters
+          - Python scripts to generate scoped Xcode projects from Bazel targets (pre `rules-xcode`)
           - Smoke test generation validating integration across CocoaPods, Carthage, Bazel and SPM
+          - Signal and mach exception propagation with open source contributions to other crash reporters
 
   - id: rightpoint
     start: January 2019
@@ -136,21 +138,27 @@ experience:
     organization: Insight Therapeutics
     title: Lead iOS Developer
     location: Remote
-    employment_type: Contract
-    stack: 
+    employment_type: Contract (Part-time)
+    stack:
       - languages: [Objective-C, Swift]
       - frameworks: [CoreGraphics, CoreData, MessageUI, UICollectionView, FMDB, SQLite, Storyboards, SSZipArchive, RNCryptor]
       - infrastructure: [cocoapods-keys, Trello, BitBucket, AWS]
     highlights:
       - Sole consultation and development of multiple apps shipped in App Store and internally
+      - Led client-server design with backend engineer, and UX design with clinical admins
     deliverables:
-      - name: ClotRx
-        url: http://itunes.apple.com/us/app/clot-rx/id408979176?mt=8
-        description: public health reference e-pamphlet about anticoagulants
+      - name: eConsent
+        description: HIPAA-compliant informed consent app for clinical trial participants
         details:
-          - Preexisting hybrid app with webviews and a PDF viewer, modernized by me
-          - Migrated UIWebView→WKWebView, added search and bookmarking, redesigned for dark mode
-          - Built interactive clinical patient eval modules with print/email reporting capability
+          - Internal deployment to hundreds of facilities and thousands of study subjects
+          - Secure admin mode for saving/resuming progress and managing completed consents
+          - Quiz-based presentation of study details with participant signature collection and export
+      - name: Antibiotic Kinetics
+        url: http://itunes.apple.com/us/app/antibiotics-kinetics/id557658913?mt=8
+        description: antibiotic dosage calculator
+        details:
+          - Ported from partner developer's Android app codebase, including adding first tests
+          - Improved UX for error reporting through multistep calculations and data entry
       - name: DementiaRx
         url: http://itunes.apple.com/us/app/dementia-rx/id496024720?mt=8
         description: public health reference e-pamphlet about dementia
@@ -158,18 +166,13 @@ experience:
           - First new app created by me shipped to the App Store for a contracting engagement
           - Scripted automatic content extraction from original paper publication PDFs
           - Built search, bookmarking and interactive patient eval elements later backported to ClotRx
-      - name: Antibiotic Kinetics
-        url: http://itunes.apple.com/us/app/antibiotics-kinetics/id557658913?mt=8
-        description: antibiotic dosage calculator
+      - name: ClotRx
+        url: http://itunes.apple.com/us/app/clot-rx/id408979176?mt=8
+        description: public health reference e-pamphlet about anticoagulants
         details:
-          - Ported from partner developer's Android app codebase, including adding first tests
-          - Improved UX for error reporting through multistep calculations and data entry
-      - name: eConsent
-        description: HIPAA-compliant informed consent app for clinical trial participants
-        details:
-          - Interactive quiz-based presentation of study details with signature collection and export
-          - Secure admin mode for saving/resuming progress and managing completed consents
-          - Internal deployment using enterprise signing to hundreds of facilities
+          - Preexisting hybrid app with webviews and a PDF viewer, modernized by me
+          - Migrated UIWebView→WKWebView, added search and bookmarking, redesigned for dark mode
+          - Built interactive clinical patient eval modules with print/email reporting capability
 
   - id: 121nexus
     start: January 2018
@@ -178,8 +181,8 @@ experience:
     organization: 121nexus
     title: Software Engineer
     location: Remote
-    employment_type: Contract
-    stack: 
+    employment_type: Contract (Part-time)
+    stack:
       - languages: [Swift]
       - frameworks: [AVFoundation, OpenCV, Firebase]
       - infrastructure: [cocoapods-keys, AWS]
@@ -188,10 +191,9 @@ experience:
         url: https://itunes.apple.com/us/app/121-scan/id1187264063
         description: medical inventory management app/SDK with custom barcode/QR scanning
         details:
-          - Public launches via iTunes and a white-labeled enterprise deployment in logistics facilities
           - Optimized critical barcode scanning component for high throughput pass/fail operation
           - Traced silent scan failures to an AVFoundation defect with double-FNC1 GS1 barcodes
-          - Added crash reporting (Crashlytics), analytics (Firebase) and logging (XCGLogging)
+          - Public launches via App Store and a white-labeled enterprise deployment in logistics facilities
 
   - id: layer
     start: December 2016
@@ -207,10 +209,10 @@ experience:
     deliverables:
       - description: four-layer SDK offering for data→widgets→prebuilt module→sample app
         details:
-          - Separated unit, integration and end-to-end tests to tighten development iteration loops
-          - Streamlined developer environment configuration (Rake, Gems, CocoaPods and git submodules)
           - Migrated network protocol with Erlang backend from SPDY to WebSockets under Thrift RPC
           - Rearchitected auth and transport layers as state machines using TransitionKit
+          - Separated unit, integration and end-to-end tests to tighten development iteration loops
+          - Streamlined developer environment configuration (Rake, Gems, CocoaPods and git submodules)
 
   - id: twitter
     start: April 2015
@@ -224,26 +226,26 @@ experience:
       - frameworks: [Rails, React, Protobuf]
       - infrastructure: [Storm, Heron, Cascading, Scalding, Graphite, Beanstalk, Kafka, Redis, Cassandra, AWS, TeamCity, Chef, Trello, Vertica, Zeppelin]
     deliverables:
+      - name: Fabric SDK (deployed to 2+ billion devices) and macOS app
+        description: developer tool ecosystem management
+        details:
+          - Rearchitected Apple SDK launch sequence using queues of async/compound NSOperations
+          - Streamlined build and release processes with TeamCity agents deployed via Chef
       - name: Crashlytics SDK
         description: crash reporting and beta deployment SDK for Apple platforms and Android
         details:
-          - Rearchitected CLIs to bootstrap projects, upload dSYMs and interop with our macOS app
-          - Added Bitcode and tvOS compatibility to SDKs, and investigated watchOS support
           - Researched and built feature surfacing solutions to detectable ecosystem-wide crash causes
-      - name: Fabric SDK and macOS app
-        description: developer tool ecosystem management
-        details:
-          - Streamlined build and release processes with TeamCity agents deployed via Chef
-          - Rearchitected macOS app launch sequence using queues of async/compound NSOperations
-      - name: FABConfig
-        url: https://github.com/twitter-fabric/fabconfig
-        description: standardizes config of all Xcode projects and released the open source FABConfig
-      - name: FABOperation
-        url: https://github.com/google-fabric/FABOperation
-        description: custom NSOperation subclasses for async work and grouping tasks
+          - Added Bitcode and tvOS compatibility to SDKs, and investigated watchOS support
+          - Rearchitected CLIs to bootstrap projects, upload dSYMs and interop with our macOS app
+#      - name: FABConfig # commented out as of the anthropic resume
+#        url: https://github.com/twitter-fabric/fabconfig
+#        description: standardizes config of all Xcode projects via xcconfig `include`s
+#      - name: FABOperation # commented out as of the anthropic resume
+#        url: https://github.com/google-fabric/FABOperation
+#        description: custom NSOperation subclasses for async work and grouping tasks
     highlights:
       - Presented NSOperation rearchitectures and open source tools at MobileDevCon 2016 in Amsterdam
-      - Work on high-volume lambda backend, including on-call and migration from Storm to Heron
+      - Worked on high-volume lambda backend, including on-call and migration from Storm to Heron
 
   - id: mc10
     start: January 2015
@@ -278,10 +280,10 @@ experience:
     deliverables:
       - name: Care.com
         url: https://itunes.apple.com/us/app/care.com/id328453619?mt=8
-        description: service seeker/provider marketplace
+        description: service seeker/provider marketplace with over 14 million members
         details:
-          - iOS 7 redesign, with custom perspective zoom effect in UIPageController with CATransform3D
-          - Added floating quick-post button, swipe UITableViewRow actions, UIDataDetectorTypes usage
+          - iOS 7 redesign, with custom perspective effect in UIPageViewController with CATransform3D
+          - Added floating quick-post button, swipeable UITableViewRowAction, UIDataDetectorTypes
           - Improved pull-to-refresh, data entry with inputAccessoryView, UIAlertView presentation/routing
       - name: B&H Photo
         url: https://itunes.apple.com/us/app/b-h-photo/id390928219?mt=8
