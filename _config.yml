@@ -26,6 +26,12 @@ exclude:
   - Gemfile*
   - logs/
   - .git/
+  # The Makefile's and workflow's scripts, which are for building and
+  # deploying the site, not for its visitors.
+  - scripts
+  # Git worktrees (see .gitignore): each a full checkout of this repo, which
+  # the site would otherwise copy into itself whole.
+  - worktrees
 tag_page_layout: tag_page
 tag_page_dir: blog/tag
 tag_feed_layout: tag_feed
