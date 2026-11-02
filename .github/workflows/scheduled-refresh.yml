@@ -80,6 +80,14 @@ jobs:
       # use `set -o pipefail`, which the dash that is /bin/sh on Ubuntu lacks.
       MAKEFLAGS: RUBY= SHELL=/bin/bash
       DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry-run }}
+      # Who commits, for every step: the release data (commit-releases.sh) and
+      # the DEPLOYED stamp (`make deploy`). Set for the job, not by a step, as
+      # a step that is skipped once (no new release, only new activity) would
+      # leave the next commit without an author, which stopped a deploy.
+      GIT_AUTHOR_NAME: github-actions[bot]
+      GIT_AUTHOR_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
+      GIT_COMMITTER_NAME: github-actions[bot]
+      GIT_COMMITTER_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
     steps:
       - uses: actions/checkout@v4
         with:
