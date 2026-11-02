@@ -4,9 +4,10 @@
 # Writes _data/releases.yml: the latest release version and date for each app and
 # devtool in _data/projects.yml, for display on the projects page. And writes
 # _data/activity.yml: each devtool's commits, and the colophon's repo's (this
-# site's own), and lines added and deleted over
-# the last year, month and week, which the page shows beside it as a small bar
-# chart of commits and a count of lines, for the period its switch chooses.
+# site's own), and lines added and deleted over the last year, month and week,
+# which the page shows beside it as a small bar chart of commits and a count
+# of lines, for the period its switch chooses; and all of them together, under
+# _total, for the line over the list.
 #
 # Run it with `make releases`. releases.yml is committed, so builds and deploys
 # never need the network or a GitHub token for it, and the page keeps showing
@@ -247,6 +248,20 @@ missing = []
   activity[project['name']] = entry
   puts format('%-20s year %3d commits +%-6d -%-6d  month %3d +%-6d -%-6d  week %3d +%-5d -%d', project['name'],
               *%w[year month week].flat_map { |period| entry[period].values_at('commits', 'added', 'deleted') })
+end
+
+# And all of them together, under _total: each period's counts summed, and
+# each week's and day's commits, for the page's line over the list.
+unless activity.empty?
+  entries = activity.values
+  total = { 'weeks' => entries.map { |e| e['weeks'] }.transpose.map(&:sum),
+            'days' => entries.map { |e| e['days'] }.transpose.map(&:sum) }
+  %w[year month week].each do |period|
+    total[period] = %w[commits added deleted].to_h { |key| [key, entries.sum { |e| e[period][key] }] }
+  end
+  activity['_total'] = total
+  puts format('%-20s year %3d commits +%-6d -%-6d  month %3d +%-6d -%-6d  week %3d +%-5d -%d', 'all of them',
+              *%w[year month week].flat_map { |period| total[period].values_at('commits', 'added', 'deleted') })
 end
 
 # Each list on one line, rather than YAML's one line per number.

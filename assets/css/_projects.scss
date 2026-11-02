@@ -642,3 +642,20 @@ body.lightbox-open {
 .colophon-description p:last-child {
   margin-bottom: 0;
 }
+
+// The line over the devtool list with all their commits, and this site's,
+// together: a label, then the chart as each tool's.
+.activity-all {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--border);
+}
+
+.activity-all-label {
+  font-family: var(--font-family-sans);
+  font-weight: 600;
+}

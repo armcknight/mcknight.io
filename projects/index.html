@@ -87,6 +87,17 @@ content_class: content-wide
       Each item carries what it sorts on.
     {% endcomment %}
     <div class="project-card devtools">
+      {% comment %}
+        Every devtool's commits and this site's (the colophon's) together, the
+        _total entry make releases writes, over the period the switch shows.
+      {% endcomment %}
+      {% assign all_activity = site.data.activity._total %}
+      {% if all_activity %}
+        <div class="activity-all" id="activity-all" data-activity="year">
+          <span class="activity-all-label">All of them, and this site</span>
+          {% include activity.html activity=all_activity %}
+        </div>
+      {% endif %}
       <ul class="devtool-list" id="devtool-list" data-activity="year">
         {% assign devtools = site.data.projects.devtools | sort: "impact" %}
         {% assign periods = "year,month,week" | split: "," %}
@@ -281,10 +292,12 @@ content_class: content-wide
     const list = document.getElementById('devtool-list');
     const periods = document.getElementById('activity-period');
     if (!list || !periods) return;
+    const all = document.getElementById('activity-all');
 
     periods.hidden = false;
     periods.addEventListener('change', function(event) {
       list.dataset.activity = event.target.value;
+      if (all) all.dataset.activity = event.target.value;
       list.dispatchEvent(new Event('activitychange'));
     });
   })();
