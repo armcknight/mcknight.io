@@ -531,6 +531,25 @@ deploy: _logs-dir check-clean ## <site> Upload a built site, then stamp and comm
 	@$(foreach s,$(SELECTED),test -n "$(dist_$(s))" || { echo "No CloudFront distribution is recorded for $(label_$(s)). Set dist_$(s) in the Makefile once it exists."; exit 1; };)
 	$(foreach s,$(SELECTED),scripts/deploy-site.sh "$(s)" "$(label_$(s))" "$(dest_$(s))" "$(bucket_$(s))" "$(stamp_$(s))" && aws --profile armcknight cloudfront create-invalidation --distribution-id $(dist_$(s)) --paths $(versioned_$(s)) > /dev/null && echo "cleared $(versioned_$(s)) from CloudFront for $(label_$(s))";)
 
+# Deploys mcknight.io from GitHub instead of this machine: starts the
+# scheduled-refresh workflow (.github/workflows/scheduled-refresh.yml) on main,
+# which refreshes the projects page's data and, when anything changed, commits
+# it, builds, deploys and pushes the DEPLOYED stamp, as it does on its schedule.
+# It builds what is pushed to main, not this checkout.
+#
+#   make deploy-gh-actions                 refresh, and deploy what changed
+#   make deploy-gh-actions DRY_RUN=true    only fetch and show what changed
+#
+# The Actions tab's own button is a dry run unless told otherwise; this is not.
+# `gh run watch` follows the run it starts: the new run takes a moment to be
+# listed, so it is chosen from the runs in progress rather than looked up.
+DRY_RUN ?= false
+.PHONY: deploy-gh-actions
+deploy-gh-actions: ## Run the scheduled-refresh workflow on GitHub, which deploys mcknight.io when its data changed; DRY_RUN=true to only fetch and diff
+	@case "$(DRY_RUN)" in true|false) ;; *) echo 'DRY_RUN is false (the default) or true, not "$(DRY_RUN)"'; exit 1;; esac
+	gh workflow run scheduled-refresh.yml --repo armcknight/mcknight.io --ref main -f dry-run=$(DRY_RUN)
+	@echo "started; follow it with: gh run watch --repo armcknight/mcknight.io (it lists the runs in progress to choose from)"
+
 # Invalidate CloudFront, so a fresh deploy is actually what gets served.
 #
 #   make bust-cache experience               a page, both its cache keys

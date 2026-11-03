@@ -113,10 +113,12 @@ large population centers (about 03:00 in US East, Central Europe, New Delhi and
 Tokyo), and at once when a devtool releases or merges: the shared CI and
 release workflows in armcknight/workflows send it a `release-published`
 dispatch. It deploys only if `releases.yml` or `activity.yml` changed, and
-commits only `releases.yml`. To start one by hand:
+commits only `releases.yml`. To start one by hand, from what is pushed to
+`main`:
 
 ```
-gh api repos/armcknight/mcknight.io/dispatches -f event_type=release-published
+make deploy-gh-actions                 # refresh, and deploy what changed
+make deploy-gh-actions DRY_RUN=true    # only fetch and print the diff
 ```
 
 Runs queue one at a time, and a newer dispatch replaces one that is still
