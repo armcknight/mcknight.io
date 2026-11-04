@@ -1,0 +1,38 @@
+---
+layout: null
+permalink: /404.html
+---
+{%- comment -%}
+  What a missing page shows: the S3 bucket's error document (its website
+  configuration), served with a 404 for any address with nothing behind it.
+  The site's header and stylesheets around the text every site's not-found
+  page shares (shared/_includes/not-found.html); here, only the way back,
+  the one page this site is.
+{%- endcomment -%}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page not found — Travel — Andrew McKnight</title>
+  <meta name="robots" content="noindex">
+  <meta name="author" content="Andrew McKnight">
+  {%- assign build = site.time | date: '%s' %}
+  <link rel="stylesheet" href="/assets/css/globe-core.css?v={{ build }}">
+  <link rel="stylesheet" href="/assets/css/travel.css?v={{ build }}">
+</head>
+<body>
+<header>
+  <h1>Travel</h1>
+  <a href="https://mcknight.io">← mcknight.io</a>
+</header>
+
+<main>
+  <section class="intro">
+    <p><strong>Page not found.</strong> There is nothing at this address, or no longer.</p>
+    {%- capture way_back %}<p>Everything on this site is on one page: <a href="/">the globe of every place I have been</a>.</p>{% endcapture %}
+    {% include not-found.html way_back=way_back %}
+  </section>
+</main>
+</body>
+</html>

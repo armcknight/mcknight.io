@@ -641,10 +641,10 @@ own `src_`, `dest_`, `port_`, `stamp_`, `log_` and `label_` entries.
 | `scripts/scheduled-refresh/` | The workflow's steps: refresh the data and say what changed, commit `releases.yml`, deploy and push the stamp |
 | `travel/` | The travel.mcknight.io site: its own config, data, page and scripts |
 | `books/` | The books.mcknight.io site: its own config, data, page and scripts |
-| `shared/` | What the subdomains share: the globe's core, and the plugin that copies it into each build |
+| `shared/` | What the sites share, through `shared/_plugins/shared_assets.rb`, which each loads: the globe's core (the subdomains), and the not-found page's text (`_includes/not-found.html`) and script (`assets/js/not-found.js`, all three; mcknight.io takes only that one asset, `shared_assets` in its `_config.yml`) |
 | `resume/` | Submodule of armcknight/resume: LaTeX sources for the resume and CV; `make website-resumes` builds the site's two, `make all-resumes` every copy |
 | `assets/pdf/` | The built PDFs the site links to — these are the tracked artifacts, not `resume/pdfs/` — and `papers/`, the published papers |
-| `404.html`, `error.html` | The not-found page, with the address asked for, a link to its Wayback Machine copy and a prefilled report, and the server-error page; neither indexed nor in the sitemap |
+| `404.html`, `error.html` | The not-found page, around the text every site's shares (`shared/_includes/not-found.html`: the address asked for, a link to its Wayback Machine copy and a prefilled report; `travel/` and `books/` have their own `404.html` around it), and the server-error page; neither indexed nor in the sitemap |
 | `robots.txt` | Who may crawl the site: everyone, for search, link previews and AI answers, but not the crawlers that train AI models. `travel/` and `books/` have the same file. It names `sitemap.xml`, which `jekyll-sitemap` writes |
 | `DEPLOYED` | What is live |
 | `_site/`, `logs/` | Build output and transcripts. Untracked |

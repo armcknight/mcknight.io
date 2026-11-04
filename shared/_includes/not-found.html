@@ -1,0 +1,23 @@
+{%- comment -%}
+  The not-found page's text, which every site's 404.html shares, inside its
+  own frame (layout or header): the address asked for, a link to the Wayback
+  Machine's copy of it, the way back into the site, which differs by site and
+  is given as HTML, and a report by email. shared/assets/js/not-found.js,
+  loaded here, fills in what needs the address, which the static page cannot
+  know itself; without it, the links fall back to the whole site's archive
+  and a report with only a subject. The report goes to the site's
+  contact_email (its _config.yml). Its links are absolute, as the page is
+  shown at whatever address was asked for.
+
+    {% capture way_back %}<p>…</p>{% endcapture %}
+    {% include not-found.html way_back=way_back %}
+
+  The site's own shared_assets list, if it has one, must name
+  js/not-found.js.
+{%- endcomment -%}
+{%- assign host = site.url | remove: 'https://' | remove: 'http://' -%}
+<p id="error-address" hidden>You asked for <code id="error-path"></code>.</p>
+<p>It may have moved (in which case you could try checking <a href="https://web.archive.org/web/*/{{ host }}/*" id="wayback-link" target="_blank" rel="noopener">the Wayback Machine entry for this URL</a>), or the URL may have been mistyped.</p>
+{{ include.way_back }}
+<p>If you were linked here by something, drop me a line here: <a href="mailto:{{ site.contact_email }}?subject=Broken%20link%20on%20{{ host }}" id="report-link">{{ site.contact_email }}</a>.</p>
+<script src="/assets/js/not-found.js?v={{ site.time | date: '%s' }}" data-site="{{ site.url }}" data-email="{{ site.contact_email }}"></script>

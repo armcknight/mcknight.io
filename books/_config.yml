@@ -7,6 +7,9 @@
 title: Books
 description: Where the authors I read come from, on a globe.
 url: https://books.mcknight.io
+# Where this site asks to be written to: its header's email link, and the
+# not-found page's report (shared/_includes/not-found.html).
+contact_email: books@andrew.mcknight.io
 
 exclude:
   - scripts

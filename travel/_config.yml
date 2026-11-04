@@ -13,6 +13,9 @@
 title: Travel
 description: Every place I have been, on a globe.
 url: https://travel.mcknight.io
+# Where this site asks to be written to: its header's email link, and the
+# not-found page's report (shared/_includes/not-found.html).
+contact_email: travel@andrew.mcknight.io
 
 exclude:
   - scripts

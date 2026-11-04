@@ -9,13 +9,10 @@ sitemap: false
 {% comment %}
   What a missing page shows: the S3 bucket's error document (its website
   configuration), served with a 404 for any address with nothing behind it.
-  Its links are absolute, as it is shown at whatever address was asked for.
+  The text is the one every site's not-found page shares
+  (shared/_includes/not-found.html); here, only the way back into this site.
 {% endcomment %}
-
-<p class="error-address" id="error-address" hidden>You asked for <code id="error-path"></code>.</p>
-
-<p>It may have moved (in which case you could try checking <a href="https://web.archive.org/web/*/{{ site.url | default: 'https://mcknight.io' | remove: 'https://' }}/*" id="wayback-link" target="_blank" rel="noopener">the Wayback Machine entry for this URL</a>), or the URL may have been mistyped.</p>
-
+{% capture way_back %}
 <p>Find your way back to the functioning site:</p>
 
 <ul class="error-links">
@@ -25,28 +22,5 @@ sitemap: false
   <li><a href="/blog/">Blog</a>, every post by year and topic</li>
   <li><a href="/links/">Links</a>, things worth reading elsewhere</li>
 </ul>
-
-<p>If you were linked here by something, drop me a line here: <a href="mailto:website@andrew.mcknight.io?subject=Broken%20link%20on%20mcknight.io" id="report-link">website@andrew.mcknight.io</a>.</p>
-
-<script>
-  // The address that was asked for, which the static page cannot know itself,
-  // shown, and put in the links that can use it: the Wayback Machine's latest
-  // copy of it (in place of every copy of the site), and the report's subject
-  // and body, with the page that linked here where the browser says.
-  (function () {
-    var path = window.location.pathname + window.location.search;
-    if (path === '/404.html') return;
-    document.getElementById('error-path').textContent = path;
-    document.getElementById('error-address').hidden = false;
-
-    var url = '{{ site.url | default: "https://mcknight.io" }}' + path;
-    document.getElementById('wayback-link').href = 'https://web.archive.org/web/' + url;
-
-    var body = 'Hi Andrew,\n\nThis address on your site is missing:\n' + url + '\n\n' +
-      (document.referrer ? 'I followed a link to it from:\n' + document.referrer + '\n\n' : '') +
-      'Thanks!';
-    document.getElementById('report-link').href = 'mailto:website@andrew.mcknight.io' +
-      '?subject=' + encodeURIComponent('Broken link on mcknight.io: ' + path) +
-      '&body=' + encodeURIComponent(body);
-  })();
-</script>
+{% endcapture %}
+{% include not-found.html way_back=way_back %}
