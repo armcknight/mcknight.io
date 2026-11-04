@@ -228,6 +228,11 @@ build: _logs-dir optimize-images _check-home-data _activity-data ## <site> Build
 # It serves the build, not the sources: there is no watch and no live reload, so
 # each change needs another build.
 #
+# Through scripts/serve-site.py, which answers a missing page as the S3 bucket
+# does, with the site's 404.html and a 404 status: http://localhost:4000/nope
+# shows it. The server-error page CloudFront shows has no local cause; open
+# /error.html to see it.
+#
 # It stops first if something already listens on a site's port. The server runs
 # in the background with its output thrown away, so otherwise it would fail to
 # start without a word, and the browser would open on whatever was there, such
@@ -235,7 +240,7 @@ build: _logs-dir optimize-images _check-home-data _activity-data ## <site> Build
 .PHONY: serve
 serve: ## <site> Serve a built site and open it
 	@$(foreach s,$(SELECTED),if lsof -ti :$(port_$(s)) -sTCP:LISTEN >/dev/null 2>&1; then echo "Something already serves port $(port_$(s)), where $(label_$(s)) goes. Run \`make endserve $(s)\` first."; exit 1; fi;)
-	$(foreach s,$(SELECTED),(cd $(dest_$(s)) && nohup python3 -m http.server $(port_$(s)) --bind localhost >/dev/null 2>&1 &); echo "serving $(label_$(s)) at http://localhost:$(port_$(s))"; open http://localhost:$(port_$(s));)
+	$(foreach s,$(SELECTED),(cd $(dest_$(s)) && nohup python3 $(CURDIR)/scripts/serve-site.py $(port_$(s)) >/dev/null 2>&1 &); echo "serving $(label_$(s)) at http://localhost:$(port_$(s))"; open http://localhost:$(port_$(s));)
 
 # Stops a served site, by the port it is on rather than by killing every Python
 # process on the machine, which is what this used to do. Only the process that

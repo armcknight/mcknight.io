@@ -6,6 +6,8 @@
   <title>{% if page.title %}{{ page.title }} - {% endif %}{{ site.title | default: "Andrew McKnight" }}</title>
   <meta name="description" content="{{ page.abstract | default: site.description | default: '' }}">
   <meta name="author" content="Andrew McKnight">
+  {%- comment %} A page that search engines should leave out, as an error page: robots: noindex {% endcomment %}
+  {% if page.robots %}<meta name="robots" content="{{ page.robots }}">{% endif %}
   <meta name="copyright" content="Andrew McKnight Copyright (c) 2024">
   <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
   

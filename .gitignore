@@ -5,6 +5,8 @@ _site
 photos/**/*.jpg
 /logs/
 vendor
+# Python's bytecode cache, from running a script in scripts/
+__pycache__/
 
 # Created by https://www.toptal.com/developers/gitignore/api/emacs
 # Edit at https://www.toptal.com/developers/gitignore?templates=emacs

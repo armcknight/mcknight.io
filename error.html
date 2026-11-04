@@ -1,0 +1,17 @@
+---
+layout: modern-page
+title: "Something went wrong"
+subtitle: "The site could not answer just now."
+permalink: /error.html
+robots: noindex
+sitemap: false
+---
+{% comment %}
+  What CloudFront shows for a server error (500, 502, 503, 504): its custom
+  error responses point here. It is only as available as the bucket it comes
+  from, so CloudFront keeps a copy, for when that is the trouble.
+{% endcomment %}
+
+<p>This is on my end, not yours, and it's usually brief. Try again in a minute or two.</p>
+
+<p>Meanwhile, these may still load from the cache: <a href="/">Home</a>, <a href="/projects/">Projects</a>, <a href="/experience/">Experience</a>, <a href="/blog/">Blog</a>.</p>

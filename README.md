@@ -633,6 +633,7 @@ own `src_`, `dest_`, `port_`, `stamp_`, `log_` and `label_` entries.
 | `_plugins/` | Jekyll plugins (tagging) |
 | `blog/_posts/` | Posts, named `YYYY-MM-DD-slug.md` |
 | `blog/img/` | Post images, including the optional per-post `thumbnail` |
+| `scripts/serve-site.py` | The local server `make serve` runs: Python's `http.server`, answering a missing page with the site's `404.html` and a 404, as the S3 bucket's error document will |
 | `scripts/new-post.sh` | Creates a post from a title, front matter and date filled in |
 | `scripts/generate-resume.rb` | Writes a resume's `.tex` from `_data/` and its entry in `resume/selections.yml`, through `resume/resume.tex.erb` |
 | `scripts/fetch-releases.rb` | Generates `_data/releases.yml` and `_data/activity.yml` |
@@ -643,6 +644,7 @@ own `src_`, `dest_`, `port_`, `stamp_`, `log_` and `label_` entries.
 | `shared/` | What the subdomains share: the globe's core, and the plugin that copies it into each build |
 | `resume/` | Submodule of armcknight/resume: LaTeX sources for the resume and CV; `make website-resumes` builds the site's two, `make all-resumes` every copy |
 | `assets/pdf/` | The built PDFs the site links to — these are the tracked artifacts, not `resume/pdfs/` — and `papers/`, the published papers |
+| `404.html`, `error.html` | The not-found page, with the address asked for, a link to its Wayback Machine copy and a prefilled report, and the server-error page; neither indexed nor in the sitemap |
 | `robots.txt` | Who may crawl the site: everyone, for search, link previews and AI answers, but not the crawlers that train AI models. `travel/` and `books/` have the same file. It names `sitemap.xml`, which `jekyll-sitemap` writes |
 | `DEPLOYED` | What is live |
 | `_site/`, `logs/` | Build output and transcripts. Untracked |
