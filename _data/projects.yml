@@ -82,6 +82,13 @@ devtools:
     ci-branch: "main"
 
 apps:
+  - name: "No Cookies for You"
+    description: "A game demonstrating annoyances in modern web pages. Click the cookie banners, pop-ups and paywalls to remove them before they completely take over article."
+    website: "https://nocookies.fun"
+    website-name: "Play"
+    image: "no-cookies-for-you.png"
+    image-alt: "A cookie with a bite out of it, the game's icon"
+
 #  - name: "Dat Bread Dough"
 #    description: "Create recipes for your bread formulas, with easy formula/weight conversions when editing. Store all your favorite ingredients, even by brands, and keep notes on everything."
 #    app-store-url: "https://itunes.apple.com/us/app/dat-bread-dough/id1214735558"
