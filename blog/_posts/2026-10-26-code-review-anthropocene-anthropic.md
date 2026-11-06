@@ -11,7 +11,7 @@ _Note: I wrote this draft yesterday, before Anthropic submitted their official S
 
 ---
 
-Last week Anthropic published a provocative article on their source control and review processes: [https://www.anthropic.com/research/redesigning-source-control](https://www.anthropic.com/research/redesigning-source-control)..
+Last week Anthropic published a provocative article on their source control and review processes: [https://www.anthropic.com/research/redesigning-source-control](https://www.anthropic.com/research/redesigning-source-control).
 
 A few days later there was a proposal for how to improve code review generally in the industry [https://just-be.dev/blog/code-review-sucks-now/](https://just-be.dev/blog/code-review-sucks-now/).
 
