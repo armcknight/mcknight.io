@@ -129,6 +129,14 @@ content_class: content-wide
               {% include project-release.html project=project %}
             </div>
             <p class="project-description">{{ project.description }}</p>
+            {% if project.ships %}
+              {%- comment -%} Its longest name, which sets how narrow its columns may get {%- endcomment -%}
+              {%- assign longest = 0 -%}
+              {%- for command in project.ships -%}{%- if command.size > longest -%}{%- assign longest = command.size -%}{%- endif -%}{%- endfor %}
+              <ul class="devtool-ships" aria-label="What {{ project.name }} ships" style="--longest: {{ longest }}">
+                {% for command in project.ships %}<li><code>{{ command }}</code></li>{% endfor %}
+              </ul>
+            {% endif %}
           </li>
         {% endfor %}
       </ul>

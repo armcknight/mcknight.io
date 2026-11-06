@@ -4,6 +4,9 @@ devtools:
 # impact: how close the tool sits to an end user, 1 the closest. Every tool
 # needs one, and no two the same: `make build home` checks, with
 # scripts/check-projects.rb. The page lists them in this order by default.
+# ships: optional; what a tool is made of, listed under its description in the
+# order given: the commands it installs, the workflows it shares, the Spoons
+# or components it holds, the slash commands it adds.
   - name: "Pippin"
     impact: 1
     description: "Framework abstracting as much boilerplate as possible out of app codebases."
@@ -19,7 +22,24 @@ devtools:
 
   - name: "tools"
     impact: 7
-    description: "SDLC automation for anything with semver and a changelog."
+    description: "Automation for various parts of the SDLC."
+    ships:
+      - migrate-changelog
+      - changetag
+      - vrsn
+      - prepare-release
+      - check-release-ready
+      - prepare-github-release
+      - read-changelog
+      - xcbs
+      - psst
+      - inject-git-info
+      - upload-symbols
+      - tag-icons
+      - ota-publish
+      - md-toc
+      - xcprune
+      - spm-acknowledgements
     website: "https://github.com/armcknight/tools"
     website-name: "GitHub"
     ci-branch: "main"
@@ -47,6 +67,14 @@ devtools:
   - name: "templatr"
     impact: 8
     description: "Templates to bootstrap new project codebases, Linear workspaces and GitHub repos."
+    ships:
+      - apple-app
+      - base
+      - github-repo
+      - mcknight-io-listing
+      - linear-workspace
+      - vapor-fly
+      - supabase
     website: "https://github.com/armcknight/templatr"
     website-name: "GitHub"
     ci-branch: "main"
@@ -54,6 +82,20 @@ devtools:
   - name: "workflows"
     impact: 6
     description: "Reusable GitHub Actions workflows."
+    ships:
+      - ci.yml
+      - claude-plugin-ci.yml
+      - claude-plugin-release.yml
+      - fly-deploy.yml
+      - github-release.yml
+      - ios-ci.yml
+      - macos-cask-release.yml
+      - ota-cleanup.yml
+      - ota-refresh.yml
+      - release.yml
+      - swift-package-ci.yml
+      - swiftpm-cask-release.yml
+      - vapor-ci.yml
     website: "https://github.com/armcknight/workflows"
     website-name: "GitHub"
     ci-branch: "main"
@@ -70,6 +112,9 @@ devtools:
   - name: "hammerspoons"
     impact: 10
     description: "Development QoL improvements for macOS."
+    ships:
+      - ITerm2WindowChooser
+      - XcodeSCStatus
     website: "https://github.com/armcknight/hammerspoons"
     website-name: "GitHub"
     ci-branch: "main"
@@ -77,6 +122,14 @@ devtools:
   - name: "claude-armcknight"
     impact: 4
     description: "Claude Code plugin marketplace for the slash commands I use in development."
+    ships:
+      - "/cleanup"
+      - "/commit"
+      - "/finish"
+      - "/merge"
+      - "/pr"
+      - "/review"
+      - "/start"
     website: "https://github.com/armcknight/armcknight-claude"
     website-name: "GitHub"
     ci-branch: "main"

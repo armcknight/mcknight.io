@@ -659,3 +659,53 @@ body.lightbox-open {
   font-family: var(--font-family-sans);
   font-weight: 600;
 }
+
+// What a tool ships (ships in projects.yml), under its description: a
+// bulleted list that flows into as many as three columns, as a dozen or more
+// one under another would make its card far the tallest. A column is never
+// narrower than the list's longest name (--longest, its length in
+// characters, which the page sets): in the code font, 1ch is one character,
+// and the rest is the code's padding and border. So a list of long names
+// takes fewer columns, and none sticks out of its own.
+.devtool-ships {
+  font-family: var(--font-family-mono);
+  font-size: var(--text-sm);
+  columns: 3 calc(var(--longest, 20) * 1ch + 1.25rem);
+  column-gap: var(--space-6);
+  // In line with the description over it (.devtool .project-description)
+  margin: var(--space-2) 0 0 var(--space-4);
+  padding-left: 1.25rem;
+}
+
+.devtool-ships li {
+  break-inside: avoid;
+  // Room under each name as padding, not the site's margin for list items:
+  // WebKit carries a margin across a column break, to the top of the next
+  // column, which put the middle column a margin lower than the others
+  margin: 0;
+  padding-bottom: var(--space-2);
+}
+
+.devtool-ships code {
+  // The list's own size, so its ch is the code's character
+  font-size: 1em;
+  // A name whole on its line, never broken at a hyphen
+  white-space: nowrap;
+  // Its padding and border inside its line, not over it: inline, they reach
+  // past the top of a column that starts with it, which a browser may clip,
+  // as Safari does, leaving the box with no top edge
+  display: inline-block;
+  line-height: 1.4;
+}
+
+// A smaller size on a phone, for more columns
+@media (max-width: 650px) {
+  .devtool-ships {
+    column-gap: var(--space-3);
+    padding-left: 1rem;
+  }
+
+  .devtool-ships {
+    font-size: var(--text-xs);
+  }
+}
