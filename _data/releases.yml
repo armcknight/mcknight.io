@@ -39,10 +39,10 @@ superlinear:
   url: https://github.com/armcknight/homebrew-tools/releases/tag/superlinear-2.0.0
   tag: superlinear-2.0.0
 templatr:
-  version: 3.0.0
+  version: 2.1.1
   date: '2026-11-07'
-  url: https://github.com/armcknight/templatr/releases/tag/v3.0.0
-  tag: v3.0.0
+  url: https://github.com/armcknight/templatr/releases/tag/2.1.1
+  tag: 2.1.1
 workflows:
   version: 4.2.0
   date: '2026-10-18'
