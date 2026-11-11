@@ -6,7 +6,7 @@ presentations:
     length: 45 min
     location: Colorado Springs, CO
     details:
-      - Presented findings from analysis of common function implementations in open source repositories as a way to generate possible Swift Evolution proposals
+      - Presented findings from analysis of common function implementations in 50GB of open source Swift repositories as a way to generate possible Swift Evolution proposals
 
   - id: cocoaheads-boston-2017
     date: Jun 2017

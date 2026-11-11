@@ -11,15 +11,13 @@ floating_top: true
 </div>
 
 {% comment %}
-get set of all tags
+get set of all tags: each link's tags part only, not its context
 {% endcomment %}
 {% assign all_tags = "" %}
 {% for link in site.data.links %}
-  {% for tags_hash in link[1] %}
-    {% for tag_array in tags_hash %}
-      {% for tag in tag_array[1] %}
-        {% assign all_tags = all_tags | append: tag | append : "|" %}
-      {% endfor %}
+  {% for part in link[1] %}
+    {% for tag in part.tags %}
+      {% assign all_tags = all_tags | append: tag | append : "|" %}
     {% endfor %}
   {% endfor %}
 {% endfor %}
@@ -52,20 +50,37 @@ generate tag cloud
       <h3 class="links-section-title">{{ tag | capitalize }}</h3>
       <ul class="links-list">
         {% for link in site.data.links %}
-          {% for tags_hash in link[1] %}
-            {% for tag_array in tags_hash %}
-              {% assign link_tags = "" %}
-              {% for link_tag in tag_array[1] %}
-                {% assign link_tags = link_tags | append: link_tag | append: "|" %}
-              {% endfor %}
-              {% assign link_tag_array = link_tags | split: "|" %}
-              {% if link_tag_array contains tag %}
-                <li class="links-list-item">
-                  <a href="{{ link[0] }}" target="_blank" rel="noopener" class="links-list-link">{{ link[0] | remove: "https://" | remove: "http://" | remove: "www." | split: "/" | first }}</a>
-                </li>
-              {% endif %}
-            {% endfor %}
+          {% assign link_tags = "" | split: "" %}
+          {% assign link_context = "" | split: "" %}
+          {% for part in link[1] %}
+            {% if part.tags %}{% assign link_tags = link_tags | concat: part.tags %}{% endif %}
+            {% if part.context %}{% assign link_context = link_context | concat: part.context %}{% endif %}
           {% endfor %}
+          {% if link_tags contains tag %}
+            <li class="links-list-item">
+              <a href="{{ link[0] }}" target="_blank" rel="noopener" class="links-list-link">{{ link[0] | remove: "https://" | remove: "http://" | remove: "www." | split: "/" | first }}</a>
+              {%- if link_context.size > 0 %}
+              {%- comment -%}
+                More about it elsewhere (context in links.yml): each link labelled
+                by its site, HN for Hacker News, or by its own label
+              {%- endcomment %}
+              <span class="links-context">(
+                {%- for more in link_context -%}
+                  {%- if more.url %}{% assign more_url = more.url %}{% else %}{% assign more_url = more %}{% endif -%}
+                  {%- assign more_host = more_url | remove: "https://" | remove: "http://" | remove: "www." | split: "/" | first -%}
+                  {%- case more_host -%}
+                    {%- when "news.ycombinator.com" -%}{%- assign more_label = "HN" -%}
+                    {%- when "old.reddit.com" -%}{%- assign more_label = "reddit" -%}
+                    {%- when "reddit.com" -%}{%- assign more_label = "reddit" -%}
+                    {%- else -%}{%- assign more_label = more_host -%}
+                  {%- endcase -%}
+                  {%- if more.label %}{% assign more_label = more.label %}{% endif -%}
+                  <a href="{{ more_url }}" target="_blank" rel="noopener">{{ more_label }}</a>{% unless forloop.last %}, {% endunless %}
+                {%- endfor -%}
+              )</span>
+              {%- endif %}
+            </li>
+          {% endif %}
         {% endfor %}
       </ul>
     </section>

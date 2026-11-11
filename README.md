@@ -172,8 +172,8 @@ the template: the `.tex` is generated, and the resume repo ignores it. The
 comment at the top of `resume/selections.yml` describes an entry, and the one
 at the top of `_data/experience.yaml` every field of a job.
 
-A cover letter is an entry in `resume/letters.yml` (its recipient, greeting
-and paragraphs, as plain text), under the same name as the application's
+A cover letter is an entry in `resume/letters.yml` (its greeting and paragraphs,
+as plain text), under the same name as the application's
 resume: `make resume-<name>` builds `resume/pdfs/screen/<name>-letter.pdf` through
 `resume/letter.tex.erb` along with the resume, or alone where there is no
 resume of that name.

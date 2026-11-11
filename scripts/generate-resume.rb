@@ -145,24 +145,52 @@ class Resume
     PRINT
   end
 
-  # The selection's sections, in its order, each with its entries.
+  # The selection's sections, in its order, each with its entries, and its
+  # title: the kind's own, or the one the selection gives it (title:).
   def sections
     @sections ||= @selection.fetch('sections').map do |section|
+      # A section's options indented no deeper than its name are its
+      # neighbours to YAML, and the section itself is empty
+      unless section.is_a?(Hash) && section.size == 1 && !section.values.first.nil?
+        keys = section.is_a?(Hash) ? section.keys.join(', ') : section.inspect
+        abort "#{@source}: a section is one name, its options indented under it, not #{keys}; " \
+              'indent `only:`, `title:` and the like two spaces deeper than the section\'s name'
+      end
       kind, spec = section.first
       title, by_id = KINDS.fetch(kind) { abort "#{@source}: no section called #{kind}; there are #{KINDS.keys.join(', ')}" }
-      next Section.new(kind, title, skills(spec), {}) if kind == 'skills'
+      if kind == 'skills'
+        # Its list, or the list under categories: beside a title:
+        if spec.is_a?(Hash)
+          extra = spec.keys - %w[title categories]
+          abort "#{@source}: skills takes title and categories, not #{extra.join(', ')}" if extra.any?
+          title = section_title(kind, spec, title)
+          spec = spec['categories']
+        end
+        next Section.new(kind, title, skills(spec), {})
+      end
 
       spec = { 'only' => spec } if spec.is_a?(Array)
       spec = {} if spec == 'all'
+      title = section_title(kind, spec, title)
       defaults = OPTIONS.fetch(kind, {})
-      extra = spec.keys - %w[only except] - defaults.keys
-      takes = (['all, a list of ids, only or except'] + defaults.keys).join(', ')
+      extra = spec.keys - %w[only except title] - defaults.keys
+      takes = (['all, a list of ids, only, except or title'] + defaults.keys).join(', ')
       abort "#{@source}: #{kind} takes #{takes}, not #{extra.join(', ')}" if extra.any?
       options = defaults.to_h { |option, default| [option, spec.fetch(option, default)] }
       bad = options.reject { |_, value| [true, false].include?(value) }.keys
       abort "#{@source}: #{kind}'s #{bad.join(', ')} is true or false" if bad.any?
       Section.new(kind, title, pick(kind, all_of(kind), spec, by_id), options)
     end
+  end
+
+  # A section's title as the selection gives it, "Selected Experience", or its
+  # kind's own.
+  def section_title(kind, spec, default)
+    return default unless spec.key?('title')
+
+    title = spec['title']
+    abort "#{@source}: #{kind}'s title is some text, not #{title.inspect}" unless title.is_a?(String) && !title.strip.empty?
+    title.strip
   end
 
   # A skills section's own list, written in the selection as a job's stack is

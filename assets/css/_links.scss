@@ -49,6 +49,22 @@
   text-decoration: underline;
 }
 
+// More about a link elsewhere (context in links.yml), after it: smaller and
+// quieter than the link itself, as an aside.
+.links-context {
+  margin-left: var(--space-1);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.links-context a {
+  color: var(--text-muted);
+}
+
+.links-context a:hover {
+  color: var(--accent);
+}
+
 // Floating back to top button
 .floating-back-to-top {
   position: fixed;

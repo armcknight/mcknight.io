@@ -94,6 +94,9 @@ I saw a reddit post the other day quoting Dietrich Bonhoeffer, which reminded me
 - Dawson’s\*: O(n^2) is the sweet spot of badly scaling algorithms: fast enough to make it into production, but slow enough to make things fall down once it gets there.
 - Greenspun's tenth rule\*: Any sufficiently complicated C or Fortran program contains an ad hoc, informally-specified, bug-ridden, slow implementation of half of Common Lisp
 - Roko's Basilisk‡: an otherwise benevolent artificial superintelligence (AI) in the future would be incentivized to create a virtual reality simulation to torture anyone who knew of its potential existence but did not directly contribute to its advancement or development, in order to incentivize said advancement
+- Akin's Laws of Spacecraft Design: there are 45 of them at https://spacecraft.ssl.umd.edu/akins_laws.html, but the one I originally was chasing that was listed on that page was:
+  - Henshaw's: one key to success in a mission is establishing clear lines of blame (also filed under Sociological)
+- Swanson's: the price of solar photovoltaic (PV) modules drops by about 20% for every doubling of cumulative shipped volume, translating to a roughly 75% cost reduction every 10 years; derived from Wright's law
 
 # Sociological
 

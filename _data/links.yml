@@ -1,8 +1,31 @@
+# Every link on the links page: its address, then a list of parts:
+#
+#   tags:      the boxes it is listed in, one per tag
+#   context:   optional; more about it elsewhere, each an address, or an
+#              address and a label: a Hacker News thread, a review, an
+#              interview. Each shows after the link, labelled by its site
+#              (HN for Hacker News), or by its label.
+#
+#   https://grugbrain.dev:
+#     - tags:
+#       - software
+#     - context:
+#       - https://news.ycombinator.com/item?id=31840331
+#       - url: https://example.com/talk
+#         label: talk
+https://computer.rip:
+  - tags:
+    - tech
 https://neal.fun:
   - tags:
     - netculture
     - software
     - funny
+https://floor796.com:
+  - tags:
+    - netculture
+  - context:
+    - https://news.ycombinator.com/item?id=40400648
 https://factoryfactoryfactory.net:
   - tags:
     - software
@@ -30,6 +53,29 @@ https://www.dreamsongs.com:
   - tags:
     - computing
     - art
+https://spacecraft.ssl.umd.edu/akins_laws.html:
+  - tags:
+    - engineering
+  - context:
+    - https://news.ycombinator.com/item?=46442903
+https://engineersneedart.com:
+  - tags:
+    - tech
+https://unix.dog/~yosh/info.html:
+  - tags:
+    - netculture
+    - software
+  - context:
+    - https://news.ycombinator.com/item?=46676125
+https://morewrong.lol:
+  - tags:
+    - funny
+    - netculture
+https://heyhomepage.com:
+  - tags:
+    - netculture
+  - context:
+    - https://news.ycombinator.com/item?=50205320
 https://www.jwz.org:
   - tags:
     - tech
@@ -77,11 +123,7 @@ http://www.complexification.net/gallery/:
   - tags:
     - software
     - art
-https://www.objc.io/issues/:
-  - tags:
-    - software
-    - apple
-https://www.objc.io/blog/archive/:
+https://www.objc.io/:
   - tags:
     - software
     - apple

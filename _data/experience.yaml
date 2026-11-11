@@ -81,6 +81,8 @@ experience:
       - tools: [Claude Code, SPM, XcodeGen, CocoaPods, Carthage, SwiftLint, clang-format, CodeCov, pre-commit, Fastlane, Arkana]
       - infrastructure: [GitHub Actions, Redash, SauceLabs, TestFlight, Linear]
     deliverables:
+      - name: Billing # not shown on zillow resume
+        description: platformized legacy Python backend for teams to self-serve how they charge for features
       - name: Seer for iOS and macOS # listed as the top item for anthropic resumes
         description: proposed and built native apps to manage our agentic offerings
       - name: Sentry Cocoa SDK
@@ -91,8 +93,6 @@ experience:
           - Built User Feedback widget, the first user-facing UI shipped in Sentry Cocoa SDK
           - Parallelized release CI job from 35 to 5; split test suites to fix statefulness issues
           - Built demo apps for SDK and Sales teams flexible enough to simulate any customer configuration
-      - name: Billing
-        description: platformized legacy system for product teams to self-serve how they charge for features
 
   - id: specto
     start: November 2019
@@ -237,13 +237,13 @@ experience:
           - Researched and built feature surfacing solutions to detectable ecosystem-wide crash causes
           - Added Bitcode and tvOS compatibility to SDKs, and investigated watchOS support
           - Rearchitected CLIs to bootstrap projects, upload dSYMs and interop with our macOS app
-#      - name: FABConfig # commented out as of the anthropic resume
-#        url: https://github.com/twitter-fabric/fabconfig
-#        description: standardizes config of all Xcode projects via xcconfig `include`s
-#      - name: FABOperation # commented out as of the anthropic resume
-#        url: https://github.com/google-fabric/FABOperation
-#        description: custom NSOperation subclasses for async work and grouping tasks
-    highlights:
+      - name: FABConfig # commented out as of the anthropic resume
+        url: https://github.com/twitter-fabric/fabconfig
+        description: standardizes config of all Xcode projects via xcconfig `include`s
+      - name: FABOperation # commented out as of the anthropic resume
+        url: https://github.com/google-fabric/FABOperation
+        description: custom NSOperation subclasses for async work and grouping tasks
+    highlights: # not shown on zillow resume
       - Presented NSOperation rearchitectures and open source tools at MobileDevCon 2016 in Amsterdam
       - Worked on high-volume lambda backend, including on-call and migration from Storm to Heron
 
