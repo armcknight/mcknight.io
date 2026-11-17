@@ -81,8 +81,6 @@ experience:
       - tools: [Claude Code, SPM, XcodeGen, CocoaPods, Carthage, SwiftLint, clang-format, CodeCov, pre-commit, Fastlane, Arkana]
       - infrastructure: [GitHub Actions, Redash, SauceLabs, TestFlight, Linear]
     deliverables:
-      - name: Billing # not shown on zillow resume
-        description: platformized legacy Python backend for teams to self-serve how they charge for features
       - name: Seer for iOS and macOS # listed as the top item for anthropic resumes
         description: proposed and built native apps to manage our agentic offerings
       - name: Sentry Cocoa SDK
@@ -93,6 +91,8 @@ experience:
           - Built User Feedback widget, the first user-facing UI shipped in Sentry Cocoa SDK
           - Parallelized release CI job from 35 to 5; split test suites to fix statefulness issues
           - Built demo apps for SDK and Sales teams flexible enough to simulate any customer configuration
+      - name: Billing # not shown on zillow resume
+        description: platformized legacy Python backend for teams to self-serve how they charge for features
 
   - id: specto
     start: November 2019
