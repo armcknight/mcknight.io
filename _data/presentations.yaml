@@ -27,7 +27,7 @@ presentations:
     location: Cambridge, MA
     details:
       - Helped organized this initial meeting of the group
-      - Covered the theoretical workings of the HyperLogLog algorithm, with a copresenter giving a demo
+      - Covered the theoretical workings of the HyperLogLog algorithm, with a co-presenter giving a demo
 
   - id: mdevcon-2016
     date: Mar 2016

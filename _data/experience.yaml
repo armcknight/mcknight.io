@@ -78,7 +78,7 @@ experience:
     stack:
       - languages: [Objective-C++, Swift, Python]
       - frameworks: [SwiftUI, Django]
-      - tools: [Claude Code, SPM, XcodeGen, CocoaPods, Carthage, SwiftLint, clang-format, CodeCov, pre-commit, Fastlane, Arkana]
+      - tools: [Claude Code, SPM, XcodeGen, CocoaPods, Carthage, SwiftLint, clang-format, Codecov, pre-commit, Fastlane, Arkana]
       - infrastructure: [GitHub Actions, Redash, SauceLabs, TestFlight, Linear]
     deliverables:
       - name: Seer for iOS and macOS # listed as the top item for anthropic resumes
@@ -128,7 +128,7 @@ experience:
     stack:
       - languages: [Swift]
       - tools: [SwiftGen, SwiftLint, Sourcery]
-      - infrastructure: [CircleCI, Postman, Browserstack, Countly]
+      - infrastructure: [CircleCI, Postman, BrowserStack, Countly]
     deliverables: Security app and SDK (under NDA)
 
   - id: insight
@@ -222,7 +222,7 @@ experience:
     title: Software Engineer
     location: Cambridge, MA
     stack: 
-      - languages: [Objective-C, C, Swift, Java, Scala, Clojure, Coffeescript]
+      - languages: [Objective-C, C, Swift, Java, Scala, Clojure, CoffeeScript]
       - frameworks: [Rails, React, Protobuf]
       - infrastructure: [Storm, Heron, Cascading, Scalding, Graphite, Beanstalk, Kafka, Redis, Cassandra, AWS, TeamCity, Chef, Trello, Vertica, Zeppelin]
     deliverables:
@@ -244,7 +244,7 @@ experience:
         url: https://github.com/google-fabric/FABOperation
         description: custom NSOperation subclasses for async work and grouping tasks
     highlights: # not shown on zillow resume
-      - Presented NSOperation rearchitectures and open source tools at MobileDevCon 2016 in Amsterdam
+      - Presented NSOperation rearchitectures and open source tools at mDevCon 2016 in Amsterdam
       - Worked on high-volume lambda backend, including on-call and migration from Storm to Heron
 
   - id: mc10
@@ -305,7 +305,7 @@ experience:
         details:
           - Refactored critical bidding calculation routines and corrected mathematical errors
           - Added pull-to-request footer in infinite scroll UITableView, horizontal UICollectionView scroll
-          - Fixed statefulness issues with UI elements dependent due to race conditions in server links
+          - Fixed statefulness issues with UI elements due to race conditions in server links
 
   - id: odu-systems-lab
     start: October 2012
@@ -336,7 +336,7 @@ experience:
       - name: SmartMarine/SmartPlant3D
         description: CAD system for designing ships and power plants, with multilayer blueprint export
         details:
-          - Unit and UI testing, numerical modules baseline regression testing, and montecarlo simulation
+          - Unit and UI testing, numerical modules baseline regression testing, and Monte Carlo simulation
           - Manual acceptance testing for new features and fixes; database migrations with handwritten SQL
 
   - id: odu-capstone
