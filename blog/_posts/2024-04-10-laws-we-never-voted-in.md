@@ -24,6 +24,11 @@ I saw a reddit post the other day quoting Dietrich Bonhoeffer, which reminded me
 - Sagan standard: extraordinary claims require extraordinary evidence
 - Chesterton's fence: reforms should not be made until the reasoning behind the existing state of affairs is understood
 - Segal's law: a person with a watch knows what time it is. Someone with two can never be sure.
+- Gell-Mann Amnesia Effect
+- Braess Paradox
+- Law of the Excluded Middle
+- Null Hypothesis
+- Chebyshev's Inequality
 
 # Economic
 
@@ -32,6 +37,8 @@ I saw a reddit post the other day quoting Dietrich Bonhoeffer, which reminded me
   - The [Gwern corollary](https://www.gwern.net/Complement): Smart companies try to commoditize their products’ complements
 - Jevon's paradox: increased efficiency in usage of a resource can lead to induced demand leading to an increased, instead of decreased, overall need for that resource
 - Hotelling's law: competitors differentiate their goods and services as little as possible in order to maximize demand from the public
+- Prisoner's Dilemma
+- Three Generation Rule (aka shirtsleeves-to-shirtsleeves)
 
 # Geographical
 
@@ -53,7 +60,8 @@ I saw a reddit post the other day quoting Dietrich Bonhoeffer, which reminded me
 
 # Technological
 
-- Fundamental theorem of software engineering: all problems in computer science can be solved by another level of indirection (attribted to David Wheeler)
+- Fundamental theorem of software engineering: all problems in computer science can be solved by another level of indirection (attributed to David Wheeler)
+  - Wheeler Corollary: except for too many levels of indirection
 - Also from [_4 New Laws of Computing_](https://spectrum.ieee.org/on-beyond-moores-law-4-new-laws-of-computing):
   - Hoff’s Law of Scalability: a technology's potential to scale is inversely related to its customizability, and directly related to its degree of standardization
   - Evans’s Law of Modularity: modularization reduces incompatibilities and complexities
@@ -76,7 +84,7 @@ I saw a reddit post the other day quoting Dietrich Bonhoeffer, which reminded me
 - Schneier’s*
 - Putt’s*
 - Liebniz’
-- Linus’
+- Linus’:
 - Maes-Garreau*
 - Metcalfe’s
 - Hofstadter’s
@@ -98,12 +106,17 @@ I saw a reddit post the other day quoting Dietrich Bonhoeffer, which reminded me
   - Henshaw's: one key to success in a mission is establishing clear lines of blame (also filed under Sociological)
 - Swanson's: the price of solar photovoltaic (PV) modules drops by about 20% for every doubling of cumulative shipped volume, translating to a roughly 75% cost reduction every 10 years; derived from Wright's law
 
+# User Experience
+
+Check out the fantastic [https://lawsofux.com](Laws of UX), I even bought their book!
+
 # Sociological
 
 - Godwin’s Law‡: As an online discussion grows longer, the probability of a comparison involving Nazis or Hitler approaches 1
 - Brandolini’s Law (aka the bullshit asymmetry law)†: The amount of energy needed to refute bullshit is an order of magnitude larger than is needed to produce it.
 - Betteridge's law\*: Any headline that ends in a question mark can be answered by the word "no"
 - Poe’s Law‡: without a clear indicator of the author's intent, any parodic or sarcastic expression of extreme views can be mistaken by some readers for a sincere expression of those views
+- Paradox of Tolerance
 
 # Linguistic
 

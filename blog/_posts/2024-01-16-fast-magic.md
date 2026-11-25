@@ -88,16 +88,22 @@ Shout out to all the people that keep TCGPlayer and Scryfall ticking! As well as
 - [https://reddit.com/r/pauper](https://reddit.com/r/pauper)
 - [https://reddit.com/r/sealedmtgdeals](https://reddit.com/r/sealedmtgdeals)
 - [https://reddit.com/r/spikes](https://reddit.com/r/spikes)
+- [https://reddit.com/r/mtgcube](https://reddit.com/r/mtgcube)
+- [https://reddit.com/r/budgetbrews](https://reddit.com/r/budgetbrews)
+- [https://reddit.com/r/casualmtg](https://reddit.com/r/casualmtg)
+- [https://reddit.com/r/secretlair_collectors](https://reddit.com/r/secretlair_collectors)
 
 and of course, Reddit wouldn't be Reddit without
 
 - [https://reddit.com/r/mtgcirclejerk]()
 
-## Card Info etc
+## Card Info, etc
 
 - [https://scryfall.com](https://scryfall.com)
 - [https://tcgplayer.com](https://tcgplayer.com)
 - [https://mtg.fandom.com/wiki/Main_Page](https://mtg.fandom.com/wiki/Main_Page)
+- [](MTGJson)
+- [](tcgcsv]
 
 ## Deck Building
 
@@ -109,6 +115,8 @@ and of course, Reddit wouldn't be Reddit without
 - [https://mtggoldfish.com](https://mtggoldfish.com)
 - [https://mtgdecks.net](https://mtgdecks.net)
 - [https://deckstats.net](https://deckstats.net)
+- [https://whatsinstandard.com](https://whatsinstandard.com)
+- [https://edhpowerlevel.com](https://edhpowerlevel.com)
 
 ## Combo Search
 
@@ -117,3 +125,26 @@ and of course, Reddit wouldn't be Reddit without
 - [https://combo-finder.com](https://combo-finder.com)
 - [https://edh-combos.com/combo](https://edh-combos.com/combo)
 - [https://ineedacombo.com/magic-the-gathering/post](https://ineedacombo.com/magic-the-gathering/post)
+
+## Pricing
+
+- [mtgstocks]()
+
+## &cetera
+
+- [17lands]()
+- [commanderlands.com]()
+- [mtgtop8.com]()
+- [magic set editor]()
+- [cubecobra.com]()
+- [cardconjurer.app]()
+- [mtgnexus.com]()
+- [commandersherald.com]()
+- [thegathering.gg]()
+- [aetherhub.com/Apps/HyperGeometric]()
+- [mtgtreachery.net]()
+- [mpcfill.com]()
+- [leviathon]()
+- [mtg.dawnglare.com]()
+- [ancestralmtg.com]()
+- [stompinggroundstcg.com/collections/magic-the-gathering]()
